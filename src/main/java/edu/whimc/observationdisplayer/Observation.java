@@ -3,6 +3,7 @@ package edu.whimc.observationdisplayer;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -194,11 +195,11 @@ public class Observation {
         this.holoLoc.getBlockY() + ", "+ this.holoLoc.getBlockZ() + "&7)";
     }
 
-    public void deleteAndRemoveFromDatabase() {
-        deleteAndRemoveFromDatabase(() -> {});
+    public void deleteAndSetInactive() {
+        deleteAndSetInactive(() -> {});
     }
 
-    public void deleteAndRemoveFromDatabase(Runnable callback) {
+    public void deleteAndSetInactive(Runnable callback) {
         plugin.getQueryer().makeSingleObservationInactive(this.id, callback);
         deleteObservation();
     }
@@ -213,6 +214,14 @@ public class Observation {
             this.hologram.delete();
             this.hologram = null;
         }
+    }
+
+    public static List<String> getObservationsTabComplete(String hint) {
+        return observations.stream()
+                .filter(v -> Integer.toString(v.getId()).startsWith(hint))
+                .sorted(Comparator.comparing(Observation::getId))
+                .map(v -> Integer.toString(v.getId()))
+                .collect(Collectors.toList());
     }
 
 }

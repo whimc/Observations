@@ -1,14 +1,17 @@
 package edu.whimc.observationdisplayer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import edu.whimc.observationdisplayer.commands.ObservationsCommand;
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
+import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
 import edu.whimc.observationdisplayer.utils.Queryer;
 import edu.whimc.observationdisplayer.utils.Utils;
 
 public class ObservationDisplayer extends JavaPlugin {
+
+    public static final String PERM_PREFIX = "whimc-observations";
 
     private Queryer queryer;
 
@@ -24,8 +27,6 @@ public class ObservationDisplayer extends JavaPlugin {
             return;
         }
 
-        getCommand("observe").setExecutor(new ObserveCommand(this));
-        getCommand("observations").setExecutor(new ObservationsCommand(this));
 
         queryer = new Queryer(this, q -> {
             if (q == null) {
@@ -38,6 +39,20 @@ public class ObservationDisplayer extends JavaPlugin {
                     Utils.debug("Finished loading observations!");
                 });
                 Observation.scanForExpiredObservations(this);
+
+                Permission parent = new Permission(PERM_PREFIX + ".*");
+                Bukkit.getPluginManager().addPermission(parent);
+
+                Permission entry = new Permission(PERM_PREFIX + ".entry.*");
+                entry.addParent(parent, true);
+                Bukkit.getPluginManager().addPermission(entry);
+
+                getCommand("observe").setExecutor(new ObserveCommand(this));
+
+                ObservationsCommand oc = new ObservationsCommand(this);
+                getCommand("observations").setExecutor(oc);
+                getCommand("observations").setTabCompleter(oc);
+
             }
         });
     }

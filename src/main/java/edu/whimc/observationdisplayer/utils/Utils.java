@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -87,13 +89,14 @@ public class Utils {
 				"    &9World: " + (world == null ? "&7N/A" : "&8\"&7&o" + world + "&8\""),
 				"");
 
-		for (Observation obs : Observation.getObservations()) {
-			if (player != null && !player.equalsIgnoreCase(obs.getPlayer())) continue;
-			if (world != null && !world.equalsIgnoreCase(obs.getHoloLocation().getWorld().getName())) continue;
+		List<Observation> matches = Observation.getObservations().stream()
+		        .filter(v -> player == null || player.equalsIgnoreCase(v.getPlayer()))
+		        .filter(v -> world == null || world.equalsIgnoreCase(v.getHoloLocation().getWorld().getName()))
+		        .collect(Collectors.toList());
+		matches.stream()
+		        .forEachOrdered(v -> Utils.msgNoPrefix(sender, " &7- " + v.toString()));
 
-			Utils.msgNoPrefix(sender, " &7- " + obs.toString());
-		}
-		Utils.msgNoPrefix(sender, "&9" + Observation.getObservations().size() + " observation(s) found.");
+		Utils.msgNoPrefix(sender, "&9" + matches.size() + " observations(s) found.");
 
 		Utils.msgNoPrefix(sender, "&7&m-----------------------------------------------------");
 	}
@@ -128,5 +131,23 @@ public class Utils {
 	public static String color(String str) {
 		return ChatColor.translateAlternateColorCodes('&', str);
 	}
+
+    public static Observation getObervationWithError(CommandSender sender, String strId) {
+        int id;
+        try {
+            id = Integer.parseInt(strId);
+        } catch (NumberFormatException exc) {
+            Utils.msg(sender, "&c\"&4" + strId + "&c\" is an invalid number!");
+            return null;
+        }
+
+        Observation obs = Observation.getObservation(id);
+        if (obs == null) {
+            Utils.msg(sender, "&c\"&4" + id + "&c\" is not a valid observation id!");
+            return null;
+        }
+
+        return obs;
+    }
 
 }
