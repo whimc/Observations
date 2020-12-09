@@ -1,3 +1,4 @@
+expiration-days: 7
 mysql:
     host: localhost
     port: 3306

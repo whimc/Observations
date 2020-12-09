@@ -15,7 +15,7 @@ public class ObservationDisplayer extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getConfig().options().copyDefaults(false);
+        getConfig().options().copyDefaults(true);
 
         if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
             getLogger().severe("*** HolographicDisplays is not installed or not enabled. ***");
@@ -25,7 +25,7 @@ public class ObservationDisplayer extends JavaPlugin {
         }
 
         getCommand("observe").setExecutor(new ObserveCommand(this));
-        getCommand("observations").setExecutor(new ObservationsCommand());
+        getCommand("observations").setExecutor(new ObservationsCommand(this));
 
         queryer = new Queryer(this, q -> {
             if (q == null) {
@@ -34,7 +34,10 @@ public class ObservationDisplayer extends JavaPlugin {
             } else {
                 Utils.setDebugPrefix(getDescription().getName());
                 Utils.debug("Starting to load observations...");
-                q.loadObservations(this);
+                q.loadObservations(() -> {
+                    Utils.debug("Finished loading observations!");
+                });
+                Observation.scanForExpiredObservations(this);
             }
         });
     }
