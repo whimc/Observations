@@ -17,10 +17,14 @@ import edu.whimc.observationdisplayer.Observation;
 
 public class Utils {
 
-	private static boolean debug = true;
+	private static boolean debug = false;
 	private static String debugPrefix = "[Observations] ";
 
 	private static final String prefix = "&8&l[&9&lObservations&8&l]&r ";
+
+	public static void setDebug(boolean shouldDebug) {
+	    debug = shouldDebug;
+	}
 
 	/**
 	 * Prints a debug message if "debug" is true.

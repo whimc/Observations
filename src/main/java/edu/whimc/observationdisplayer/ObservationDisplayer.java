@@ -19,6 +19,7 @@ public class ObservationDisplayer extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
+        saveConfig();
 
         if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
             getLogger().severe("*** HolographicDisplays is not installed or not enabled. ***");
@@ -26,6 +27,8 @@ public class ObservationDisplayer extends JavaPlugin {
             this.setEnabled(false);
             return;
         }
+
+        Utils.setDebug(getConfig().getBoolean("debug"));
 
 
         queryer = new Queryer(this, q -> {
