@@ -3,6 +3,7 @@ package edu.whimc.observationdisplayer.utils;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,9 @@ public class Utils {
 	private static boolean debug = false;
 	private static String debugPrefix = "[Observations] ";
 
-	private static final String prefix = "&8&l[&9&lObservations&8&l]&r ";
+	private static final String PREFIX = "&8&l[&9&lObservations&8&l]&r ";
+
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d yyyy, h:mm a z");
 
 	public static void setDebug(boolean shouldDebug) {
 	    debug = shouldDebug;
@@ -49,16 +52,25 @@ public class Utils {
 	 * @return A formatted version of the given date
 	 */
 	public static String getDate(Timestamp timestamp) {
-		String pattern = "MMMM d, h:mm a z";
-		SimpleDateFormat format = new SimpleDateFormat(pattern);
+		return DATE_FORMAT.format(new Date(timestamp.getTime()));
+	}
 
-		return format.format(new Date(timestamp.getTime()));
+	public static String getDateNow() {
+	    return getDate(new Timestamp(System.currentTimeMillis()));
+	}
+
+	public static Timestamp parseDate(String str) {
+	    try {
+	        return new Timestamp(DATE_FORMAT.parse(str).getTime());
+	    } catch (ParseException e) {
+	        return null;
+	    }
 	}
 
 	public static void msg(CommandSender sender, String... messages) {
 		for (int ind = 0; ind < messages.length; ind++) {
 			if (ind == 0) {
-				sender.sendMessage(color(prefix + messages[ind]));
+				sender.sendMessage(color(PREFIX + messages[ind]));
 			} else {
 				sender.sendMessage(color(messages[ind]));
 			}
@@ -136,12 +148,27 @@ public class Utils {
 		return ChatColor.translateAlternateColorCodes('&', str);
 	}
 
+	public static Integer parseInt(String str) {
+	    try {
+	        return Integer.parseInt(str);
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }
+	}
+
+	public static Integer parseIntWithError(CommandSender sender, String str) {
+	    Integer id = parseInt(str);
+	    if (id == null) {
+	        Utils.msg(sender, "&c\"&4" + str + "&c\" is an invalid number!");
+            return null;
+	    }
+
+	    return id;
+	}
+
     public static Observation getObervationWithError(CommandSender sender, String strId) {
-        int id;
-        try {
-            id = Integer.parseInt(strId);
-        } catch (NumberFormatException exc) {
-            Utils.msg(sender, "&c\"&4" + strId + "&c\" is an invalid number!");
+        Integer id = parseIntWithError(sender, strId);
+        if (id == null) {
             return null;
         }
 
