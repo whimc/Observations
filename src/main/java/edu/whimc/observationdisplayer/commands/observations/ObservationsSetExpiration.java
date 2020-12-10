@@ -45,7 +45,7 @@ public class ObservationsSetExpiration extends AbstractSubCommand {
             if (newExpiration == null) {
                 Utils.msg(sender, "&aRemoved the expiration from \"&2" + obs.getId() + "&a\"");
             } else {
-                Utils.msg(sender, "&aExpiration of \"&2" + obs.getId() + "&a\" set to \"&2" + Utils.getDate(newExpiration));
+                Utils.msg(sender, "&aExpiration of \"&2" + obs.getId() + "&a\" set to \"&2" + Utils.getDate(newExpiration) + "&a\"");
             }
         });
         return true;
