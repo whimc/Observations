@@ -34,19 +34,26 @@ public class Observation {
     private String observation;
     private Hologram hologram;
     private Timestamp expiration;
+    private boolean temporary;
 
     private Observation() {}
 
     public static void createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
             String observation, Timestamp expiration) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, true);
+        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, false, true);
+        observations.add(obs);
+    }
+
+    public static void loadTemporaryObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
+            String playerName, Location viewLoc, String observation, Timestamp expiration) {
+        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, true, false);
         observations.add(obs);
     }
 
     public static void loadObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
             String playerName, Location viewLoc, String observation, Timestamp expiration) {
-        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, false);
+        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, false, false);
         observations.add(obs);
     }
 
@@ -54,6 +61,7 @@ public class Observation {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             long count = observations.stream()
                     .filter(v -> Instant.now().isAfter(v.getExpiration().toInstant()))
+                    .filter(v -> !v.isTemporary())
                     .collect(Collectors.toList())
                     .stream()
                     .peek(Observation::deleteObservation)
@@ -68,7 +76,7 @@ public class Observation {
     }
 
     private Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
-            Location viewLoc, String observation, Timestamp expiration, boolean isNew) {
+            Location viewLoc, String observation, Timestamp expiration, boolean temporary, boolean isNew) {
         this.plugin = plugin;
         this.timestamp = timestamp;
         this.playerName = playerName;
@@ -76,6 +84,7 @@ public class Observation {
         this.viewLoc = viewLoc;
         this.observation = observation;
         this.expiration = expiration;
+        this.temporary = temporary;
 
         if (!isNew) {
             this.id = id;
@@ -100,8 +109,13 @@ public class Observation {
         holo.appendTextLine(ChatColor.GRAY + playerName + " - " + Utils.getDate(timestamp))
                 .setTouchHandler(clickListener);
 
-        if (expiration != null) {
+        if (this.expiration != null) {
             holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(expiration))
+                    .setTouchHandler(clickListener);
+        }
+
+        if (this.temporary) {
+            holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*")
                     .setTouchHandler(clickListener);
         }
 
@@ -181,6 +195,10 @@ public class Observation {
 
     public void setExpiration(Timestamp timestamp) {
         this.expiration = timestamp;
+    }
+
+    public boolean isTemporary() {
+        return this.temporary;
     }
 
     @Override

@@ -29,10 +29,12 @@ public class ObservationsCommand implements CommandExecutor, TabCompleter {
 	    subCommands.put("info", new ObservationsInfo(plugin, "observations", "info"));
 	    subCommands.put("list", new ObservationsList(plugin, "observations", "list"));
 	    subCommands.put("near", new ObservationsNear(plugin, "observations", "near"));
+	    subCommands.put("purge", new ObservationsPurge(plugin, "observations", "purge"));
+	    subCommands.put("reactivate", new ObservationsReactivate(plugin, "observations", "reactivate"));
 	    subCommands.put("remove", new ObservationsRemove(plugin, "observations", "remove"));
 	    subCommands.put("removeall", new ObservationsRemoveAll(plugin, "observations", "removeall"));
+	    subCommands.put("setexpiration", new ObservationsSetExpiration(plugin, "observations", "setexpiration"));
 	    subCommands.put("teleport", new ObservationsTeleport(plugin, "observations", "teleport"));
-	    subCommands.put("test_parse", new TEST_PARSING(plugin, "observations", "test_parse"));
 	}
 
 	@Override

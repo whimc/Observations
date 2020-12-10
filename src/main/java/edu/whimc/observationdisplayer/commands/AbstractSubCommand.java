@@ -28,12 +28,13 @@ public abstract class AbstractSubCommand {
     protected ObservationDisplayer plugin;
     private String baseCommand;
     private String subCommand;
-    private String permission;
+    private Permission permission;
 
     private String description = "";
-    private String[] arguments = {};
+    private List<String[]> arguments = new ArrayList<>();
     private int minArgs = 0;
     private int maxArgs = 0;
+    private boolean bypassArgumentChecks = false;
     private boolean requiresPlayer = false;
 
     public AbstractSubCommand(ObservationDisplayer plugin, String baseCommand, String subCommand) {
@@ -41,30 +42,34 @@ public abstract class AbstractSubCommand {
         this.baseCommand = baseCommand;
         this.subCommand = subCommand;
 
-        this.permission = ObservationDisplayer.PERM_PREFIX + "." + baseCommand.toLowerCase() + "." + subCommand.toLowerCase();
-        Permission perm = new Permission(this.permission);
+        String permStr = ObservationDisplayer.PERM_PREFIX + "." + baseCommand.toLowerCase() + "." + subCommand.toLowerCase();
+        Permission perm = new Permission(permStr);
         perm.addParent(ObservationDisplayer.PERM_PREFIX + "." + baseCommand + ".*", true);
         Bukkit.getPluginManager().addPermission(perm);
+        this.permission = perm;
     }
 
     protected void description(String desc) { this.description = desc; }
 
     protected void arguments(String args) {
-        this.arguments = parseArgs(args, "[", "]");
+        String[] parsed = parseArgs(args, "[", "]");
+        this.arguments.add(parsed);
         this.minArgs = 0;
-        for (String arg : this.arguments) {
+        for (String arg : parsed) {
             if (arg.startsWith("[") && arg.endsWith("]")) {
-                maxArgs += 2;
+                this.maxArgs += 2;
             } else {
-                minArgs++;
-                maxArgs++;
+                this.minArgs++;
+                this.maxArgs++;
             }
         }
-   }
+    }
+
+    protected void bypassArgumentChecks() { this.bypassArgumentChecks = true; }
 
     protected void requiresPlayer() { this.requiresPlayer = true; }
 
-    protected List<String> onTabComplete(CommandSender sender, String[] args) { return null; }
+    protected List<String> onTabComplete(CommandSender sender, String[] args) { return Arrays.asList(); }
 
     public List<String> executeOnTabComplete(CommandSender sender, String args[]) {
         if (!sender.hasPermission(getPermission()) || args.length > this.maxArgs) {
@@ -84,9 +89,17 @@ public abstract class AbstractSubCommand {
         return PRIMARY + "/" + this.baseCommand + " " + SECONDARY + this.subCommand;
     }
 
-    public String getUsage() {
+    public List<String> getUsages() {
+        List<String> res = new ArrayList<>();
+        for (int ind = 0; ind < this.arguments.size(); ind++) {
+            res.add(getUsage(ind));
+        }
+        return res;
+    }
+
+    public String getUsage(int index) {
         String usage = getCommand() + " ";
-        for (String arg : this.arguments) {
+        for (String arg : this.arguments.get(index)) {
             usage += formatArg(arg) + " ";
         }
         return usage.trim();
@@ -96,7 +109,7 @@ public abstract class AbstractSubCommand {
         return this.getCommand() + SEPARATOR + " - " + TEXT + this.description;
     }
 
-    public String getPermission() {
+    public Permission getPermission() {
         return this.permission;
     }
 
@@ -115,21 +128,25 @@ public abstract class AbstractSubCommand {
             return true;
         }
 
-        if (args.length - 1 < this.minArgs) {
-            List<String> missingArgsList = new ArrayList<>();
-            for (int ind = args.length - 1; ind < arguments.length; ind++) {
-                missingArgsList.add(formatArg(arguments[ind]));
+
+        if (!this.bypassArgumentChecks && this.arguments.size() == 1) {
+            if (args.length - 1 < this.minArgs) {
+                List<String> missingArgsList = new ArrayList<>();
+                String[] correctArgs = this.arguments.get(0);
+                for (int ind = args.length - 1; ind < correctArgs.length; ind++) {
+                    missingArgsList.add(formatArg(correctArgs[ind]));
+                }
+                String missingArgs = String.join("&7, ", missingArgsList);
+                missingArguments(sender, missingArgs);
+                return true;
             }
-            String missingArgs = String.join("&7, ", missingArgsList);
-            missingArguments(sender, missingArgs);
-            return true;
         }
 
         return onCommand(sender, parseArgs(Arrays.copyOfRange(args, 1, args.length), "\""));
     }
 
     protected void missingArguments(CommandSender sender, String missingArgs) {
-        Utils.msg(sender, "&cMissing argument(s): " + missingArgs, "  " + getUsage());
+        Utils.msg(sender, "&cMissing argument(s): " + missingArgs, "  " + getUsage(0));
     }
 
     private static String[] parseArgs(String[] args, String quote) {
@@ -147,7 +164,7 @@ public abstract class AbstractSubCommand {
 
         List<String> res = new ArrayList<>();
         while (matcher.find())
-            res.add(matcher.group(1).replace("\"", ""));
+            res.add(matcher.group(1).replace(start, "").replace(end, ""));
 
         return res.toArray(new String[0]);
 

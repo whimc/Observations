@@ -18,7 +18,8 @@ public class ObservationsList extends AbstractSubCommand {
     public ObservationsList(ObservationDisplayer plugin, String baseCommand, String subCommand) {
         super(plugin, baseCommand, subCommand);
         super.description("Lists all active observations");
-        super.arguments("[-p <player>] [-w <world...>]");
+        super.arguments("[-p <player>] [-w <\"world...\">]");
+        super.bypassArgumentChecks();
     }
 
     @Override
@@ -41,8 +42,8 @@ public class ObservationsList extends AbstractSubCommand {
 
         if (args.length > 0 && player == null && world == null) {
             Utils.msg(sender, "&cIncorrect parameter usage!",
-                    "  " + super.getUsage(),
-                    "  &7Example: /observations list -p Poi -w \"Redstone World\"");
+                    "  " + super.getUsage(0),
+                    "  &7Example:", "    &7/observations &blist &3-p Poi -w &7\"&3Redstone World&7\"");
             return true;
         }
 

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -38,12 +39,12 @@ public class Queryer {
     private static final String QUERY_MAKE_OBSERVATION_INACTIVE =
             "UPDATE whimc_observations " +
             "SET active=0 " +
-            "WHERE active=1 AND rowid=?";
+            "WHERE rowid=? AND active=1";
 
     private static final String QUERY_MAKE_PLAYER_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
             "SET active=0 " +
-            "WHERE active=1 AND username=?";
+            "WHERE username=? AND active=1";
 
     private static final String QUERY_MAKE_WORLD_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
@@ -52,12 +53,32 @@ public class Queryer {
     private static final String QUERY_MAKE_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
             "SET active=0 " +
-            "WHERE active=1 AND username=? AND world=?";
+            "WHERE username=? AND active=1 AND world=?";
 
     private static final String QUERY_MAKE_EXPIRED_INACTIVE =
             "UPDATE whimc_observations " +
             "SET active=0 " +
             "WHERE ? > expiration";
+
+    private static final String QUERY_SET_EXPIRATION =
+            "UPDATE whimc_observations " +
+            "SET expiration=? " +
+            "WHERE rowid=?";
+
+    private static final String QUERY_GET_INACTIVE_ID =
+            "SELECT * " +
+            "FROM whimc_observations " +
+            "WHERE rowid=?";
+
+    private static final String QUERY_GET_INACTIVE_RANGE =
+            "SELECT * " +
+            "FROM whimc_observations " +
+            "WHERE rowid BETWEEN ? AND ?";
+
+    private static final String QUERY_GET_INACTIVE_TIME =
+            "SELECT * " +
+            "FROM whimc_observations " +
+            "WHERE time BETWEEN ? AND ?";
 
     private ObservationDisplayer plugin;
     private MySQLConnection sqlConnection;
@@ -114,7 +135,7 @@ public class Queryer {
      * @param callback Function to call once the observation has been saved
      */
     public void storeNewObservation(Observation observation, Consumer<Integer> callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        async(() -> {
             Utils.debug("Storing observation to database:");
 
             try (Connection connection = this.sqlConnection.getConnection()) {
@@ -141,7 +162,7 @@ public class Queryer {
      * Loads observations from the database.
      */
     public void loadObservations(Runnable callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        async(() -> {
             Utils.debug("Loading observations:");
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (Statement statement = connection.createStatement()) {
@@ -194,7 +215,7 @@ public class Queryer {
      */
     public void makeSingleObservationInactive(int id, Runnable callback) {
         Utils.debug("Making observation id " + id + " inactive:");
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        async(() -> {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_MAKE_OBSERVATION_INACTIVE)) {
                     statement.setInt(1, id);
@@ -223,7 +244,7 @@ public class Queryer {
     public void makeObservationsInactive(String world, String player, Consumer<Integer> callback) {
         String query = getInactiveQuery(world, player);
 
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        async(() -> {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(query)) {
                     int ind = 1;
@@ -242,7 +263,7 @@ public class Queryer {
     }
 
     public void makeExpiredObservationsInactive(Consumer<Integer> callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        async(() -> {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_MAKE_EXPIRED_INACTIVE)) {
                     statement.setLong(1, System.currentTimeMillis());
@@ -250,6 +271,101 @@ public class Queryer {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    public void reactivateObservations(Timestamp start, Timestamp end, Consumer<Integer> callback) {
+        loadTemporaryObservation(QUERY_GET_INACTIVE_TIME, statement -> {
+            try {
+                statement.setLong(1, start.getTime());
+                statement.setLong(2, end.getTime());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }, callback);
+    }
+
+    public void reactivateObservations(int startId, int endId, Consumer<Integer> callback) {
+        loadTemporaryObservation(QUERY_GET_INACTIVE_RANGE, statement -> {
+            try {
+                statement.setInt(1, startId);
+                statement.setInt(2, endId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }, callback);
+    }
+
+    public void reactivateObservation(int id, Consumer<Integer> callback) {
+        loadTemporaryObservation(QUERY_GET_INACTIVE_ID, statement -> {
+            try {
+                statement.setInt(1, id);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }, callback);
+    }
+
+    private void loadTemporaryObservation(String query, Consumer<PreparedStatement> prepare, Consumer<Integer> callback) {
+        async(() -> {
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(query)) {
+                    prepare.accept(statement);
+                    try (ResultSet results = statement.executeQuery()) {
+                        int count = 0;
+                        while (results.next()) {
+                            count++;
+                            int id = results.getInt("rowid");
+                            Timestamp timestamp = new Timestamp(results.getLong("time"));
+                            String name = results.getString("username");
+                            String worldName = results.getString("world");
+                            double x = results.getDouble("x");
+                            double y = results.getDouble("y");
+                            double z = results.getDouble("z");
+                            float yaw = results.getFloat("yaw");
+                            float pitch = results.getFloat("pitch");
+                            String observation = results.getString("observation");
+                            long expNum = results.getLong("expiration");
+                            Timestamp expiration = expNum == 0 ? null : new Timestamp(expNum);
+
+                            sync(() -> {
+                                World world = Bukkit.getWorld(worldName);
+                                if (world == null) {
+                                    Utils.debug("  - "  + id + " | world '" + worldName + "' not found -> skipping");
+                                    return;
+                                }
+                                Location loc = new Location(world, x, y, z, yaw, pitch);
+
+                                Utils.debug("  - " + id +
+                                        " | " + timestamp.getTime() +
+                                        " | " + name +
+                                        " | (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" +
+                                        " | " + observation + " | " +
+                                        " | " + (expiration == null ? "n/a" : expiration.getTime()));
+                                Observation.loadTemporaryObservation(plugin, id, timestamp, name, loc, observation, expiration);
+                            });
+                        }
+                        sync(callback, count);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void setExpiration(int id, Timestamp newExpiration, Runnable callback) {
+        async(() -> {
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(QUERY_SET_EXPIRATION)) {
+                    statement.setInt(1, id);
+                    statement.setObject(2, newExpiration == null ? null : newExpiration.getTime(), Types.BIGINT);
+                    statement.executeUpdate();
+                    sync(callback);
+                }
+            } catch (SQLException exc) {
+                exc.printStackTrace();
             }
         });
     }
@@ -263,5 +379,10 @@ public class Queryer {
     private void sync(Runnable runnable) {
         Bukkit.getScheduler().runTask(this.plugin, runnable);
     }
+
+    private void async(Runnable runnable) {
+        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
+    }
+
 
 }

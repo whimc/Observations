@@ -40,11 +40,11 @@ public class ObservationsRemoveAll extends AbstractSubCommand {
 
         if (player == null && world == null) {
             Utils.msg(sender, "&cIncorrect parameter usage!",
-                    "  " + super.getUsage(),
+                    "  " + super.getUsage(0),
                     "  &7Examples:",
-                    "    /observations removeall -p Poi -w \"Redstone World\"",
-                    "    /observations removeall -p Poi",
-                    "    /observations removeall -w NoMoon");
+                    "    &7/observations &bremoveall &3-p Poi -w &7\"&3Redstone World&7\"",
+                    "    &7/observations &bremoveall &3-p Poi",
+                    "    &7/observations &bremoveall &3-w NoMoon");
             return true;
         }
 
@@ -71,7 +71,7 @@ public class ObservationsRemoveAll extends AbstractSubCommand {
     @Override
     protected void missingArguments(CommandSender sender, String missingArgs) {
         Utils.msg(sender, "&cMissing parameters: " + missingArgs,
-                "  " + super.getUsage(),
+                "  " + super.getUsage(0),
                 "  &7Examples:",
                 "    /observations removeall -p Poi -w \"Redstone World\"",
                 "    /observations removeall -p Poi",
