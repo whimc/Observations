@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
@@ -88,11 +87,7 @@ public class ObservationsRemoveAll extends AbstractSubCommand {
         String prev = args[args.length - 2];
         String hint = args[args.length - 1].toLowerCase();
         if (prev.equalsIgnoreCase("-p")) {
-            return Bukkit.getOnlinePlayers().stream()
-                    .filter(v -> v.getName().toLowerCase().startsWith(hint))
-                    .map(Player::getName)
-                    .sorted()
-                    .collect(Collectors.toList());
+            return Observation.getPlayersTabComplete(hint);
         }
         if (prev.equalsIgnoreCase("-w")) {
             return Bukkit.getWorlds().stream()

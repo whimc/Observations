@@ -242,4 +242,13 @@ public class Observation {
                 .collect(Collectors.toList());
     }
 
+    public static List<String> getPlayersTabComplete(String hint) {
+        return observations.stream()
+                .map(Observation::getPlayer)
+                .distinct()
+                .filter(v -> v.toLowerCase().startsWith(hint.toLowerCase()))
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
 }

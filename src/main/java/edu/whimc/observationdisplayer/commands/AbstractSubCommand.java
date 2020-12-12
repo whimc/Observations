@@ -119,7 +119,7 @@ public abstract class AbstractSubCommand {
         if (!sender.hasPermission(getPermission())) {
             Utils.msg(sender,
                     "&cYou do not have the required permission!",
-                    "  &f&o" + getPermission());
+                    "  &f&o" + getPermission().getName());
             return true;
         }
 
