@@ -359,8 +359,8 @@ public class Queryer {
         async(() -> {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_SET_EXPIRATION)) {
-                    statement.setInt(1, id);
-                    statement.setObject(2, newExpiration == null ? null : newExpiration.getTime(), Types.BIGINT);
+                    statement.setObject(1, newExpiration == null ? null : newExpiration.getTime(), Types.BIGINT);
+                    statement.setInt(2, id);
                     statement.executeUpdate();
                     sync(callback);
                 }
