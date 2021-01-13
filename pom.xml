@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
 	<artifactId>WHIMC-ObservationDisplayer</artifactId>
-	<version>1.4.4</version>
+	<version>1.4.5</version>
 	<name>WHIMC ObservationDisplayer</name>
 	<description>Create holographic observations in worlds</description>
 

@@ -60,6 +60,7 @@ public class Observation {
     public static void scanForExpiredObservations(ObservationDisplayer plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             long count = observations.stream()
+                    .filter(v -> v.getExpiration() != null)
                     .filter(v -> Instant.now().isAfter(v.getExpiration().toInstant()))
                     .filter(v -> !v.isTemporary())
                     .collect(Collectors.toList())
