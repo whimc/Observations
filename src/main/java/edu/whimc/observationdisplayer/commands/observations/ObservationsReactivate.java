@@ -29,7 +29,6 @@ public class ObservationsReactivate extends AbstractSubCommand {
             return true;
         }
 
-
         if (args.length == 1) {
             Timestamp date = Utils.parseDate(args[0]);
             if (date != null) {
@@ -42,13 +41,13 @@ public class ObservationsReactivate extends AbstractSubCommand {
             }
 
             if (Observation.getObservation(id) != null) {
-                Utils.msg(sender, "&a\"&4" + id + "&a\" is already active!");
+                Utils.msg(sender, "&c\"&4" + id + "&c\" is already active!");
                 return true;
             }
 
             plugin.getQueryer().reactivateObservation(id, count -> {
                 if (count == 0) {
-                    Utils.msg(sender, "&cObservation \"&2" + id + "&c\" does not exist!");
+                    Utils.msg(sender, "&cObservation \"&4" + id + "&c\" does not exist!");
                 } else {
                     Utils.msg(sender, "&aTemporarily reactivated observation \"&2" + id + "&a\"");
                 }
