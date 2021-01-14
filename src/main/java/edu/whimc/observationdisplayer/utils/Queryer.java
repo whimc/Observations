@@ -315,8 +315,11 @@ public class Queryer {
                     try (ResultSet results = statement.executeQuery()) {
                         int count = 0;
                         while (results.next()) {
-                            count++;
                             int id = results.getInt("rowid");
+                            if (Observation.getObservation(id) != null) {
+                                continue;
+                            }
+                            count++;
                             Timestamp timestamp = new Timestamp(results.getLong("time"));
                             String name = results.getString("username");
                             String worldName = results.getString("world");
