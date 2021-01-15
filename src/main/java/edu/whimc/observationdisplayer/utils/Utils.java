@@ -5,13 +5,17 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import edu.whimc.observationdisplayer.Observation;
@@ -179,6 +183,35 @@ public class Utils {
         }
 
         return obs;
+    }
+
+    public static List<String> getWorldsTabComplete(String hint) {
+        return Bukkit.getWorlds().stream()
+                .filter(v -> v.getName().toLowerCase().startsWith(hint))
+                .map(World::getName)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getFlaggedTabComplete(CommandSender sender, String[] args) {
+        List<String> res = new ArrayList<>(Arrays.asList("-p", "-w"));
+        if (args.length == 1) {
+            return res;
+        }
+
+        // Removed used flags
+        Stream.of(args).map(String::toLowerCase).forEachOrdered(v -> res.remove(v));
+
+        String prev = args[args.length - 2];
+        String hint = args[args.length - 1].toLowerCase();
+        if (prev.equalsIgnoreCase("-p")) {
+            return Observation.getPlayersTabComplete(hint);
+        }
+        if (prev.equalsIgnoreCase("-w")) {
+            return Utils.getWorldsTabComplete(hint);
+        }
+
+        return res;
     }
 
 }

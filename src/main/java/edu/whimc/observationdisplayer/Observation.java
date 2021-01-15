@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -244,12 +245,16 @@ public class Observation {
     }
 
     public static List<String> getPlayersTabComplete(String hint) {
-        return observations.stream()
+        Set<String> players = observations.stream()
                 .map(Observation::getPlayer)
                 .distinct()
                 .filter(v -> v.toLowerCase().startsWith(hint.toLowerCase()))
                 .sorted()
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+        players.addAll(Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toSet()));
+        return new ArrayList<>(players);
     }
 
 }
