@@ -1,14 +1,9 @@
 package edu.whimc.observationdisplayer.commands.observations;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.AbstractSubCommand;
 import edu.whimc.observationdisplayer.utils.Utils;
@@ -53,25 +48,7 @@ public class ObservationsList extends AbstractSubCommand {
 
     @Override
     protected List<String> onTabComplete(CommandSender sender, String[] args) {
-        List<String> res = Arrays.asList("-p", "-w");
-        if (args.length == 1) {
-            return res;
-        }
-
-        String prev = args[args.length - 2];
-        String hint = args[args.length - 1].toLowerCase();
-        if (prev.equalsIgnoreCase("-p")) {
-            return Observation.getPlayersTabComplete(hint);
-        }
-        if (prev.equalsIgnoreCase("-w")) {
-            return Bukkit.getWorlds().stream()
-                    .filter(v -> v.getName().toLowerCase().startsWith(hint))
-                    .map(World::getName)
-                    .sorted()
-                    .collect(Collectors.toList());
-        }
-
-        return res;
+        return Utils.getFlaggedTabComplete(sender, args);
     }
 
 }

@@ -52,8 +52,9 @@ public abstract class AbstractSubCommand {
     protected void description(String desc) { this.description = desc; }
 
     protected void arguments(String args) {
-        String[] parsed = parseArgs(args, "[", "]");
-        this.arguments.add(parsed);
+        String[] parsed_replaced = parseArgs(args, "[", "]", true);
+        String[] parsed = parseArgs(args, "[", "]", false);
+        this.arguments.add(parsed_replaced);
         this.minArgs = 0;
         for (String arg : parsed) {
             if (arg.startsWith("[") && arg.endsWith("]")) {
@@ -142,29 +143,34 @@ public abstract class AbstractSubCommand {
             }
         }
 
-        return onCommand(sender, parseArgs(Arrays.copyOfRange(args, 1, args.length), "\""));
+        return onCommand(sender, parseArgs(Arrays.copyOfRange(args, 1, args.length), "\"", true));
     }
 
     protected void missingArguments(CommandSender sender, String missingArgs) {
         Utils.msg(sender, "&cMissing argument(s): " + missingArgs, "  " + getUsage(0));
     }
 
-    private static String[] parseArgs(String[] args, String quote) {
-        return parseArgs(String.join(" ", args), quote, quote);
+    private static String[] parseArgs(String[] args, String quote, boolean replace) {
+        return parseArgs(String.join(" ", args), quote, quote, replace);
     }
 
-    protected static String[] parseArgs(String[] args, String start, String end) {
-        return parseArgs(String.join(" ", args), start, end);
+    protected static String[] parseArgs(String[] args, String start, String end, boolean replace) {
+        return parseArgs(String.join(" ", args), start, end, replace);
     }
 
-    private static String[] parseArgs(String args, String start, String end) {
+    private static String[] parseArgs(String args, String start, String end, boolean replace) {
         String s = Pattern.quote(start);
         String e = Pattern.quote(end);
         Matcher matcher = Pattern.compile("([^" + s + "]\\S*|" + s + ".+?" + e + ")\\s*").matcher(args);
 
         List<String> res = new ArrayList<>();
-        while (matcher.find())
-            res.add(matcher.group(1).replace(start, "").replace(end, ""));
+        while (matcher.find()) {
+            String match = matcher.group(1);
+            if (replace) {
+                match = match.replace(start, "").replace(end, "");
+            }
+            res.add(match);
+        }
 
         return res.toArray(new String[0]);
 
