@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
+import edu.whimc.observationdisplayer.commands.observetemplate.ObserveTemplateCommand;
 import edu.whimc.observationdisplayer.utils.Queryer;
 import edu.whimc.observationdisplayer.utils.Utils;
 
@@ -26,7 +27,7 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
         Utils.setDebug(getConfig().getBoolean("debug"));
 
 
-        queryer = new Queryer(this, q -> {
+        this.queryer = new Queryer(this, q -> {
             if (q == null) {
                 this.getLogger().severe("Could not create MySQL connection! Disabling plugin...");
                 getCommand("observations").setExecutor(this);
@@ -48,6 +49,8 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
 
                 getCommand("observe").setExecutor(new ObserveCommand(this));
 
+                getCommand("observetemplate").setExecutor(new ObserveTemplateCommand(this));
+
                 ObservationsCommand oc = new ObservationsCommand(this);
                 getCommand("observations").setExecutor(oc);
                 getCommand("observations").setTabCompleter(oc);
@@ -56,7 +59,7 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
     }
 
     public Queryer getQueryer() {
-        return queryer;
+        return this.queryer;
     }
 
     @Override
