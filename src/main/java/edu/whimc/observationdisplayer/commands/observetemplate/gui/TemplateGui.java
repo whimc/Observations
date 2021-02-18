@@ -1,8 +1,14 @@
 package edu.whimc.observationdisplayer.commands.observetemplate.gui;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.commands.observetemplate.ObservationType;
 import edu.whimc.observationdisplayer.utils.Utils;
 
 public final class TemplateGui implements Listener {
@@ -27,12 +34,15 @@ public final class TemplateGui implements Listener {
 
     private Inventory inventory;
 
-    private ObservationDisplayer plugin;
-    private TemplateGuiManager manager;
+    private Map<Integer, ObservationType> templateSlots = new HashMap<>();
 
-    public TemplateGui(ObservationDisplayer plugin, TemplateGuiManager manager) {
+    private Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
+
+    private ObservationDisplayer plugin;
+
+    public TemplateGui(ObservationDisplayer plugin) {
         this.plugin = plugin;
-        this.manager = manager;
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         loadTemplateInventory();
     }
 
@@ -46,22 +56,34 @@ public final class TemplateGui implements Listener {
         this.cancelItem = new ItemStack(Material.matchMaterial(getString(Path.CANCEL_ITEM)));
         this.cancelPosition = getInt(Path.CANCEL_POSITION);
         setName(this.cancelItem, getString(Path.CANCEL_NAME));
-    }
 
-    public Inventory createTemplateInventory(World world) {
-        Inventory result = Bukkit.createInventory(null, this.inventorySize, Utils.color(this.inventoryName));
+        this.inventory = Bukkit.createInventory(null, this.inventorySize, Utils.color(this.inventoryName));
 
         // Add in filler items
-        for (int slot = 0; slot < result.getSize(); slot++) {
-            result.setItem(slot, this.fillerItem);
+        for (int slot = 0; slot < this.inventory.getSize(); slot++) {
+            this.inventory.setItem(slot, this.fillerItem);
         }
 
         // Add cancel item
-        result.setItem(this.cancelPosition, this.cancelItem);
+        this.inventory.setItem(this.cancelPosition, this.cancelItem);
 
         // Add template-specific items
+        for (ObservationType type : ObservationType.values()) {
+            String pathRoot = "templates." + type + ".gui.";
+            FileConfiguration config = this.plugin.getConfig();
 
-        return result;
+            ItemStack item = new ItemStack(Material.matchMaterial(config.getString(pathRoot + "item")));
+            int position = config.getInt(pathRoot + "position");
+            setName(item, config.getString(pathRoot + "name"));
+            setLore(item, config.getStringList(pathRoot + "lore"));
+
+            this.templateSlots.put(position, type);
+            this.inventory.setItem(position, item);
+        }
+    }
+
+    public void addConsumer(ObservationType type, Consumer<Player> action) {
+        this.templateActions.put(type, action);
     }
 
     public void openTemplateInventory(Player player) {
@@ -76,20 +98,38 @@ public final class TemplateGui implements Listener {
 
         event.setCancelled(true);
 
+        // Only care about clicks in our inventory
+        if (event.getClickedInventory() != this.inventory) {
+            return;
+        }
+
         ItemStack clicked = event.getCurrentItem();
 
+        // Do nothing if they didn't click anything important
         if (clicked == null || clicked == this.fillerItem) {
             return;
         }
 
+        // Only care if the clicker was a player
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
 
+        // Close the inventory if they click the cancel button
         if (clicked.equals(this.cancelItem)) {
             event.getWhoClicked().closeInventory();
-            Utils.msg(event.getWhoClicked(), "&aInventory closed!");
+            return;
         }
+
+        ObservationType type = this.templateSlots.getOrDefault(event.getSlot(), null);
+        if (type == null) {
+            return;
+        }
+
+        // Close the inventory and execute the action for this template type
+        Player player = (Player) event.getWhoClicked();
+        player.closeInventory();
+        this.templateActions.getOrDefault(type, p -> {}).accept(player);
     }
 
     @EventHandler
@@ -102,6 +142,15 @@ public final class TemplateGui implements Listener {
     private void setName(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Utils.color(name));
+        item.setItemMeta(meta);
+    }
+
+    private void setLore(ItemStack item, List<String> lore) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(lore
+                .stream()
+                .map(Utils::color)
+                .collect(Collectors.toList()));
         item.setItemMeta(meta);
     }
 

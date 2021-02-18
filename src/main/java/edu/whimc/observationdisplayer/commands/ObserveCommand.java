@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +17,10 @@ import edu.whimc.observationdisplayer.utils.Utils;
 
 public class ObserveCommand implements CommandExecutor {
 
-	ObservationDisplayer plugin;
+    private static final String TEMPLATED_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe";
+    private static final String FREE_HAND_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe.freehand";
+
+	private ObservationDisplayer plugin;
 
 	public ObserveCommand(ObservationDisplayer plugin) {
 		this.plugin = plugin;
@@ -29,32 +33,25 @@ public class ObserveCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (!sender.hasPermission("observations.observe")) {
+		if (!sender.hasPermission(TEMPLATED_OBSERVATION)) {
 			Utils.msg(sender,
 					"&cYou do not have the required permission!",
-					"  &f&oobservations.observe");
-			return true;
-		}
-
-		if (args.length == 0) {
-			Utils.msg(sender,
-					"&cIncorrect usage!",
-					"  &f&o/observe [text]");
+					"  &f&o" + TEMPLATED_OBSERVATION);
 			return true;
 		}
 
 		Player player = (Player) sender;
 
-		StringBuilder builder = new StringBuilder();
-		for (String str : args) {
-			builder.append(str).append(" ");
+		if (!sender.hasPermission(FREE_HAND_OBSERVATION) || args.length == 0) {
+		    this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
+		    return true;
 		}
-		String text = builder.toString().trim();
 
+		String text = StringUtils.join(args, " ");
 		int days = this.plugin.getConfig().getInt("expiration-days");
 		Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-		Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
 
+		Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
 		Utils.msg(sender,
 				"&7Your observation has been placed:",
 				"  &8\"&f&l" + text + "&8\"");

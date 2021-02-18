@@ -11,9 +11,6 @@ commands:
   observe:
     description: Create an observation
     usage: '/observe [text]'
-  observetemplate:
-    description: Create a templated observation
-    usage: '/observetemplate'
   observations:
     description: Manage observations
     usage: '/observations'

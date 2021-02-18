@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
-import edu.whimc.observationdisplayer.commands.observetemplate.ObserveTemplateCommand;
+import edu.whimc.observationdisplayer.commands.observetemplate.TemplateManager;
 import edu.whimc.observationdisplayer.utils.Queryer;
 import edu.whimc.observationdisplayer.utils.Utils;
 
@@ -19,13 +19,14 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
 
     private Queryer queryer;
 
+    private TemplateManager templateManager;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
         Utils.setDebug(getConfig().getBoolean("debug"));
-
 
         this.queryer = new Queryer(this, q -> {
             if (q == null) {
@@ -47,9 +48,9 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 entry.addParent(parent, true);
                 Bukkit.getPluginManager().addPermission(entry);
 
-                getCommand("observe").setExecutor(new ObserveCommand(this));
+                this.templateManager = new TemplateManager(this);
 
-                getCommand("observetemplate").setExecutor(new ObserveTemplateCommand(this));
+                getCommand("observe").setExecutor(new ObserveCommand(this));
 
                 ObservationsCommand oc = new ObservationsCommand(this);
                 getCommand("observations").setExecutor(oc);
@@ -60,6 +61,10 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
 
     public Queryer getQueryer() {
         return this.queryer;
+    }
+
+    public TemplateManager getTemplateManager() {
+        return this.templateManager;
     }
 
     @Override
