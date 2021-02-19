@@ -19,6 +19,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import edu.whimc.observationdisplayer.Observation;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Utils {
 
@@ -142,9 +143,13 @@ public class Utils {
 		return newStr.toString().replace(ChatColor.COLOR_CHAR, '&');
 	}
 
-	public static void msgNoPrefix(CommandSender sender, String... messages) {
-		for (String str : messages) {
-			sender.sendMessage(color(str));
+	public static void msgNoPrefix(CommandSender sender, Object... messages) {
+		for (Object str : messages) {
+		    if (str instanceof BaseComponent) {
+		        sender.spigot().sendMessage((BaseComponent) str);
+		    } else {
+		        sender.sendMessage(color(str.toString()));
+		    }
 		}
 	}
 

@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer.commands.observetemplate;
+package edu.whimc.observationdisplayer.observetemplate.models;
 
 public enum ObservationType {
 

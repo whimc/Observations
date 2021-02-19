@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer.commands.observetemplate.gui;
+package edu.whimc.observationdisplayer.observetemplate.gui;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.commands.observetemplate.ObservationType;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
 import edu.whimc.observationdisplayer.utils.Utils;
 
 public final class TemplateGui implements Listener {

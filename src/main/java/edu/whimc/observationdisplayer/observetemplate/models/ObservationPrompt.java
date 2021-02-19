@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer.commands.observetemplate;
+package edu.whimc.observationdisplayer.observetemplate.models;
 
 import java.util.Arrays;
 import java.util.HashMap;

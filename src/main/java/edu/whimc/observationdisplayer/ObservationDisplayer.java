@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
-import edu.whimc.observationdisplayer.commands.observetemplate.TemplateManager;
+import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
 import edu.whimc.observationdisplayer.utils.Queryer;
 import edu.whimc.observationdisplayer.utils.Utils;
 
