@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer.observetemplate.models;
+package edu.whimc.observationdisplayer.libraries;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +31,7 @@ public class SpigotCallback {
                 if (!e.getMessage().startsWith("/spigot:callback")) {
                     return;
                 }
+                e.setCancelled(true);
                 String[] args = e.getMessage().split(" ");
 
                 if (args.length != 2 ) {
@@ -39,7 +40,6 @@ public class SpigotCallback {
                 if (args[1].split("-").length != 5) {
                     return;
                 }
-                e.setCancelled(true);
                 UUID callbackUUID = UUID.fromString(args[1]);
                 UUID playerUUID = e.getPlayer().getUniqueId();
 

@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -12,24 +14,28 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.libraries.CenteredText;
+import edu.whimc.observationdisplayer.libraries.SpigotCallback;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationPrompt;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
-import edu.whimc.observationdisplayer.observetemplate.models.SpigotCallback;
 import edu.whimc.observationdisplayer.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class TemplateSelection implements Listener {
+
+    private static final String CHECK = "\u2714";
+
+    private static final String CROSS = "\u274C";
+
+    private static final String BULLET = "\u2022";
 
     /** Instance of main class. */
     private ObservationDisplayer plugin;
@@ -55,24 +61,37 @@ public class TemplateSelection implements Listener {
     /** The response index that is being selected. */
     private int responseIndex = 0;
 
+    /** Selections that are currently happening. */
+    private static Map<UUID, TemplateSelection> ongoingSelections = new HashMap<>();
+
     public TemplateSelection(ObservationDisplayer plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
+        UUID uuid = player.getUniqueId();
+        if (ongoingSelections.containsKey(uuid)) {
+            ongoingSelections.get(uuid).destroySelection();
+            Utils.msg(player, "Your previous observation was canceled because you started a new one!");
+        }
+
         this.plugin = plugin;
         this.spigotCallback = spigotCallback;
         this.template = template;
-        this.uuid = player.getUniqueId();
+        this.uuid = uuid;
 
         // Register this class as a listener to cancel clickables if they change worlds
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
-        if (template.getPrompts().size() == 1) {
-            this.prompt = template.getPrompts().get(0);
-            this.stage = TemplateSelectionStage.SELECT_RESPONSE;
-        }
+//        if (template.getPrompts().size() == 1) {
+//            this.prompt = template.getPrompts().get(0);
+//            this.stage = TemplateSelectionStage.SELECT_RESPONSE;
+//        }
 
+        ongoingSelections.put(uuid, this);
         doStage();
     }
 
     private void doStage() {
+        // Clear all other callbacks before entering the next stage
+        this.spigotCallback.clearCallbacks(getPlayer());
+
         switch (this.stage) {
         case SELECT_PROMPT:
             doSelectPrompt();
@@ -87,43 +106,41 @@ public class TemplateSelection implements Listener {
     }
 
     private void doSelectPrompt() {
-        Player player = Bukkit.getPlayer(this.uuid);
-        Utils.msgNoPrefix(player,
-                "&7&m-----------------------------------------------------",
-                "&lClick the template you would like to fill out:",
-                "");
+        Player player = getPlayer();
+
+        sendHeader();
+        Utils.msgNoPrefix(player, "&lClick the template you would like to fill out:", "");
+
         for (ObservationPrompt curPrompt : this.template.getPrompts()) {
             sendComponent(
                     player,
-                    "&8• &r" + curPrompt.getPrompt(),
+                    "&8" + BULLET + " &r" + curPrompt.getPrompt(),
                     "&aClick here to select \"&r" + curPrompt.getPrompt() + "&a\"",
                     p -> {
                         this.prompt = curPrompt;
                         this.stage = TemplateSelectionStage.SELECT_RESPONSE;
-                        this.spigotCallback.clearCallbacks(p);
                         doStage();
                     });
         }
-        Utils.msgNoPrefix(player,
-                "",
-                getCancelComponent(),
-                "&7&m-----------------------------------------------------");
+
+        sendFooter(false, p -> {
+            destroySelection();
+            this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
+        });
     }
 
     private void doSelectResponse() {
-        Player player = Bukkit.getPlayer(this.uuid);
+        Player player = getPlayer();
         List<String> responses = this.prompt.getResponses(player.getWorld(), this.responseIndex);
-        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, "&6&l[   ]&r");
+        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, "&6&l[&n   &6&l]&r");
 
-        Utils.msgNoPrefix(player,
-                "&7&m-----------------------------------------------------",
-                filledIn,
-                "");
+        sendHeader();
+        Utils.msgNoPrefix(player, filledIn, "");
 
         for (String response : responses) {
             sendComponent(
                     player,
-                    "&8• &r" + response,
+                    "&8" + BULLET + " &r" + response,
                     "&aClick here to select \"&r" + response + "&a\"",
                     p -> {
                         this.responses.add(response);
@@ -131,50 +148,38 @@ public class TemplateSelection implements Listener {
                         if (this.responseIndex == this.prompt.getNumberOfFillIns()) {
                             this.stage = TemplateSelectionStage.CONFIRM;
                         }
-                        this.spigotCallback.clearCallbacks(p);
                         doStage();
                     });
         }
-        Utils.msgNoPrefix(player,
-                "",
-                getCancelComponent(),
-                "&7&m-----------------------------------------------------");
+
+        sendFooter(false, p -> {
+            if (this.responseIndex == 0) {
+                this.stage = TemplateSelectionStage.SELECT_PROMPT;
+            } else {
+                this.responses.remove(this.responses.size() - 1);
+                this.responseIndex -= 1;
+            }
+            doStage();
+        });
     }
 
     private void doConfirm() {
         String filledIn = getFilledInPrompt();
-        Player player = Bukkit.getPlayer(this.uuid);
+        Player player = getPlayer();
 
-        Consumer<Player> confirmCallback = p -> {
-            String text = ChatColor.stripColor(filledIn);
-            int days = this.plugin.getConfig().getInt("expiration-days");
-            Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-
-            Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
-            Utils.msg(player,
-                    "&7Your observation has been placed:",
-                    "  &8\"&f&l" + text + "&8\"");
-            this.spigotCallback.clearCallbacks(p);
-        };
-
-        BaseComponent[] confirm = new ComponentBuilder("")
-                .append(createComponent(
-                        "&a&l✔ Confirm",
-                        "&aClick to submit your observation!",
-                        confirmCallback))
-                .append("  ")
-                .append(getCancelComponent())
-                .create();
+        sendHeader();
 
         Utils.msgNoPrefix(player,
-                "&7&m-----------------------------------------------------",
                 "&f&lSubmit the following observation?",
                 "",
-                filledIn,
-                "");
+                filledIn);
 
-        player.spigot().sendMessage(confirm);
-        Utils.msgNoPrefix(player, "&7&m-----------------------------------------------------");
+        sendFooter(true, p -> {
+            this.responses.remove(this.responses.size() - 1);
+            this.responseIndex -= 1;
+            this.stage = TemplateSelectionStage.SELECT_RESPONSE;
+            doStage();
+        });
     }
 
     private String getFilledInPrompt() {
@@ -183,18 +188,6 @@ public class TemplateSelection implements Listener {
             result = replaceFirst(result, ObservationPrompt.FILLIN, "&e" + response + "&r");
         }
         return result;
-    }
-
-    private TextComponent getCancelComponent() {
-        Consumer<Player> cancelCallback = p -> {
-            Utils.msg(p, "Observation canceled!");
-            this.spigotCallback.clearCallbacks(p);
-        };
-
-        return createComponent(
-                "&c&l❌ Cancel",
-                "&cClick to cancel your observation",
-                cancelCallback);
     }
 
     public String replaceFirst(String str, String pattern, String replacement) {
@@ -216,8 +209,71 @@ public class TemplateSelection implements Listener {
         player.spigot().sendMessage(createComponent(text, hoverText, onClick));
     }
 
-    private void cancelSelection() {
-        HandlerList.unregisterAll(this);
+    private void sendHeader() {
+        Player player = getPlayer();
+        String header = "&r " + this.template.getTitle() + " ";
+        CenteredText.sendCenteredMessage(player, header, "&7&m &r");
+    }
+
+    private void sendFooter(boolean withConfirm, Consumer<Player> goBackCallback) {
+        Player player = getPlayer();
+        ComponentBuilder builder = new ComponentBuilder("");
+
+        if (withConfirm) {
+            Consumer<Player> confirmCallback = p -> {
+                String text = Utils.color(getFilledInPrompt());
+                int days = this.plugin.getConfig().getInt("expiration-days");
+                Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
+
+                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
+                Utils.msg(player,
+                        "&7Your observation has been placed:",
+                        "  &8\"&f&l" + text + "&8\"");
+                destroySelection();
+            };
+
+            builder.append(createComponent(
+                        "&a&l" + CHECK + " Confirm",
+                        "&aClick to submit your observation!",
+                        confirmCallback))
+                    .append("  ");
+        }
+
+        Consumer<Player> cancelCallback = p -> {
+            Utils.msg(p, "Observation canceled!");
+            destroySelection();
+        };
+
+        builder.append(createComponent(
+                    "&c&l" + CROSS + " Cancel",
+                    "&cClick to cancel your observation",
+                    cancelCallback));
+
+        if (goBackCallback != null) {
+            builder.append("  ").append(createComponent(
+                    "&e&l< Go Back",
+                    "&eClick to go back to the previous panel",
+                    goBackCallback));
+        }
+
+        Utils.msgNoPrefix(player, "");
+        player.spigot().sendMessage(builder.create());
+        CenteredText.sendCenteredMessage(player, "", "&7&m &r");
+    }
+
+    private Player getPlayer() {
+        return Bukkit.getPlayer(this.uuid);
+    }
+
+    public void destroySelection() {
+        // Clear callbacks
+        this.spigotCallback.clearCallbacks(getPlayer());
+
+        // Remove this as an ongoing selection
+        ongoingSelections.remove(this.uuid);
+
+        // Unregister events
+        PlayerChangedWorldEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler
@@ -228,56 +284,7 @@ public class TemplateSelection implements Listener {
         }
 
         Utils.msg(player, "Your observation has been canceled because you changed worlds!");
-        this.spigotCallback.clearCallbacks(event.getPlayer());
-//        BUST DOWN THOTIANA
-//        BLUE FACE BABY
-//        YEAH AIGHT
-//        BUST DOWN THOTIANA
-//        YEAH AIGHT
-//        I WANNA SEE YOU BUST DOWN
-//        BUST DOWN THOTIANA BUST DOWN THOTIANA
-//        I WANNA SEE YOU BUST DOWN
-//        PICK IT UP NOW BREAK THAT SHIT DOWN
-//        SPEED IT UP THEN SLOW THAT SHIT DOWN ON THE GANG
-//        BUST IT
-//        BUST DOWN ON THE GANG
-//        BUST DOWN THOTIANA
-//        I WANNA SEE YOU BUST DOWN
-//        PICK IT UP NOW BREAK THAT SHIT DOWN
-//        SPEED IT UP NOW SLOW THAT SHIT DOWN ON THE GANG
-//        BUIST IT BUST DOWN BUST IT BUST IT
-//        BUST DOWN ON THE GANG
-//        BLUEFACE BABY
-//        YEAH AIGHT IM EVERY WOMANS FANTASY
-//        MAMA ALWAYS TOLD ME I WAS GON BREAK HEARTS]
-//                I GUESS ITS HER FAULT STUPID
-//                DONT BE MAD AT ME
-//                I WANNA SEE YOU BUST DOWN
-//                BEND THAT SHIT OVER ON THE GANG
-//                MAKE THAT SHIT CLAP
-//                SHE THREW IT BACK SO I HAD TO DOUBLE BACK ION THE GANG
-//                SMACKIN HIGH OFF THEM DRUGS
-//                I TRIED TO TELL MYSELF TWO TIMES WAS ENOUGH
-//                THEN A  RELAPSED ON THE DEAD LOCS
-//                AINT NO RUNNIN THOTIANA
-//                YOU GON TAKE THESE DAMN STROKES
-//                I BEAT THE PUSSY UP NOW ITS A MURDER SCENE
-//                KEEP SHIT PLAYER THOTIANA
-//                LIKE YOU AINT EVER NEVER EVEN HEARD OF ME
-//                BUST DOWN THOTIANA I WANNA SEE YOU BUST DOWN
-//                BEND THAT SHIT OVER
-//                YEAH AIGHT NOW MAKE THAT SHIT CLAP ON THE GANG
-//                NOW TOOT THAT THING UP
-//                THROW THAT SHIT BACK
-//                I NEED MY EXTRAS ON THE DEAD LOCS
-//                BUST DOWN THOTIANA
-//                I WANNA SEE YTOU BUST DOWN
-//                PICK IT UP NOW BREAK THAT SHIT DOWN
-//                SPEED IT UP THEN SLOW THAT SHIT DOWN ON THE GANG
-//                BUST IT BUST DOWN BUST IT BUST IT
-//                BUST DOWN ON THE GANG
-//                BUST DOWN THOTIANA
-//                I WANNA SEE YOU BUST DOWN
+        destroySelection();
     }
 
 }

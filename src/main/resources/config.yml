@@ -26,15 +26,15 @@ templates:
     gui:
       item: green_concrete
       position: 9
-      name: '&aAnalogy'
+      name: '&aAnalogy Observation'
       lore:
-        - '&fComparing natural phenomena with another similar structure or object.'
-        - '&fAn advanced form of comparative.'
-        - ''
-        - '&7Example:'
-        - '  &f&oThe trees are line the ones in real-life'
+      - '&fComparing natural phenomena with another similar structure or object.'
+      - '&fAn advanced form of comparative.'
+      - ''
+      - '&7Example:'
+      - '  &f&oThe trees are like the ones in real-life'
     prompts:
-    - prompt: The {} is/are like {}.
+    - prompt: The &7{}&r is/are like &7{}&r.
       worlds:
         world:
           0:
@@ -49,14 +49,14 @@ templates:
     gui:
       item: blue_concrete
       position: 11
-      name: '&bComparative'
+      name: '&bComparative Observation'
       lore:
-        - '&fComparing one natural phenomena to another; expectations are violated.'
-        - ''
-        - '&7Example:'
-        - '  &f&oThe grass is different from Earth.'
+      - '&fComparing one natural phenomena to another; expectations are violated.'
+      - ''
+      - '&7Example:'
+      - '  &f&oThe grass is different from Earth.'
     prompts:
-    - prompt: The {} is {}.
+    - prompt: The &7{}&r is &7{}&r.
       worlds:
         world:
           0:
@@ -71,32 +71,32 @@ templates:
     gui:
       item: orange_concrete
       position: 13
-      name: '&6Descriptive'
+      name: '&6Descriptive Observation'
       lore:
-        - '&fRelated to color, temperature, quantity, and other physical attributes.'
-        - ''
-        - '&7Example:'
-        - '  &f&o There are lots of trees.'
+      - '&fRelated to color, temperature, quantity, and other physical attributes.'
+      - ''
+      - '&7Example:'
+      - '  &f&o There are lots of trees.'
     prompts:
-    - prompt: There are lots of {}.
+    - prompt: There are lots of &7{}&r.
       worlds:
         world:
           0:
           - coral
           - trees
-    - prompt: There are no {}.
+    - prompt: There are no &7{}&r.
       worlds:
         world:
           0:
           - animals
           - plants
-    - prompt: It is really {}.
+    - prompt: It is really &7{}&r.
       worlds:
         world:
           0:
           - hot
           - cold
-    - prompt: The {} is {}.
+    - prompt: The &7{}&r is &7{}&r.
       worlds:
         world:
           0:
@@ -111,15 +111,15 @@ templates:
     gui:
       item: purple_concrete
       position: 15
-      name: '&9Factual'
+      name: '&9Factual Observation'
       lore:
-        - '&fNoun statements without elaborations.'
-        - ''
-        - '&7Example:'
-        - '  &f&oThere are animals.'
+      - '&fNoun statements without elaborations.'
+      - ''
+      - '&7Example:'
+      - '  &f&oThere are animals.'
     description: Noun statements without elaborations.
     prompts:
-    - prompt: There is/are {}.
+    - prompt: There is/are &7{}&r.
       worlds:
         world:
           0:
@@ -130,14 +130,14 @@ templates:
     gui:
       item: pink_concrete
       position: 17
-      name: '&dInference'
+      name: '&dInference Observation'
       lore:
-        - '&fA hypothesis or explanation is proposed.'
-        - ''
-        - '&7Example:'
-        - '  &f&oThe plants grow because the sun provides nutrients.'
+      - '&fA hypothesis or explanation is proposed.'
+      - ''
+      - '&7Example:'
+      - '  &f&oThe plants grow because the sun provides nutrients.'
     prompts:
-    - prompt: The {} because {}.
+    - prompt: The &7{}&r because &7{}&r.
       worlds:
         world:
           0:

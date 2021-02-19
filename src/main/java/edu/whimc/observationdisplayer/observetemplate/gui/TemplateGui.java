@@ -69,7 +69,7 @@ public final class TemplateGui implements Listener {
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
-            String pathRoot = "templates." + type + ".gui.";
+            String pathRoot = "templates." + type.name() + ".gui.";
             FileConfiguration config = this.plugin.getConfig();
 
             ItemStack item = new ItemStack(Material.matchMaterial(config.getString(pathRoot + "item")));
@@ -115,9 +115,12 @@ public final class TemplateGui implements Listener {
             return;
         }
 
+        Player player = (Player) event.getWhoClicked();
+
         // Close the inventory if they click the cancel button
         if (clicked.equals(this.cancelItem)) {
             event.getWhoClicked().closeInventory();
+            Utils.msg(player, "Observation canceled!");
             return;
         }
 
@@ -127,7 +130,6 @@ public final class TemplateGui implements Listener {
         }
 
         // Close the inventory and execute the action for this template type
-        Player player = (Player) event.getWhoClicked();
         player.closeInventory();
         this.templateActions.getOrDefault(type, p -> {}).accept(player);
     }

@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.libraries.SpigotCallback;
 import edu.whimc.observationdisplayer.observetemplate.gui.TemplateGui;
 import edu.whimc.observationdisplayer.observetemplate.gui.TemplateSelection;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
-import edu.whimc.observationdisplayer.observetemplate.models.SpigotCallback;
 
 public class TemplateManager {
 

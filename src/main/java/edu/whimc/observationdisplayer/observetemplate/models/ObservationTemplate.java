@@ -10,17 +10,32 @@ public class ObservationTemplate {
 
     private List<ObservationPrompt> prompts = new ArrayList<>();
 
+    private ObservationType type;
+
+    private String title;
+
     public ObservationTemplate(ObservationDisplayer plugin, ObservationType type) {
-        String path = "templates." + type + ".prompts";
+        this.type = type;
+        String path = "templates." + type.name() + ".prompts";
 
         List<Map<?, ?>> entries = plugin.getConfig().getMapList(path);
         for (Map<?, ?> entry : entries) {
             this.prompts.add(new ObservationPrompt(entry));
         }
+
+        this.title = plugin.getConfig().getString("templates." + type.name() + ".gui.name");
     }
 
     public List<ObservationPrompt> getPrompts() {
         return this.prompts;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public ObservationType getType() {
+        return this.type;
     }
 
 }
