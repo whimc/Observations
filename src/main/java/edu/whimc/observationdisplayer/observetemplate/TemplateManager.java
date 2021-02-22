@@ -19,18 +19,19 @@ public class TemplateManager {
     private Map<ObservationType, ObservationTemplate> templates = new HashMap<>();
 
     public TemplateManager(ObservationDisplayer plugin) {
-        this.gui = new TemplateGui(plugin);
         this.spigotCallback = new SpigotCallback(plugin);
 
         for (ObservationType type : ObservationType.values()) {
             ObservationTemplate template = new ObservationTemplate(plugin, type);
-
             this.templates.put(type, template);
+        }
+
+        this.gui = new TemplateGui(plugin, this);
+        for (ObservationType type : ObservationType.values()) {
             this.gui.addConsumer(type, player -> {
                 new TemplateSelection(plugin, this.spigotCallback, player, getTemplate(type));
             });
         }
-
     }
 
     public TemplateGui getGui() {

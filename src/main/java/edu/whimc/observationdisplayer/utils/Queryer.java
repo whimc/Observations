@@ -13,8 +13,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.models.Observation;
 
 /**
  * Handles storing position data

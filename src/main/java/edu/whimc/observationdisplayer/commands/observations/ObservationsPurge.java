@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
 
-import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.AbstractSubCommand;
+import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.utils.Utils;
 
 public class ObservationsPurge extends AbstractSubCommand {

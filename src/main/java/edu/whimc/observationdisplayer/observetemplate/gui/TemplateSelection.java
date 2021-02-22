@@ -16,11 +16,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import edu.whimc.observationdisplayer.Observation;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.libraries.CenteredText;
 import edu.whimc.observationdisplayer.libraries.SpigotCallback;
+import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationPrompt;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
 import edu.whimc.observationdisplayer.utils.Utils;
@@ -132,7 +133,8 @@ public class TemplateSelection implements Listener {
     private void doSelectResponse() {
         Player player = getPlayer();
         List<String> responses = this.prompt.getResponses(player.getWorld(), this.responseIndex);
-        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, "&6&l[&n   &6&l]&r");
+        String highlight = this.template.getColor() + "&l";
+        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, highlight + "[&n   " + highlight + "]&r");
 
         sendHeader();
         Utils.msgNoPrefix(player, filledIn, "");
@@ -184,8 +186,9 @@ public class TemplateSelection implements Listener {
 
     private String getFilledInPrompt() {
         String result = this.prompt.getPrompt();
+        String highlight = this.template.getColor();
         for (String response : this.responses) {
-            result = replaceFirst(result, ObservationPrompt.FILLIN, "&e" + response + "&r");
+            result = replaceFirst(result, ObservationPrompt.FILLIN, highlight + response + "&r");
         }
         return result;
     }
@@ -211,7 +214,7 @@ public class TemplateSelection implements Listener {
 
     private void sendHeader() {
         Player player = getPlayer();
-        String header = "&r " + this.template.getTitle() + " ";
+        String header = "&r " + this.template.getGuiItemName() + " ";
         CenteredText.sendCenteredMessage(player, header, "&7&m &r");
     }
 
@@ -225,7 +228,9 @@ public class TemplateSelection implements Listener {
                 int days = this.plugin.getConfig().getInt("expiration-days");
                 Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
+                Observation obs = Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
+                obs.setHologramItem(this.template.getGuiItem());
+
                 Utils.msg(player,
                         "&7Your observation has been placed:",
                         "  &8\"&f&l" + text + "&8\"");
@@ -258,7 +263,7 @@ public class TemplateSelection implements Listener {
 
         Utils.msgNoPrefix(player, "");
         player.spigot().sendMessage(builder.create());
-        CenteredText.sendCenteredMessage(player, "", "&7&m &r");
+        CenteredText.sendCenteredMessage(player, " &7Click to make a selection ", "&7&m &r");
     }
 
     private Player getPlayer() {
@@ -274,6 +279,7 @@ public class TemplateSelection implements Listener {
 
         // Unregister events
         PlayerChangedWorldEvent.getHandlerList().unregister(this);
+        PlayerQuitEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler
@@ -285,6 +291,13 @@ public class TemplateSelection implements Listener {
 
         Utils.msg(player, "Your observation has been canceled because you changed worlds!");
         destroySelection();
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        if (this.uuid.equals(event.getPlayer().getUniqueId())) {
+            destroySelection();
+        }
     }
 
 }

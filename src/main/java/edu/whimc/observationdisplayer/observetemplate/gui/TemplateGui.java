@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
 import edu.whimc.observationdisplayer.utils.Utils;
 
@@ -40,8 +41,11 @@ public final class TemplateGui implements Listener {
 
     private ObservationDisplayer plugin;
 
-    public TemplateGui(ObservationDisplayer plugin) {
+    private TemplateManager manager;
+
+    public TemplateGui(ObservationDisplayer plugin, TemplateManager manager) {
         this.plugin = plugin;
+        this.manager = manager;
         Bukkit.getPluginManager().registerEvents(this, plugin);
         loadTemplateInventory();
     }
@@ -69,16 +73,14 @@ public final class TemplateGui implements Listener {
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
-            String pathRoot = "templates." + type.name() + ".gui.";
-            FileConfiguration config = this.plugin.getConfig();
+            ObservationTemplate template = this.manager.getTemplate(type);
 
-            ItemStack item = new ItemStack(Material.matchMaterial(config.getString(pathRoot + "item")));
-            int position = config.getInt(pathRoot + "position");
-            setName(item, config.getString(pathRoot + "name"));
-            setLore(item, config.getStringList(pathRoot + "lore"));
+            ItemStack item = new ItemStack(template.getGuiItem());
+            setName(item, template.getGuiItemName());
+            setLore(item, template.getGuiLore());
 
-            this.templateSlots.put(position, type);
-            this.inventory.setItem(position, item);
+            this.templateSlots.put(template.getGuiPosition(), type);
+            this.inventory.setItem(template.getGuiPosition(), item);
         }
     }
 

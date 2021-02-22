@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer;
+package edu.whimc.observationdisplayer.models;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -20,6 +20,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
 
+import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.utils.Utils;
 
 public class Observation {
@@ -36,26 +37,28 @@ public class Observation {
     private Hologram hologram;
     private Timestamp expiration;
     private boolean temporary;
+    private Material hologramItem = Material.OAK_SIGN;
 
-    private Observation() {}
-
-    public static void createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
+    public static Observation createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
             String observation, Timestamp expiration) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, false, true);
         observations.add(obs);
+        return obs;
     }
 
-    public static void loadTemporaryObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
+    public static Observation loadTemporaryObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
             String playerName, Location viewLoc, String observation, Timestamp expiration) {
         Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, true, false);
         observations.add(obs);
+        return obs;
     }
 
-    public static void loadObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
+    public static Observation loadObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
             String playerName, Location viewLoc, String observation, Timestamp expiration) {
         Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, false, false);
         observations.add(obs);
+        return obs;
     }
 
     public static void scanForExpiredObservations(ObservationDisplayer plugin) {
@@ -77,7 +80,7 @@ public class Observation {
         }, 20 * 60, 20 * 60);
     }
 
-    private Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
+    protected Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
             Location viewLoc, String observation, Timestamp expiration, boolean temporary, boolean isNew) {
         this.plugin = plugin;
         this.timestamp = timestamp;
@@ -101,18 +104,18 @@ public class Observation {
     }
 
     private void createHologram() {
-        Hologram holo = HologramsAPI.createHologram(plugin, holoLoc);
-        ObservationClick clickListener = new ObservationClick(viewLoc);
+        Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
+        ObservationClick clickListener = new ObservationClick(this.viewLoc);
 
-        holo.appendItemLine(new ItemStack(Material.OAK_SIGN))
+        holo.appendItemLine(new ItemStack(this.hologramItem))
                 .setTouchHandler(clickListener);
-        holo.appendTextLine(ChatColor.translateAlternateColorCodes('&', observation))
+        holo.appendTextLine(ChatColor.translateAlternateColorCodes('&', this.observation))
                 .setTouchHandler(clickListener);
-        holo.appendTextLine(ChatColor.GRAY + playerName + " - " + Utils.getDate(timestamp))
+        holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp))
                 .setTouchHandler(clickListener);
 
         if (this.expiration != null) {
-            holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(expiration))
+            holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration))
                     .setTouchHandler(clickListener);
         }
 
@@ -129,6 +132,12 @@ public class Observation {
         createHologram();
     }
 
+    public void setHologramItem(Material hologramItem) {
+        this.hologramItem = hologramItem;
+        this.hologram.getLine(0).removeLine();
+        this.hologram.insertItemLine(0, new ItemStack(hologramItem));
+    }
+
     private class ObservationClick implements TouchHandler {
 
         private Location loc;
@@ -139,7 +148,7 @@ public class Observation {
 
         @Override
         public void onTouch(Player player) {
-            player.teleport(loc);
+            player.teleport(this.loc);
         }
     }
 
@@ -220,7 +229,7 @@ public class Observation {
     }
 
     public void deleteAndSetInactive(Runnable callback) {
-        plugin.getQueryer().makeSingleObservationInactive(this.id, callback);
+        this.plugin.getQueryer().makeSingleObservationInactive(this.id, callback);
         deleteObservation();
     }
 
