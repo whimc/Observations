@@ -11,8 +11,8 @@ import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
-import edu.whimc.observationdisplayer.utils.Queryer;
 import edu.whimc.observationdisplayer.utils.Utils;
+import edu.whimc.observationdisplayer.utils.sql.Queryer;
 
 public class ObservationDisplayer extends JavaPlugin implements CommandExecutor {
 

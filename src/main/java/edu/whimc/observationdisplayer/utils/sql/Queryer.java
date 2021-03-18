@@ -1,4 +1,4 @@
-package edu.whimc.observationdisplayer.utils;
+package edu.whimc.observationdisplayer.utils.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +15,7 @@ import org.bukkit.World;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.models.Observation;
+import edu.whimc.observationdisplayer.utils.Utils;
 
 /**
  * Handles storing position data

@@ -1,11 +1,11 @@
-package edu.whimc.observationdisplayer.utils;
+package edu.whimc.observationdisplayer.utils.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.sql.migration.SchemaManager;
 
 public class MySQLConnection  {
 
@@ -34,6 +34,8 @@ public class MySQLConnection  {
     private String host, database, username, password, url;
     private int port;
 
+    private ObservationDisplayer plugin;
+
     public MySQLConnection(ObservationDisplayer plugin) {
         this.host = plugin.getConfig().getString("mysql.host", "localhost");
         this.port = plugin.getConfig().getInt("mysql.port", 3306);
@@ -41,7 +43,9 @@ public class MySQLConnection  {
         this.username = plugin.getConfig().getString("mysql.username", "user");
         this.password = plugin.getConfig().getString("mysql.password", "pass");
 
-        this.url = String.format(URL_TEMPLATE, host, port, database);
+        this.url = String.format(URL_TEMPLATE, this.host, this.port, this.database);
+
+        this.plugin = plugin;
     }
 
     public boolean initialize() {
@@ -49,15 +53,8 @@ public class MySQLConnection  {
             return false;
         }
 
-        try {
-            PreparedStatement statement = this.connection.prepareStatement(CREATE_TABLE);
-            statement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        SchemaManager manager =  new SchemaManager(this.plugin, this.connection);
+        return manager.initialize();
     }
 
     public Connection getConnection() {
