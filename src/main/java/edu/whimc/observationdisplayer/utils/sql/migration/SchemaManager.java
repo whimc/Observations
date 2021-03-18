@@ -34,7 +34,6 @@ public class SchemaManager {
         try {
             return Integer.parseInt(new String(Files.readAllBytes(getVersionFile().toPath())));
         } catch (NumberFormatException | IOException exc) {
-            exc.printStackTrace();
             return 0;
         }
     }
@@ -45,12 +44,12 @@ public class SchemaManager {
         SchemaVersion schema = BASE_SCHEMA;
         while (schema != null) {
             if (schema.getVersion() > curVersion) {
-                this.plugin.getLogger().info("Migrating to schema" + schema.getVersion() + "...");
+                this.plugin.getLogger().info("Migrating to schema " + schema.getVersion() + "...");
                 if (!schema.migrate(this)) {
                     return false;
                 }
             }
-            schema = schema.next();
+            schema = schema.getNextSchema();
         }
 
         return true;

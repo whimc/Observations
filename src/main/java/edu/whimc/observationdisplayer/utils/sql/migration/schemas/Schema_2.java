@@ -11,14 +11,8 @@ public class Schema_2 extends SchemaVersion {
     private static final String ADD_CATEGORY =
             "ALTER TABLE whimc_observations ADD COLUMN category VARCHAR(64);";
 
-    @Override
-    protected SchemaVersion next() {
-        return null;
-    }
-
-    @Override
-    protected int getVersion() {
-        return 2;
+    public Schema_2() {
+        super(2, null);
     }
 
     @Override

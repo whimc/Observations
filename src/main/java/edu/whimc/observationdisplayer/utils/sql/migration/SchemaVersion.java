@@ -8,9 +8,21 @@ import com.google.common.io.Files;
 
 public abstract class SchemaVersion {
 
-    protected abstract SchemaVersion next();
+    private int version;
+    private SchemaVersion nextSchema;
 
-    protected abstract int getVersion();
+    protected SchemaVersion(int version, SchemaVersion next) {
+        this.version = version;
+        this.nextSchema = next;
+    }
+
+    public int getVersion() {
+        return this.version;
+    }
+
+    public SchemaVersion getNextSchema() {
+        return this.nextSchema;
+    }
 
     protected abstract void migrateRoutine(Connection connection) throws SQLException;
 
@@ -25,7 +37,7 @@ public abstract class SchemaVersion {
 
         // Update the schema version
         try {
-            Files.write(String.valueOf(getVersion()).getBytes(), manager.getVersionFile());
+            Files.write(String.valueOf(this.version).getBytes(), manager.getVersionFile());
         } catch (IOException exc) {
             exc.printStackTrace();
             return false;

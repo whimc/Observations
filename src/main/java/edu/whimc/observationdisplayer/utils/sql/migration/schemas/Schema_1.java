@@ -27,14 +27,8 @@ public class Schema_1 extends SchemaVersion {
             "  INDEX uuid     (`uuid`)," +
             "  INDEX username (`username`));";
 
-    @Override
-    protected SchemaVersion next() {
-        return new Schema_2();
-    }
-
-    @Override
-    protected int getVersion() {
-        return 1;
+    public Schema_1() {
+        super(1, new Schema_2());
     }
 
     @Override
