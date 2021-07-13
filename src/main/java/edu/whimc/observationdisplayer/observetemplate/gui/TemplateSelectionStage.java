@@ -7,6 +7,5 @@ public enum TemplateSelectionStage {
     SELECT_RESPONSE,
 
     CONFIRM,
-    ;
 
 }

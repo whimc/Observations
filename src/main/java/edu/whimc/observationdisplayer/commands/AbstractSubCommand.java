@@ -1,5 +1,13 @@
 package edu.whimc.observationdisplayer.commands;
 
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,15 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.utils.Utils;
 
 public abstract class AbstractSubCommand {
 
@@ -26,12 +25,12 @@ public abstract class AbstractSubCommand {
     private static final String TEXT = "&f";
 
     protected ObservationDisplayer plugin;
-    private String baseCommand;
-    private String subCommand;
-    private Permission permission;
+    private final String baseCommand;
+    private final String subCommand;
+    private final Permission permission;
 
     private String description = "";
-    private List<String[]> arguments = new ArrayList<>();
+    private final List<String[]> arguments = new ArrayList<>();
     private int minArgs = 0;
     private int maxArgs = 0;
     private boolean bypassArgumentChecks = false;
@@ -49,7 +48,9 @@ public abstract class AbstractSubCommand {
         this.permission = perm;
     }
 
-    protected void description(String desc) { this.description = desc; }
+    protected void description(String desc) {
+        this.description = desc;
+    }
 
     protected void arguments(String args) {
         String[] parsed_replaced = parseArgs(args, "[", "]", true);
@@ -66,13 +67,19 @@ public abstract class AbstractSubCommand {
         }
     }
 
-    protected void bypassArgumentChecks() { this.bypassArgumentChecks = true; }
+    protected void bypassArgumentChecks() {
+        this.bypassArgumentChecks = true;
+    }
 
-    protected void requiresPlayer() { this.requiresPlayer = true; }
+    protected void requiresPlayer() {
+        this.requiresPlayer = true;
+    }
 
-    protected List<String> onTabComplete(CommandSender sender, String[] args) { return Arrays.asList(); }
+    protected List<String> onTabComplete(CommandSender sender, String[] args) {
+        return Arrays.asList();
+    }
 
-    public List<String> executeOnTabComplete(CommandSender sender, String args[]) {
+    public List<String> executeOnTabComplete(CommandSender sender, String[] args) {
         if (!sender.hasPermission(getPermission()) || args.length > this.maxArgs) {
             return Arrays.asList();
         }

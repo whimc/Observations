@@ -1,23 +1,5 @@
 package edu.whimc.observationdisplayer.observetemplate.gui;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.libraries.CenteredText;
 import edu.whimc.observationdisplayer.libraries.SpigotCallback;
@@ -29,6 +11,19 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public class TemplateSelection implements Listener {
 
@@ -38,32 +33,50 @@ public class TemplateSelection implements Listener {
 
     private static final String BULLET = "\u2022";
 
-    /** Instance of main class. */
-    private ObservationDisplayer plugin;
+    /**
+     * Instance of main class.
+     */
+    private final ObservationDisplayer plugin;
 
-    /** Used to create clickable messags with callbacks. */
-    private SpigotCallback spigotCallback;
+    /**
+     * Used to create clickable messags with callbacks.
+     */
+    private final SpigotCallback spigotCallback;
 
-    /** The selected template to fill out. */
-    private ObservationTemplate template;
+    /**
+     * The selected template to fill out.
+     */
+    private final ObservationTemplate template;
 
-    /** The UUID of the player making the selection. */
-    private UUID uuid;
+    /**
+     * The UUID of the player making the selection.
+     */
+    private final UUID uuid;
 
-    /** The selected prompt from the template. */
+    /**
+     * The selected prompt from the template.
+     */
     private ObservationPrompt prompt = null;
 
-    /** The current responses that have been chosen */
-    private List<String> responses = new ArrayList<>();
+    /**
+     * The current responses that have been chosen
+     */
+    private final List<String> responses = new ArrayList<>();
 
-    /** The stage of the selection. */
+    /**
+     * The stage of the selection.
+     */
     private TemplateSelectionStage stage = TemplateSelectionStage.SELECT_PROMPT;
 
-    /** The response index that is being selected. */
+    /**
+     * The response index that is being selected.
+     */
     private int responseIndex = 0;
 
-    /** Selections that are currently happening. */
-    private static Map<UUID, TemplateSelection> ongoingSelections = new HashMap<>();
+    /**
+     * Selections that are currently happening.
+     */
+    private static final Map<UUID, TemplateSelection> ongoingSelections = new HashMap<>();
 
     public TemplateSelection(ObservationDisplayer plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
         UUID uuid = player.getUniqueId();
@@ -94,15 +107,15 @@ public class TemplateSelection implements Listener {
         this.spigotCallback.clearCallbacks(getPlayer());
 
         switch (this.stage) {
-        case SELECT_PROMPT:
-            doSelectPrompt();
-            return;
-        case SELECT_RESPONSE:
-            doSelectResponse();
-            return;
-        case CONFIRM:
-            doConfirm();
-            return;
+            case SELECT_PROMPT:
+                doSelectPrompt();
+                return;
+            case SELECT_RESPONSE:
+                doSelectResponse();
+                return;
+            case CONFIRM:
+                doConfirm();
+                return;
         }
     }
 
@@ -238,9 +251,9 @@ public class TemplateSelection implements Listener {
             };
 
             builder.append(createComponent(
-                        "&a&l" + CHECK + " Confirm",
-                        "&aClick to submit your observation!",
-                        confirmCallback))
+                    "&a&l" + CHECK + " Confirm",
+                    "&aClick to submit your observation!",
+                    confirmCallback))
                     .append("  ");
         }
 
@@ -250,9 +263,9 @@ public class TemplateSelection implements Listener {
         };
 
         builder.append(createComponent(
-                    "&c&l" + CROSS + " Cancel",
-                    "&cClick to cancel your observation",
-                    cancelCallback));
+                "&c&l" + CROSS + " Cancel",
+                "&cClick to cancel your observation",
+                cancelCallback));
 
         if (goBackCallback != null) {
             builder.append("  ").append(createComponent(

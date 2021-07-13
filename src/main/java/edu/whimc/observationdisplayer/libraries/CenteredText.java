@@ -1,8 +1,7 @@
 package edu.whimc.observationdisplayer.libraries;
 
-import org.bukkit.entity.Player;
-
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
 
 public final class CenteredText {
 
@@ -13,8 +12,8 @@ public final class CenteredText {
         boolean previousCode = false;
         boolean isBold = false;
 
-        for(char c : message.toCharArray()){
-            if(c == '§'){
+        for (char c : message.toCharArray()) {
+            if (c == 'ï¿½') {
                 previousCode = true;
                 continue;
             }
@@ -36,8 +35,8 @@ public final class CenteredText {
         sendCenteredMessage(player, message, " ");
     }
 
-    public static void sendCenteredMessage(Player player, String message, String padding){
-        if(message == null || message.isEmpty()) {
+    public static void sendCenteredMessage(Player player, String message, String padding) {
+        if (message == null || message.isEmpty()) {
             message = "";
         }
 
@@ -50,11 +49,11 @@ public final class CenteredText {
         int paddingLength = getMessagePxSize(padding);
         int compensated = 0;
         StringBuilder sb = new StringBuilder();
-        while(compensated < toCompensate){
-                sb.append(padding);
-                compensated += paddingLength;
+        while (compensated < toCompensate) {
+            sb.append(padding);
+            compensated += paddingLength;
         }
-        player.sendMessage(sb.toString() + message + sb.toString());
+        player.sendMessage(sb + message + sb);
     }
 
 }

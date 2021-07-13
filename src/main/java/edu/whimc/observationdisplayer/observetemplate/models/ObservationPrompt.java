@@ -1,20 +1,20 @@
 package edu.whimc.observationdisplayer.observetemplate.models;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 public class ObservationPrompt {
 
     public static final String FILLIN = "{}";
 
-    private String prompt;
+    private final String prompt;
 
-    private Map<World, Map<Integer, List<String>>> responses;
+    private final Map<World, Map<Integer, List<String>>> responses;
 
     @SuppressWarnings("unchecked")
     public ObservationPrompt(Map<?, ?> entry) {

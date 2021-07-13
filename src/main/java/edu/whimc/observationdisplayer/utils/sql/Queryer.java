@@ -1,88 +1,87 @@
 package edu.whimc.observationdisplayer.utils.sql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.function.Consumer;
-
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.models.Observation;
+import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.models.Observation;
-import edu.whimc.observationdisplayer.utils.Utils;
+import java.sql.*;
+import java.util.function.Consumer;
 
 /**
  * Handles storing position data
- * @author Jack Henhapl
  *
+ * @author Jack Henhapl
  */
 public class Queryer {
 
-    /** Query for inserting an observation into the database. */
+    /**
+     * Query for inserting an observation into the database.
+     */
     private static final String QUERY_SAVE_OBSERVATION =
             "INSERT INTO whimc_observations " +
-            "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    /** Query for getting all observations from the database. */
+    /**
+     * Query for getting all observations from the database.
+     */
     private static final String QUERY_GET_ACTIVE_OBSERVATIONS =
             "SELECT * " +
-            "FROM whimc_observations " +
-            "WHERE active = 1 AND (expiration IS NULL OR (expiration - time > 0))";
+                    "FROM whimc_observations " +
+                    "WHERE active = 1 AND (expiration IS NULL OR (expiration - time > 0))";
 
-    /** Query for making an observation inactive. */
+    /**
+     * Query for making an observation inactive.
+     */
     private static final String QUERY_MAKE_OBSERVATION_INACTIVE =
             "UPDATE whimc_observations " +
-            "SET active=0 " +
-            "WHERE rowid=? AND active=1";
+                    "SET active=0 " +
+                    "WHERE rowid=? AND active=1";
 
     private static final String QUERY_MAKE_PLAYER_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
-            "SET active=0 " +
-            "WHERE username=? AND active=1";
+                    "SET active=0 " +
+                    "WHERE username=? AND active=1";
 
     private static final String QUERY_MAKE_WORLD_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
-            "SET active=0 " +
-            "WHERE active=1 AND world=?";
+                    "SET active=0 " +
+                    "WHERE active=1 AND world=?";
     private static final String QUERY_MAKE_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
-            "SET active=0 " +
-            "WHERE username=? AND active=1 AND world=?";
+                    "SET active=0 " +
+                    "WHERE username=? AND active=1 AND world=?";
 
     private static final String QUERY_MAKE_EXPIRED_INACTIVE =
             "UPDATE whimc_observations " +
-            "SET active=0 " +
-            "WHERE ? > expiration";
+                    "SET active=0 " +
+                    "WHERE ? > expiration";
 
     private static final String QUERY_SET_EXPIRATION =
             "UPDATE whimc_observations " +
-            "SET expiration=? " +
-            "WHERE rowid=?";
+                    "SET expiration=? " +
+                    "WHERE rowid=?";
 
     private static final String QUERY_GET_INACTIVE_ID =
             "SELECT * " +
-            "FROM whimc_observations " +
-            "WHERE rowid=?";
+                    "FROM whimc_observations " +
+                    "WHERE rowid=?";
 
     private static final String QUERY_GET_INACTIVE_RANGE =
             "SELECT * " +
-            "FROM whimc_observations " +
-            "WHERE rowid BETWEEN ? AND ?";
+                    "FROM whimc_observations " +
+                    "WHERE rowid BETWEEN ? AND ?";
 
     private static final String QUERY_GET_INACTIVE_TIME =
             "SELECT * " +
-            "FROM whimc_observations " +
-            "WHERE time BETWEEN ? AND ?";
+                    "FROM whimc_observations " +
+                    "WHERE time BETWEEN ? AND ?";
 
-    private ObservationDisplayer plugin;
-    private MySQLConnection sqlConnection;
+    private final ObservationDisplayer plugin;
+    private final MySQLConnection sqlConnection;
 
     public Queryer(ObservationDisplayer plugin, Consumer<Queryer> callback) {
         this.plugin = plugin;
@@ -98,8 +97,9 @@ public class Queryer {
 
     /**
      * Generated a PreparedStatement for saving a new observation.
+     *
      * @param connection MySQL Connection
-     * @param obs Observation to save
+     * @param obs        Observation to save
      * @return PreparedStatement
      * @throws SQLException
      */
@@ -132,8 +132,9 @@ public class Queryer {
 
     /**
      * Stores an observation into the database and returns the obervation's ID
+     *
      * @param observation Observation to save
-     * @param callback Function to call once the observation has been saved
+     * @param callback    Function to call once the observation has been saved
      */
     public void storeNewObservation(Observation observation, Consumer<Integer> callback) {
         async(() -> {
@@ -187,7 +188,7 @@ public class Queryer {
                             sync(() -> {
                                 World world = Bukkit.getWorld(worldName);
                                 if (world == null) {
-                                    Utils.debug("  - "  + id + " | world '" + worldName + "' not found -> skipping");
+                                    Utils.debug("  - " + id + " | world '" + worldName + "' not found -> skipping");
                                     return;
                                 }
                                 Location loc = new Location(world, x, y, z, yaw, pitch);
@@ -212,6 +213,7 @@ public class Queryer {
 
     /**
      * Makes an obseration inactive in the database.
+     *
      * @param id Id of the observation
      */
     public void makeSingleObservationInactive(int id, Runnable callback) {
@@ -336,7 +338,7 @@ public class Queryer {
                             sync(() -> {
                                 World world = Bukkit.getWorld(worldName);
                                 if (world == null) {
-                                    Utils.debug("  - "  + id + " | world '" + worldName + "' not found -> skipping");
+                                    Utils.debug("  - " + id + " | world '" + worldName + "' not found -> skipping");
                                     return;
                                 }
                                 Location loc = new Location(world, x, y, z, yaw, pitch);

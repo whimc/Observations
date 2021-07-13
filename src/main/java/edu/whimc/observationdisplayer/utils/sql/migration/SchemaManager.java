@@ -1,12 +1,12 @@
 package edu.whimc.observationdisplayer.utils.sql.migration;
 
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.sql.migration.schemas.Schema_1;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
-
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.utils.sql.migration.schemas.Schema_1;
 
 public class SchemaManager {
 
@@ -14,8 +14,8 @@ public class SchemaManager {
 
     private static final SchemaVersion BASE_SCHEMA = new Schema_1();
 
-    private ObservationDisplayer plugin;
-    private Connection connection;
+    private final ObservationDisplayer plugin;
+    private final Connection connection;
 
     public SchemaManager(ObservationDisplayer plugin, Connection connection) {
         this.plugin = plugin;

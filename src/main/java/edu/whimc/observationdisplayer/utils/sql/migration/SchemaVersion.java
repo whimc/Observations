@@ -1,15 +1,15 @@
 package edu.whimc.observationdisplayer.utils.sql.migration;
 
+import com.google.common.io.Files;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.google.common.io.Files;
-
 public abstract class SchemaVersion {
 
-    private int version;
-    private SchemaVersion nextSchema;
+    private final int version;
+    private final SchemaVersion nextSchema;
 
     protected SchemaVersion(int version, SchemaVersion next) {
         this.version = version;

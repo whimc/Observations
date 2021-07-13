@@ -1,22 +1,26 @@
 package edu.whimc.observationdisplayer.utils.sql;
 
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.sql.migration.SchemaManager;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.utils.sql.migration.SchemaManager;
-
-public class MySQLConnection  {
+public class MySQLConnection {
 
     public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
     public static final String URL_TEMPLATE = "jdbc:mysql://%s:%s/%s";
 
     private Connection connection;
-    private String host, database, username, password, url;
-    private int port;
+    private final String host;
+    private final String database;
+    private final String username;
+    private final String password;
+    private final String url;
+    private final int port;
 
-    private ObservationDisplayer plugin;
+    private final ObservationDisplayer plugin;
 
     public MySQLConnection(ObservationDisplayer plugin) {
         this.host = plugin.getConfig().getString("mysql.host", "localhost");
@@ -35,7 +39,7 @@ public class MySQLConnection  {
             return false;
         }
 
-        SchemaManager manager =  new SchemaManager(this.plugin, this.connection);
+        SchemaManager manager = new SchemaManager(this.plugin, this.connection);
         return manager.initialize();
     }
 

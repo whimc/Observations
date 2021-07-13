@@ -1,13 +1,12 @@
 package edu.whimc.observationdisplayer.commands.observations;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.AbstractSubCommand;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.utils.Utils;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public class ObservationsRemove extends AbstractSubCommand {
 

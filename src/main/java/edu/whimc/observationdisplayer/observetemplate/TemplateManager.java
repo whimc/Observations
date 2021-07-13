@@ -1,8 +1,5 @@
 package edu.whimc.observationdisplayer.observetemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.libraries.SpigotCallback;
 import edu.whimc.observationdisplayer.observetemplate.gui.TemplateGui;
@@ -10,13 +7,16 @@ import edu.whimc.observationdisplayer.observetemplate.gui.TemplateSelection;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TemplateManager {
 
-    private TemplateGui gui;
+    private final TemplateGui gui;
 
-    private SpigotCallback spigotCallback;
+    private final SpigotCallback spigotCallback;
 
-    private Map<ObservationType, ObservationTemplate> templates = new HashMap<>();
+    private final Map<ObservationType, ObservationTemplate> templates = new HashMap<>();
 
     public TemplateManager(ObservationDisplayer plugin) {
         this.spigotCallback = new SpigotCallback(plugin);

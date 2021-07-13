@@ -1,10 +1,10 @@
 package edu.whimc.observationdisplayer.utils.sql.migration.schemas;
 
+import edu.whimc.observationdisplayer.utils.sql.migration.SchemaVersion;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
-import edu.whimc.observationdisplayer.utils.sql.migration.SchemaVersion;
 
 public class Schema_2 extends SchemaVersion {
 

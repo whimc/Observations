@@ -1,18 +1,17 @@
 package edu.whimc.observationdisplayer;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
 import edu.whimc.observationdisplayer.utils.Utils;
 import edu.whimc.observationdisplayer.utils.sql.Queryer;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ObservationDisplayer extends JavaPlugin implements CommandExecutor {
 

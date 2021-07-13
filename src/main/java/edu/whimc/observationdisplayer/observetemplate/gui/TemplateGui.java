@@ -1,11 +1,10 @@
 package edu.whimc.observationdisplayer.observetemplate.gui;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
+import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,11 +16,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
-import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
-import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
-import edu.whimc.observationdisplayer.utils.Utils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class TemplateGui implements Listener {
 
@@ -35,13 +34,13 @@ public final class TemplateGui implements Listener {
 
     private Inventory inventory;
 
-    private Map<Integer, ObservationType> templateSlots = new HashMap<>();
+    private final Map<Integer, ObservationType> templateSlots = new HashMap<>();
 
-    private Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
+    private final Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
 
-    private ObservationDisplayer plugin;
+    private final ObservationDisplayer plugin;
 
-    private TemplateManager manager;
+    private final TemplateManager manager;
 
     public TemplateGui(ObservationDisplayer plugin, TemplateManager manager) {
         this.plugin = plugin;
@@ -133,7 +132,8 @@ public final class TemplateGui implements Listener {
 
         // Close the inventory and execute the action for this template type
         player.closeInventory();
-        this.templateActions.getOrDefault(type, p -> {}).accept(player);
+        this.templateActions.getOrDefault(type, p -> {
+        }).accept(player);
     }
 
     @EventHandler
@@ -180,9 +180,9 @@ public final class TemplateGui implements Listener {
         CANCEL_NAME("cancel.name"),
         ;
 
-        private String path;
+        private final String path;
 
-        private Path(String path) {
+        Path(String path) {
             this.path = path;
         }
 

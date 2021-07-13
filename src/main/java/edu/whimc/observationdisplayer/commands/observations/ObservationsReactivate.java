@@ -1,15 +1,14 @@
 package edu.whimc.observationdisplayer.commands.observations;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.AbstractSubCommand;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.utils.Utils;
+import org.bukkit.command.CommandSender;
+
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
 
 public class ObservationsReactivate extends AbstractSubCommand {
 
@@ -116,7 +115,7 @@ public class ObservationsReactivate extends AbstractSubCommand {
 
     private void invalidTime(CommandSender sender, String date) {
         Utils.msg(sender, "&c\"&4" + date + "&c\" is an invalid date! Make sure you surround your dates in quotes!",
-                          "&7Example date: \"" + Utils.getDateNow() + "\"");
+                "&7Example date: \"" + Utils.getDateNow() + "\"");
     }
 
     private void invalidNumber(CommandSender sender, String id) {

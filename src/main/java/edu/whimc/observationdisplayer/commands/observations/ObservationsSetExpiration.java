@@ -1,15 +1,14 @@
 package edu.whimc.observationdisplayer.commands.observations;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.AbstractSubCommand;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.utils.Utils;
+import org.bukkit.command.CommandSender;
+
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
 
 public class ObservationsSetExpiration extends AbstractSubCommand {
 
@@ -34,8 +33,8 @@ public class ObservationsSetExpiration extends AbstractSubCommand {
 
         Timestamp newExpiration = Utils.parseDate(args[1]);
         if (!args[1].equalsIgnoreCase("none") && newExpiration == null) {
-            Utils.msg(sender,"&cCould not parse date \"&4" + args[1] + "&c\"!",
-                             "&7Example date: \"" + Utils.getDateNow() + "\"");
+            Utils.msg(sender, "&cCould not parse date \"&4" + args[1] + "&c\"!",
+                    "&7Example date: \"" + Utils.getDateNow() + "\"");
             return true;
         }
 

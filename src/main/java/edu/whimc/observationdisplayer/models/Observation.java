@@ -1,14 +1,10 @@
 package edu.whimc.observationdisplayer.models;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,31 +12,29 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
-
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.utils.Utils;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Observation {
 
-    private static List<Observation> observations = new ArrayList<>();
+    private static final List<Observation> observations = new ArrayList<>();
 
-    private ObservationDisplayer plugin;
+    private final ObservationDisplayer plugin;
     private int id;
-    private Timestamp timestamp;
-    private String playerName;
-    private Location holoLoc;
-    private Location viewLoc;
-    private String observation;
+    private final Timestamp timestamp;
+    private final String playerName;
+    private final Location holoLoc;
+    private final Location viewLoc;
+    private final String observation;
     private Hologram hologram;
     private Timestamp expiration;
-    private boolean temporary;
+    private final boolean temporary;
     private Material hologramItem = Material.OAK_SIGN;
 
     public static Observation createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
-            String observation, Timestamp expiration) {
+                                                String observation, Timestamp expiration) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, false, true);
         observations.add(obs);
@@ -48,14 +42,14 @@ public class Observation {
     }
 
     public static Observation loadTemporaryObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
-            String playerName, Location viewLoc, String observation, Timestamp expiration) {
+                                                       String playerName, Location viewLoc, String observation, Timestamp expiration) {
         Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, true, false);
         observations.add(obs);
         return obs;
     }
 
     public static Observation loadObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
-            String playerName, Location viewLoc, String observation, Timestamp expiration) {
+                                              String playerName, Location viewLoc, String observation, Timestamp expiration) {
         Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, false, false);
         observations.add(obs);
         return obs;
@@ -81,7 +75,7 @@ public class Observation {
     }
 
     protected Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
-            Location viewLoc, String observation, Timestamp expiration, boolean temporary, boolean isNew) {
+                          Location viewLoc, String observation, Timestamp expiration, boolean temporary, boolean isNew) {
         this.plugin = plugin;
         this.timestamp = timestamp;
         this.playerName = playerName;
@@ -140,7 +134,7 @@ public class Observation {
 
     private class ObservationClick implements TouchHandler {
 
-        private Location loc;
+        private final Location loc;
 
         public ObservationClick(Location loc) {
             this.loc = loc;
@@ -220,12 +214,13 @@ public class Observation {
         }
 
         return "&9&l" + this.id + ".&r &8\"" + text + "&8\" &9> &7&o" + this.playerName + " " +
-        "&7(" + this.holoLoc.getWorld().getName() + ", " + this.holoLoc.getBlockX() + ", " +
-        this.holoLoc.getBlockY() + ", "+ this.holoLoc.getBlockZ() + "&7)";
+                "&7(" + this.holoLoc.getWorld().getName() + ", " + this.holoLoc.getBlockX() + ", " +
+                this.holoLoc.getBlockY() + ", " + this.holoLoc.getBlockZ() + "&7)";
     }
 
     public void deleteAndSetInactive() {
-        deleteAndSetInactive(() -> {});
+        deleteAndSetInactive(() -> {
+        });
     }
 
     public void deleteAndSetInactive(Runnable callback) {

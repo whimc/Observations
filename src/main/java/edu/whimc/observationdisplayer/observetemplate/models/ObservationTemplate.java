@@ -1,29 +1,28 @@
 package edu.whimc.observationdisplayer.observetemplate.models;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import edu.whimc.observationdisplayer.ObservationDisplayer;
-import edu.whimc.observationdisplayer.utils.Utils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ObservationTemplate {
 
-    private List<ObservationPrompt> prompts = new ArrayList<>();
+    private final List<ObservationPrompt> prompts = new ArrayList<>();
 
-    private ObservationType type;
+    private final ObservationType type;
 
-    private Material guiItem;
+    private final Material guiItem;
 
-    private String guiItemName;
+    private final String guiItemName;
 
-    private int guiPosition;
+    private final int guiPosition;
 
-    private List<String> guiLore;
+    private final List<String> guiLore;
 
     public ObservationTemplate(ObservationDisplayer plugin, ObservationType type) {
         this.type = type;

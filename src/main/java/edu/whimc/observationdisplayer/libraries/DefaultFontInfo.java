@@ -1,6 +1,6 @@
 package edu.whimc.observationdisplayer.libraries;
 
-public enum DefaultFontInfo{
+public enum DefaultFontInfo {
 
     A('A', 5),
     a('a', 5),
@@ -99,30 +99,30 @@ public enum DefaultFontInfo{
     SPACE(' ', 3),
     DEFAULT('a', 4);
 
-    private char character;
-    private int length;
+    private final char character;
+    private final int length;
 
     DefaultFontInfo(char character, int length) {
         this.character = character;
         this.length = length;
     }
 
-    public char getCharacter(){
+    public char getCharacter() {
         return this.character;
     }
 
-    public int getLength(){
+    public int getLength() {
         return this.length;
     }
 
-    public int getBoldLength(){
-        if(this == DefaultFontInfo.SPACE) return this.getLength();
+    public int getBoldLength() {
+        if (this == DefaultFontInfo.SPACE) return this.getLength();
         return this.length + 1;
     }
 
-    public static DefaultFontInfo getDefaultFontInfo(char c){
-        for(DefaultFontInfo dFI : DefaultFontInfo.values()){
-            if(dFI.getCharacter() == c) return dFI;
+    public static DefaultFontInfo getDefaultFontInfo(char c) {
+        for (DefaultFontInfo dFI : DefaultFontInfo.values()) {
+            if (dFI.getCharacter() == c) return dFI;
         }
         return DefaultFontInfo.DEFAULT;
     }
