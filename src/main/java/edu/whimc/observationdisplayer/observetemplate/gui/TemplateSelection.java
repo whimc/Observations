@@ -39,7 +39,7 @@ public class TemplateSelection implements Listener {
     private final ObservationDisplayer plugin;
 
     /**
-     * Used to create clickable messags with callbacks.
+     * Used to create clickable messages with callbacks.
      */
     private final SpigotCallback spigotCallback;
 
@@ -241,8 +241,7 @@ public class TemplateSelection implements Listener {
                 int days = this.plugin.getConfig().getInt("expiration-days");
                 Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-                Observation obs = Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
-                obs.setHologramItem(this.template.getGuiItem());
+                Observation obs = Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
 
                 Utils.msg(player,
                         "&7Your observation has been placed:",

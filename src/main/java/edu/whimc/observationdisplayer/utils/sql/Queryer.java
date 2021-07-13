@@ -2,6 +2,8 @@ package edu.whimc.observationdisplayer.utils.sql;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.models.Observation;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationType;
 import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,8 +24,8 @@ public class Queryer {
      */
     private static final String QUERY_SAVE_OBSERVATION =
             "INSERT INTO whimc_observations " +
-                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration, category) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * Query for getting all observations from the database.
@@ -89,9 +91,7 @@ public class Queryer {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             final boolean success = sqlConnection.initialize();
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                callback.accept(success ? this : null);
-            });
+            Bukkit.getScheduler().runTask(plugin, () -> callback.accept(success ? this : null));
         });
     }
 
@@ -105,6 +105,11 @@ public class Queryer {
      */
     private PreparedStatement getStatement(Connection connection, Observation obs) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_OBSERVATION, Statement.RETURN_GENERATED_KEYS);
+
+        String category = null;
+        if (obs.getTemplate() != null) {
+            category = obs.getTemplate().getType().name();
+        }
 
         Location loc = obs.getViewLocation();
         String world = loc.getWorld().getName();
@@ -126,8 +131,42 @@ public class Queryer {
         statement.setString(10, obs.getObservation());
         statement.setBoolean(11, true);
         statement.setLong(12, obs.getExpiration().getTime());
+        statement.setString(13, category);
 
         return statement;
+    }
+
+    private void loadObservationFromResultSet(ResultSet results, int id, boolean isTemporary) throws SQLException {
+        Timestamp timestamp = new Timestamp(results.getLong("time"));
+        String name = results.getString("username");
+        String worldName = results.getString("world");
+        double x = results.getDouble("x");
+        double y = results.getDouble("y");
+        double z = results.getDouble("z");
+        float yaw = results.getFloat("yaw");
+        float pitch = results.getFloat("pitch");
+        String observation = results.getString("observation");
+        long expNum = results.getLong("expiration");
+        Timestamp expiration = expNum == 0 ? null : new Timestamp(expNum);
+        String category = results.getString("category");
+        ObservationTemplate template = category == null ? null : this.plugin.getTemplateManager().getTemplate(ObservationType.valueOf(category));
+
+        sync(() -> {
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                Utils.debug("  - " + id + " | world '" + worldName + "' not found -> skipping");
+                return;
+            }
+            Location loc = new Location(world, x, y, z, yaw, pitch);
+
+            Utils.debug("  - " + id +
+                    " | " + timestamp.getTime() +
+                    " | " + name +
+                    " | (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" +
+                    " | " + observation + " | " +
+                    " | " + (expiration == null ? "n/a" : expiration.getTime()));
+            Observation.loadObservation(this.plugin, id, timestamp, name, loc, observation, expiration, template, isTemporary);
+        });
     }
 
     /**
@@ -173,34 +212,7 @@ public class Queryer {
                         Utils.debug("Observations found:");
                         while (results.next()) {
                             int id = results.getInt("rowid");
-                            Timestamp timestamp = new Timestamp(results.getLong("time"));
-                            String name = results.getString("username");
-                            String worldName = results.getString("world");
-                            double x = results.getDouble("x");
-                            double y = results.getDouble("y");
-                            double z = results.getDouble("z");
-                            float yaw = results.getFloat("yaw");
-                            float pitch = results.getFloat("pitch");
-                            String observation = results.getString("observation");
-                            long expNum = results.getLong("expiration");
-                            Timestamp expiration = expNum == 0 ? null : new Timestamp(expNum);
-
-                            sync(() -> {
-                                World world = Bukkit.getWorld(worldName);
-                                if (world == null) {
-                                    Utils.debug("  - " + id + " | world '" + worldName + "' not found -> skipping");
-                                    return;
-                                }
-                                Location loc = new Location(world, x, y, z, yaw, pitch);
-
-                                Utils.debug("  - " + id +
-                                        " | " + timestamp.getTime() +
-                                        " | " + name +
-                                        " | (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" +
-                                        " | " + observation + " | " +
-                                        " | " + (expiration == null ? "n/a" : expiration.getTime()));
-                                Observation.loadObservation(plugin, id, timestamp, name, loc, observation, expiration);
-                            });
+                            loadObservationFromResultSet(results, id, false);
                         }
                         sync(callback);
                     }
@@ -212,7 +224,7 @@ public class Queryer {
     }
 
     /**
-     * Makes an obseration inactive in the database.
+     * Makes an observation inactive in the database.
      *
      * @param id Id of the observation
      */
@@ -255,7 +267,7 @@ public class Queryer {
                         statement.setString(ind++, player);
                     }
                     if (world != null) {
-                        statement.setString(ind++, world);
+                        statement.setString(ind, world);
                     }
                     sync(callback, statement.executeUpdate());
                 }
@@ -323,34 +335,7 @@ public class Queryer {
                                 continue;
                             }
                             count++;
-                            Timestamp timestamp = new Timestamp(results.getLong("time"));
-                            String name = results.getString("username");
-                            String worldName = results.getString("world");
-                            double x = results.getDouble("x");
-                            double y = results.getDouble("y");
-                            double z = results.getDouble("z");
-                            float yaw = results.getFloat("yaw");
-                            float pitch = results.getFloat("pitch");
-                            String observation = results.getString("observation");
-                            long expNum = results.getLong("expiration");
-                            Timestamp expiration = expNum == 0 ? null : new Timestamp(expNum);
-
-                            sync(() -> {
-                                World world = Bukkit.getWorld(worldName);
-                                if (world == null) {
-                                    Utils.debug("  - " + id + " | world '" + worldName + "' not found -> skipping");
-                                    return;
-                                }
-                                Location loc = new Location(world, x, y, z, yaw, pitch);
-
-                                Utils.debug("  - " + id +
-                                        " | " + timestamp.getTime() +
-                                        " | " + name +
-                                        " | (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" +
-                                        " | " + observation + " | " +
-                                        " | " + (expiration == null ? "n/a" : expiration.getTime()));
-                                Observation.loadTemporaryObservation(plugin, id, timestamp, name, loc, observation, expiration);
-                            });
+                            loadObservationFromResultSet(results, id, true);
                         }
                         sync(callback, count);
                     }
@@ -377,9 +362,7 @@ public class Queryer {
     }
 
     private <T> void sync(Consumer<T> cons, T val) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            cons.accept(val);
-        });
+        Bukkit.getScheduler().runTask(this.plugin, () -> cons.accept(val));
     }
 
     private void sync(Runnable runnable) {

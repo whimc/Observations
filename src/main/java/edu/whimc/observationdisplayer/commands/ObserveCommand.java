@@ -50,7 +50,7 @@ public class ObserveCommand implements CommandExecutor {
         int days = this.plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-        Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration);
+        Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, null);
         Utils.msg(sender,
                 "&7Your observation has been placed:",
                 "  &8\"&f&l" + text + "&8\"");

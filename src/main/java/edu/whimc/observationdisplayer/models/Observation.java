@@ -4,6 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.observetemplate.models.ObservationTemplate;
 import edu.whimc.observationdisplayer.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,35 +23,59 @@ public class Observation {
     private static final List<Observation> observations = new ArrayList<>();
 
     private final ObservationDisplayer plugin;
-    private int id;
     private final Timestamp timestamp;
     private final String playerName;
     private final Location holoLoc;
     private final Location viewLoc;
     private final String observation;
+    private final boolean isTemporary;
+    private final ObservationTemplate template;
+    private int id;
     private Hologram hologram;
     private Timestamp expiration;
-    private final boolean temporary;
     private Material hologramItem = Material.OAK_SIGN;
 
-    public static Observation createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
-                                                String observation, Timestamp expiration) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, false, true);
-        observations.add(obs);
-        return obs;
+    protected Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
+                          Location viewLoc, String observation, Timestamp expiration, ObservationTemplate template,
+                          boolean isTemporary, boolean isNew) {
+        this.plugin = plugin;
+        this.timestamp = timestamp;
+        this.playerName = playerName;
+        this.holoLoc = viewLoc.clone().add(0, 3, 0).add(viewLoc.getDirection().multiply(2));
+        this.viewLoc = viewLoc;
+        this.observation = observation;
+        this.expiration = expiration;
+        this.template = template;
+        this.isTemporary = isTemporary;
+
+        if (this.template != null) {
+            this.hologramItem = this.template.getGuiItem();
+        }
+
+        if (!isNew) {
+            this.id = id;
+            createHologram();
+            return;
+        }
+
+        plugin.getQueryer().storeNewObservation(this, newId -> {
+            this.id = newId;
+            createHologram();
+        });
     }
 
-    public static Observation loadTemporaryObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
-                                                       String playerName, Location viewLoc, String observation, Timestamp expiration) {
-        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, true, false);
+    public static Observation createObservation(ObservationDisplayer plugin, Player player, Location viewLoc,
+                                                String observation, Timestamp expiration, ObservationTemplate template) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, template, false, true);
         observations.add(obs);
         return obs;
     }
 
     public static Observation loadObservation(ObservationDisplayer plugin, int id, Timestamp timestamp,
-                                              String playerName, Location viewLoc, String observation, Timestamp expiration) {
-        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, false, false);
+                                              String playerName, Location viewLoc, String observation,
+                                              Timestamp expiration, ObservationTemplate template, boolean isTemporary) {
+        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, template, isTemporary, false);
         observations.add(obs);
         return obs;
     }
@@ -74,78 +99,6 @@ public class Observation {
         }, 20 * 60, 20 * 60);
     }
 
-    protected Observation(ObservationDisplayer plugin, int id, Timestamp timestamp, String playerName,
-                          Location viewLoc, String observation, Timestamp expiration, boolean temporary, boolean isNew) {
-        this.plugin = plugin;
-        this.timestamp = timestamp;
-        this.playerName = playerName;
-        this.holoLoc = viewLoc.clone().add(0, 3, 0).add(viewLoc.getDirection().multiply(2));
-        this.viewLoc = viewLoc;
-        this.observation = observation;
-        this.expiration = expiration;
-        this.temporary = temporary;
-
-        if (!isNew) {
-            this.id = id;
-            createHologram();
-            return;
-        }
-
-        plugin.getQueryer().storeNewObservation(this, newId -> {
-            this.id = newId;
-            createHologram();
-        });
-    }
-
-    private void createHologram() {
-        Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
-        ObservationClick clickListener = new ObservationClick(this.viewLoc);
-
-        holo.appendItemLine(new ItemStack(this.hologramItem))
-                .setTouchHandler(clickListener);
-        holo.appendTextLine(ChatColor.translateAlternateColorCodes('&', this.observation))
-                .setTouchHandler(clickListener);
-        holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp))
-                .setTouchHandler(clickListener);
-
-        if (this.expiration != null) {
-            holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration))
-                    .setTouchHandler(clickListener);
-        }
-
-        if (this.temporary) {
-            holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*")
-                    .setTouchHandler(clickListener);
-        }
-
-        this.hologram = holo;
-    }
-
-    public void reRender() {
-        deleteHologramOnly();
-        createHologram();
-    }
-
-    public void setHologramItem(Material hologramItem) {
-        this.hologramItem = hologramItem;
-        this.hologram.getLine(0).removeLine();
-        this.hologram.insertItemLine(0, new ItemStack(hologramItem));
-    }
-
-    private class ObservationClick implements TouchHandler {
-
-        private final Location loc;
-
-        public ObservationClick(Location loc) {
-            this.loc = loc;
-        }
-
-        @Override
-        public void onTouch(Player player) {
-            player.teleport(this.loc);
-        }
-    }
-
     public static List<Observation> getObservations() {
         return observations;
     }
@@ -160,6 +113,56 @@ public class Observation {
         }
 
         return null;
+    }
+
+    public static List<String> getObservationsTabComplete(String hint) {
+        return observations.stream()
+                .filter(v -> Integer.toString(v.getId()).startsWith(hint))
+                .sorted(Comparator.comparing(Observation::getId))
+                .map(v -> Integer.toString(v.getId()))
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getPlayersTabComplete(String hint) {
+        Set<String> players = observations.stream()
+                .map(Observation::getPlayer)
+                .distinct()
+                .filter(v -> v.toLowerCase().startsWith(hint.toLowerCase()))
+                .sorted()
+                .collect(Collectors.toSet());
+        players.addAll(Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toSet()));
+        return new ArrayList<>(players);
+    }
+
+    private void createHologram() {
+        Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
+        ObservationClick clickListener = new ObservationClick(this.viewLoc);
+
+        holo.appendItemLine(new ItemStack(this.hologramItem))
+                .setTouchHandler(clickListener);
+        holo.appendTextLine(Utils.color(this.observation))
+                .setTouchHandler(clickListener);
+        holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp))
+                .setTouchHandler(clickListener);
+
+        if (this.expiration != null) {
+            holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration))
+                    .setTouchHandler(clickListener);
+        }
+
+        if (this.isTemporary) {
+            holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*")
+                    .setTouchHandler(clickListener);
+        }
+
+        this.hologram = holo;
+    }
+
+    public void reRender() {
+        deleteHologramOnly();
+        createHologram();
     }
 
     public Hologram getHologram() {
@@ -194,16 +197,20 @@ public class Observation {
         return this.expiration;
     }
 
-    public boolean hasExpired() {
-        return this.timestamp != null && this.expiration.toInstant().isAfter(Instant.now());
-    }
-
     public void setExpiration(Timestamp timestamp) {
         this.expiration = timestamp;
     }
 
+    public boolean hasExpired() {
+        return this.timestamp != null && this.expiration.toInstant().isAfter(Instant.now());
+    }
+
+    public ObservationTemplate getTemplate() {
+        return this.template;
+    }
+
     public boolean isTemporary() {
-        return this.temporary;
+        return this.isTemporary;
     }
 
     @Override
@@ -216,11 +223,6 @@ public class Observation {
         return "&9&l" + this.id + ".&r &8\"" + text + "&8\" &9> &7&o" + this.playerName + " " +
                 "&7(" + this.holoLoc.getWorld().getName() + ", " + this.holoLoc.getBlockX() + ", " +
                 this.holoLoc.getBlockY() + ", " + this.holoLoc.getBlockZ() + "&7)";
-    }
-
-    public void deleteAndSetInactive() {
-        deleteAndSetInactive(() -> {
-        });
     }
 
     public void deleteAndSetInactive(Runnable callback) {
@@ -240,25 +242,18 @@ public class Observation {
         }
     }
 
-    public static List<String> getObservationsTabComplete(String hint) {
-        return observations.stream()
-                .filter(v -> Integer.toString(v.getId()).startsWith(hint))
-                .sorted(Comparator.comparing(Observation::getId))
-                .map(v -> Integer.toString(v.getId()))
-                .collect(Collectors.toList());
-    }
+    private class ObservationClick implements TouchHandler {
 
-    public static List<String> getPlayersTabComplete(String hint) {
-        Set<String> players = observations.stream()
-                .map(Observation::getPlayer)
-                .distinct()
-                .filter(v -> v.toLowerCase().startsWith(hint.toLowerCase()))
-                .sorted()
-                .collect(Collectors.toSet());
-        players.addAll(Bukkit.getOnlinePlayers().stream()
-                .map(Player::getName)
-                .collect(Collectors.toSet()));
-        return new ArrayList<>(players);
+        private final Location loc;
+
+        public ObservationClick(Location loc) {
+            this.loc = loc;
+        }
+
+        @Override
+        public void onTouch(Player player) {
+            player.teleport(this.loc);
+        }
     }
 
 }
