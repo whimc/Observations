@@ -24,23 +24,16 @@ import java.util.stream.Collectors;
 
 public final class TemplateGui implements Listener {
 
+    private final Map<Integer, ObservationType> templateSlots = new HashMap<>();
+    private final Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
+    private final ObservationDisplayer plugin;
+    private final TemplateManager manager;
     private String inventoryName;
     private int inventorySize;
-
     private ItemStack fillerItem;
-
     private ItemStack cancelItem;
     private int cancelPosition;
-
     private Inventory inventory;
-
-    private final Map<Integer, ObservationType> templateSlots = new HashMap<>();
-
-    private final Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
-
-    private final ObservationDisplayer plugin;
-
-    private final TemplateManager manager;
 
     public TemplateGui(ObservationDisplayer plugin, TemplateManager manager) {
         this.plugin = plugin;
@@ -132,8 +125,7 @@ public final class TemplateGui implements Listener {
 
         // Close the inventory and execute the action for this template type
         player.closeInventory();
-        this.templateActions.getOrDefault(type, p -> {
-        }).accept(player);
+        this.templateActions.getOrDefault(type, p -> { /* no-op */ }).accept(player);
     }
 
     @EventHandler
