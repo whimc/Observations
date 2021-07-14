@@ -1,6 +1,7 @@
 package edu.whimc.observationdisplayer.observetemplate.gui;
 
 import edu.whimc.observationdisplayer.ObservationDisplayer;
+import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.libraries.CenteredText;
 import edu.whimc.observationdisplayer.libraries.SpigotCallback;
 import edu.whimc.observationdisplayer.models.Observation;
@@ -11,6 +12,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,51 +34,42 @@ public class TemplateSelection implements Listener {
     private static final String CROSS = "\u274C";
 
     private static final String BULLET = "\u2022";
-
-    /**
-     * Instance of main class.
-     */
-    private final ObservationDisplayer plugin;
-
-    /**
-     * Used to create clickable messages with callbacks.
-     */
-    private final SpigotCallback spigotCallback;
-
-    /**
-     * The selected template to fill out.
-     */
-    private final ObservationTemplate template;
-
-    /**
-     * The UUID of the player making the selection.
-     */
-    private final UUID uuid;
-
-    /**
-     * The selected prompt from the template.
-     */
-    private ObservationPrompt prompt = null;
-
-    /**
-     * The current responses that have been chosen
-     */
-    private final List<String> responses = new ArrayList<>();
-
-    /**
-     * The stage of the selection.
-     */
-    private TemplateSelectionStage stage;
-
-    /**
-     * The response index that is being selected.
-     */
-    private int responseIndex = 0;
-
     /**
      * Selections that are currently happening.
      */
     private static final Map<UUID, TemplateSelection> ongoingSelections = new HashMap<>();
+    /**
+     * Instance of main class.
+     */
+    private final ObservationDisplayer plugin;
+    /**
+     * Used to create clickable messages with callbacks.
+     */
+    private final SpigotCallback spigotCallback;
+    /**
+     * The selected template to fill out.
+     */
+    private final ObservationTemplate template;
+    /**
+     * The UUID of the player making the selection.
+     */
+    private final UUID uuid;
+    /**
+     * The current responses that have been chosen
+     */
+    private final List<String> responses = new ArrayList<>();
+    /**
+     * The selected prompt from the template.
+     */
+    private ObservationPrompt prompt = null;
+    /**
+     * The stage of the selection.
+     */
+    private TemplateSelectionStage stage;
+    /**
+     * The response index that is being selected.
+     */
+    private int responseIndex = 0;
 
     public TemplateSelection(ObservationDisplayer plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
         UUID uuid = player.getUniqueId();
@@ -147,21 +140,45 @@ public class TemplateSelection implements Listener {
         sendHeader();
         Utils.msgNoPrefix(player, filledIn, "");
 
+        Consumer<String> addResponseAndAdvanceStage = response -> {
+            this.responses.add(response);
+            this.responseIndex += 1;
+
+            TemplateSelectionStage nextStage = this.stage;
+            if (this.responseIndex == this.prompt.getNumberOfFillIns()) {
+                nextStage = TemplateSelectionStage.CONFIRM;
+            }
+            doStage(nextStage);
+        };
+
         for (String response : responses) {
             sendComponent(
                     player,
                     "&8" + BULLET + " &r" + response,
                     "&aClick here to select \"&r" + response + "&a\"",
+                    p -> addResponseAndAdvanceStage.accept(response)
+            );
+        }
+        // Send component for custom input if they permission
+        if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
+            sendComponent(
+                    player,
+                    "&8" + BULLET + " &7Write your own response",
+                    "&aClick here to write your own response!",
                     p -> {
-                        this.responses.add(response);
-                        this.responseIndex += 1;
-
-                        TemplateSelectionStage nextStage = this.stage;
-                        if (this.responseIndex == this.prompt.getNumberOfFillIns()) {
-                            nextStage = TemplateSelectionStage.CONFIRM;
-                        }
-                        doStage(nextStage);
-                    });
+                        new AnvilGUI.Builder()
+                                .plugin(this.plugin)
+                                .title(Utils.color(filledIn))
+                                .preventClose()
+                                .text("Type here")
+                                .onLeftInputClick(clicked -> Utils.msg(clicked, "Click the item on the right to confirm your response."))
+                                .onComplete((anvilPlayer, response) -> {
+                                    addResponseAndAdvanceStage.accept(response);
+                                    return AnvilGUI.Response.close();
+                                })
+                                .open(p);
+                    }
+            );
         }
 
         sendFooter(false, p -> {

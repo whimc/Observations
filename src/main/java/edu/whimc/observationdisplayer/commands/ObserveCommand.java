@@ -19,8 +19,9 @@ import java.util.List;
 
 public class ObserveCommand implements CommandExecutor, TabCompleter {
 
-    private static final String TEMPLATED_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe";
-    private static final String FREE_HAND_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe.freehand";
+    public static final String TEMPLATED_PERM = ObservationDisplayer.PERM_PREFIX + ".observe";
+    public static final String FREE_HAND_PERM = ObservationDisplayer.PERM_PREFIX + ".observe.freehand";
+    public static final String CUSTOM_RESPONSE_PERM = ObservationDisplayer.PERM_PREFIX + ".observe.customresponse";
 
     private final ObservationDisplayer plugin;
 
@@ -35,16 +36,16 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (!sender.hasPermission(TEMPLATED_OBSERVATION)) {
+        if (!sender.hasPermission(TEMPLATED_PERM)) {
             Utils.msg(sender,
                     "&cYou do not have the required permission!",
-                    "  &f&o" + TEMPLATED_OBSERVATION);
+                    "  &f&o" + TEMPLATED_PERM);
             return true;
         }
 
         Player player = (Player) sender;
 
-        if (!sender.hasPermission(FREE_HAND_OBSERVATION) || args.length == 0) {
+        if (!sender.hasPermission(FREE_HAND_PERM) || args.length == 0) {
             this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
             return true;
         }

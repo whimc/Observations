@@ -45,10 +45,6 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 Permission parent = new Permission(PERM_PREFIX + ".*");
                 Bukkit.getPluginManager().addPermission(parent);
 
-                Permission entry = new Permission(PERM_PREFIX + ".entry.*");
-                entry.addParent(parent, true);
-                Bukkit.getPluginManager().addPermission(entry);
-
                 ObserveCommand observeCommand = new ObserveCommand(this);
                 getCommand("observe").setExecutor(observeCommand);
                 getCommand("observe").setTabCompleter(observeCommand);
