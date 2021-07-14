@@ -35,6 +35,7 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 getCommand("observe").setExecutor(this);
             } else {
                 Utils.setDebugPrefix(getDescription().getName());
+                this.templateManager = new TemplateManager(this);
                 Utils.debug("Starting to load observations...");
                 q.loadObservations(() -> {
                     Utils.debug("Finished loading observations!");
@@ -47,8 +48,6 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 Permission entry = new Permission(PERM_PREFIX + ".entry.*");
                 entry.addParent(parent, true);
                 Bukkit.getPluginManager().addPermission(entry);
-
-                this.templateManager = new TemplateManager(this);
 
                 getCommand("observe").setExecutor(new ObserveCommand(this));
 
