@@ -49,7 +49,9 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 entry.addParent(parent, true);
                 Bukkit.getPluginManager().addPermission(entry);
 
-                getCommand("observe").setExecutor(new ObserveCommand(this));
+                ObserveCommand observeCommand = new ObserveCommand(this);
+                getCommand("observe").setExecutor(observeCommand);
+                getCommand("observe").setTabCompleter(observeCommand);
 
                 ObservationsCommand oc = new ObservationsCommand(this);
                 getCommand("observations").setExecutor(oc);

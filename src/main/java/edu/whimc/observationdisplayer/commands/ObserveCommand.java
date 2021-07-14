@@ -8,13 +8,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 
-public class ObserveCommand implements CommandExecutor {
+public class ObserveCommand implements CommandExecutor, TabCompleter {
 
     private static final String TEMPLATED_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe";
     private static final String FREE_HAND_OBSERVATION = ObservationDisplayer.PERM_PREFIX + ".observe.freehand";
@@ -55,5 +58,11 @@ public class ObserveCommand implements CommandExecutor {
                 "&7Your observation has been placed:",
                 "  &8\"&f&l" + text + "&8\"");
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // Don't show any tab completions
+        return Arrays.asList();
     }
 }
