@@ -13,7 +13,7 @@ public final class CenteredText {
         boolean isBold = false;
 
         for (char c : message.toCharArray()) {
-            if (c == '�') {
+            if (c == '§') {
                 previousCode = true;
                 continue;
             }
