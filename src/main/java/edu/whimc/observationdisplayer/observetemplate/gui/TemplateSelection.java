@@ -66,7 +66,7 @@ public class TemplateSelection implements Listener {
     /**
      * The stage of the selection.
      */
-    private TemplateSelectionStage stage = TemplateSelectionStage.SELECT_PROMPT;
+    private TemplateSelectionStage stage;
 
     /**
      * The response index that is being selected.
@@ -93,20 +93,16 @@ public class TemplateSelection implements Listener {
         // Register this class as a listener to cancel clickables if they change worlds
         Bukkit.getPluginManager().registerEvents(this, plugin);
 
-//        if (template.getPrompts().size() == 1) {
-//            this.prompt = template.getPrompts().get(0);
-//            this.stage = TemplateSelectionStage.SELECT_RESPONSE;
-//        }
-
         ongoingSelections.put(uuid, this);
-        doStage();
+        doStage(TemplateSelectionStage.SELECT_PROMPT);
     }
 
-    private void doStage() {
+    private void doStage(TemplateSelectionStage nextStage) {
         // Clear all other callbacks before entering the next stage
         this.spigotCallback.clearCallbacks(getPlayer());
+        this.stage = nextStage;
 
-        switch (this.stage) {
+        switch (nextStage) {
             case SELECT_PROMPT:
                 doSelectPrompt();
                 return;
@@ -132,8 +128,7 @@ public class TemplateSelection implements Listener {
                     "&aClick here to select \"&r" + curPrompt.getPrompt() + "&a\"",
                     p -> {
                         this.prompt = curPrompt;
-                        this.stage = TemplateSelectionStage.SELECT_RESPONSE;
-                        doStage();
+                        doStage(TemplateSelectionStage.SELECT_RESPONSE);
                     });
         }
 
@@ -160,21 +155,24 @@ public class TemplateSelection implements Listener {
                     p -> {
                         this.responses.add(response);
                         this.responseIndex += 1;
+
+                        TemplateSelectionStage nextStage = this.stage;
                         if (this.responseIndex == this.prompt.getNumberOfFillIns()) {
-                            this.stage = TemplateSelectionStage.CONFIRM;
+                            nextStage = TemplateSelectionStage.CONFIRM;
                         }
-                        doStage();
+                        doStage(nextStage);
                     });
         }
 
         sendFooter(false, p -> {
+            TemplateSelectionStage nextStage = this.stage;
             if (this.responseIndex == 0) {
-                this.stage = TemplateSelectionStage.SELECT_PROMPT;
+                nextStage = TemplateSelectionStage.SELECT_PROMPT;
             } else {
                 this.responses.remove(this.responses.size() - 1);
                 this.responseIndex -= 1;
             }
-            doStage();
+            doStage(nextStage);
         });
     }
 
@@ -192,8 +190,7 @@ public class TemplateSelection implements Listener {
         sendFooter(true, p -> {
             this.responses.remove(this.responses.size() - 1);
             this.responseIndex -= 1;
-            this.stage = TemplateSelectionStage.SELECT_RESPONSE;
-            doStage();
+            doStage(TemplateSelectionStage.SELECT_RESPONSE);
         });
     }
 
