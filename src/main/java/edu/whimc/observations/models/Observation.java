@@ -15,7 +15,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Observation {
@@ -80,14 +83,12 @@ public class Observation {
         return obs;
     }
 
-    public static void scanForExpiredObservations(Observations plugin) {
+    public static void startExpiredObservationScanningTask(Observations plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            Utils.debug("Scanning for expired observations...");
             long count = observations.stream()
-                    .filter(v -> v.getExpiration() != null)
-                    .filter(v -> Instant.now().isAfter(v.getExpiration().toInstant()))
+                    .filter(Observation::hasExpired)
                     .filter(v -> !v.isTemporary())
-                    .collect(Collectors.toList())
-                    .stream()
                     .peek(Observation::deleteObservation)
                     .count();
             if (count > 0) {
@@ -95,16 +96,11 @@ public class Observation {
                     Utils.debug("Removed " + count + " expired observation(s). (" + dbCount + ") from database");
                 });
             }
-
         }, 20 * 60, 20 * 60);
     }
 
     public static List<Observation> getObservations() {
         return observations;
-    }
-
-    public static Iterator<Observation> getObservationsIterator() {
-        return observations.iterator();
     }
 
     public static Observation getObservation(int id) {
@@ -128,7 +124,6 @@ public class Observation {
                 .map(Observation::getPlayer)
                 .distinct()
                 .filter(v -> v.toLowerCase().startsWith(hint.toLowerCase()))
-                .sorted()
                 .collect(Collectors.toSet());
         players.addAll(Bukkit.getOnlinePlayers().stream()
                 .map(Player::getName)
@@ -165,10 +160,6 @@ public class Observation {
         createHologram();
     }
 
-    public Hologram getHologram() {
-        return this.hologram;
-    }
-
     public String getPlayer() {
         return this.playerName;
     }
@@ -202,7 +193,7 @@ public class Observation {
     }
 
     public boolean hasExpired() {
-        return this.timestamp != null && this.expiration.toInstant().isAfter(Instant.now());
+        return this.expiration != null && Instant.now().isAfter(this.expiration.toInstant());
     }
 
     public ObservationTemplate getTemplate() {

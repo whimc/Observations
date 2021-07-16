@@ -47,7 +47,7 @@ public class Observations extends JavaPlugin implements CommandExecutor {
             q.loadObservations(() -> {
                 Utils.debug("Finished loading observations!");
             });
-            Observation.scanForExpiredObservations(this);
+            Observation.startExpiredObservationScanningTask(this);
 
             Permission parent = new Permission(PERM_PREFIX + ".*");
             Bukkit.getPluginManager().addPermission(parent);

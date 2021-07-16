@@ -105,7 +105,6 @@ public class TemplateSelection implements Listener {
                 return;
             case CONFIRM:
                 doConfirm();
-                return;
         }
     }
 
@@ -167,7 +166,7 @@ public class TemplateSelection implements Listener {
                     "&8" + BULLET + " &7Write your own response",
                     "&aClick here to write your own response!",
                     p -> this.plugin.getSignMenuFactory()
-                            .newMenu(Arrays.asList(ChatColor.UNDERLINE + "Your response"))
+                            .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your response"))
                             .reopenIfFail(true)
                             .response((signPlayer, strings) -> {
                                 String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
@@ -220,7 +219,7 @@ public class TemplateSelection implements Listener {
         return result;
     }
 
-    public String replaceFirst(String str, String pattern, String replacement) {
+    private String replaceFirst(String str, String pattern, String replacement) {
         return str.replaceFirst(Pattern.quote(pattern), replacement);
     }
 
@@ -255,7 +254,7 @@ public class TemplateSelection implements Listener {
                 int days = this.plugin.getConfig().getInt("expiration-days");
                 Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-                Observation obs = Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
+                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
 
                 Utils.msg(player,
                         "&7Your observation has been placed:",
@@ -296,7 +295,7 @@ public class TemplateSelection implements Listener {
         return Bukkit.getPlayer(this.uuid);
     }
 
-    public void destroySelection() {
+    private void destroySelection() {
         // Clear callbacks
         this.spigotCallback.clearCallbacks(getPlayer());
 

@@ -31,10 +31,6 @@ public final class CenteredText {
         return messagePxSize;
     }
 
-    public static void sendCenteredMessage(Player player, String message) {
-        sendCenteredMessage(player, message, " ");
-    }
-
     public static void sendCenteredMessage(Player player, String message, String padding) {
         if (message == null || message.isEmpty()) {
             message = "";
