@@ -2,6 +2,7 @@ package edu.whimc.observationdisplayer;
 
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.commands.observations.ObservationsCommand;
+import edu.whimc.observationdisplayer.libraries.SignMenuFactory;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.observetemplate.TemplateManager;
 import edu.whimc.observationdisplayer.utils.Utils;
@@ -18,8 +19,8 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
     public static final String PERM_PREFIX = "whimc-observations";
 
     private Queryer queryer;
-
     private TemplateManager templateManager;
+    private SignMenuFactory signMenuFactory;
 
     @Override
     public void onEnable() {
@@ -35,7 +36,10 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
                 getCommand("observe").setExecutor(this);
             } else {
                 Utils.setDebugPrefix(getDescription().getName());
+
                 this.templateManager = new TemplateManager(this);
+                this.signMenuFactory = new SignMenuFactory(this);
+
                 Utils.debug("Starting to load observations...");
                 q.loadObservations(() -> {
                     Utils.debug("Finished loading observations!");
@@ -62,6 +66,10 @@ public class ObservationDisplayer extends JavaPlugin implements CommandExecutor 
 
     public TemplateManager getTemplateManager() {
         return this.templateManager;
+    }
+
+    public SignMenuFactory getSignMenuFactory() {
+        return this.signMenuFactory;
     }
 
     @Override

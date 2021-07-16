@@ -3,6 +3,7 @@ package edu.whimc.observationdisplayer.observetemplate.gui;
 import edu.whimc.observationdisplayer.ObservationDisplayer;
 import edu.whimc.observationdisplayer.commands.ObserveCommand;
 import edu.whimc.observationdisplayer.libraries.CenteredText;
+import edu.whimc.observationdisplayer.libraries.SignMenuFactory;
 import edu.whimc.observationdisplayer.libraries.SpigotCallback;
 import edu.whimc.observationdisplayer.models.Observation;
 import edu.whimc.observationdisplayer.observetemplate.models.ObservationPrompt;
@@ -12,8 +13,9 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.wesjd.anvilgui.AnvilGUI;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -166,17 +168,18 @@ public class TemplateSelection implements Listener {
                     "&8" + BULLET + " &7Write your own response",
                     "&aClick here to write your own response!",
                     p -> {
-                        new AnvilGUI.Builder()
-                                .plugin(this.plugin)
-                                .title(Utils.color(filledIn))
-                                .preventClose()
-                                .text("Type here")
-                                .onLeftInputClick(clicked -> Utils.msg(clicked, "Click the item on the right to confirm your response."))
-                                .onComplete((anvilPlayer, response) -> {
+                        SignMenuFactory.Menu menu = this.plugin.getSignMenuFactory()
+                                .newMenu(Arrays.asList(ChatColor.BOLD + "Your response:"))
+                                .reopenIfFail(true)
+                                .response((signPlayer, strings) -> {
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                    if (response.isEmpty()) {
+                                        return false;
+                                    }
                                     addResponseAndAdvanceStage.accept(response);
-                                    return AnvilGUI.Response.close();
-                                })
-                                .open(p);
+                                    return true;
+                                });
+                        menu.open(p);
                     }
             );
         }
