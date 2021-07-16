@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
-	<artifactId>WHIMC-ObservationDisplayer</artifactId>
+	<artifactId>WHIMC-Observations</artifactId>
 	<version>2.0.0</version>
-	<name>WHIMC ObservationDisplayer</name>
+	<name>WHIMC Observations</name>
 	<description>Create holographic observations in worlds</description>
 
 	<repositories>
@@ -46,6 +46,7 @@
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.7.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
