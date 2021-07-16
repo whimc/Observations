@@ -24,16 +24,27 @@ import java.util.stream.Collectors;
 
 public final class TemplateGui implements Listener {
 
-    private final Map<Integer, ObservationType> templateSlots = new HashMap<>();
-    private final Map<ObservationType, Consumer<Player>> templateActions = new HashMap<>();
     private final Observations plugin;
     private final TemplateManager manager;
-    private String inventoryName;
-    private int inventorySize;
-    private ItemStack fillerItem;
-    private ItemStack cancelItem;
-    private int cancelPosition;
+
+
+    private final Map<Integer, Consumer<Player>> slotActions = new HashMap<>();
+
+    /* The inventory that will hold the GUI */
     private Inventory inventory;
+    /* The name of the GUI */
+    private String inventoryName;
+    /* The size of the GUI */
+    private int inventorySize;
+
+    /* The item used for filler slots */
+    private ItemStack fillerItem;
+
+    /* The item used for the cancel button */
+    private ItemStack cancelItem;
+    /* The position of the cancel button */
+    private int cancelPosition;
+
 
     public TemplateGui(Observations plugin, TemplateManager manager) {
         this.plugin = plugin;
@@ -62,6 +73,7 @@ public final class TemplateGui implements Listener {
 
         // Add cancel item
         this.inventory.setItem(this.cancelPosition, this.cancelItem);
+        setAction(this.cancelPosition, p -> p.closeInventory());
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
@@ -71,13 +83,12 @@ public final class TemplateGui implements Listener {
             setName(item, template.getGuiItemName());
             setLore(item, template.getGuiLore());
 
-            this.templateSlots.put(template.getGuiPosition(), type);
             this.inventory.setItem(template.getGuiPosition(), item);
         }
     }
 
-    public void addConsumer(ObservationType type, Consumer<Player> action) {
-        this.templateActions.put(type, action);
+    public void setAction(int slot, Consumer<Player> action){
+        this.slotActions.put(slot, action);
     }
 
     public void openTemplateInventory(Player player) {
@@ -118,14 +129,15 @@ public final class TemplateGui implements Listener {
             return;
         }
 
-        ObservationType type = this.templateSlots.getOrDefault(event.getSlot(), null);
-        if (type == null) {
+        // Do nothing if there's no action for the given slot
+        Consumer<Player> action = this.slotActions.getOrDefault(event.getSlot(), null);
+        if (action == null) {
             return;
         }
 
-        // Close the inventory and execute the action for this template type
+        // Close the inventory and execute the action for the slot
         player.closeInventory();
-        this.templateActions.getOrDefault(type, p -> { /* no-op */ }).accept(player);
+        action.accept(player);
     }
 
     @EventHandler

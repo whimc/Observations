@@ -26,10 +26,12 @@ public class TemplateManager {
             this.templates.put(type, template);
         }
 
+        // The templates must be loaded before creating the GUI
         this.gui = new TemplateGui(plugin, this);
-        for (ObservationType type : ObservationType.values()) {
-            this.gui.addConsumer(type, player -> {
-                new TemplateSelection(plugin, this.spigotCallback, player, getTemplate(type));
+
+        for (ObservationTemplate template : this.templates.values()) {
+            this.gui.setAction(template.getGuiPosition(), player -> {
+                new TemplateSelection(plugin, this.spigotCallback, player, template);
             });
         }
     }
