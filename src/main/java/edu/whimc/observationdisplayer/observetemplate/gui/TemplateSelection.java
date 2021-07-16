@@ -161,7 +161,7 @@ public class TemplateSelection implements Listener {
                     p -> addResponseAndAdvanceStage.accept(response)
             );
         }
-        // Send component for custom input if they permission
+        // Send component for custom input if they have permission
         if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
             sendComponent(
                     player,
