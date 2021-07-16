@@ -76,7 +76,6 @@ public class ObservationsReactivate extends AbstractSubCommand {
                 startTime = temp;
             }
 
-            // TODO Reactivate range of observations by date
             String formattedStart = Utils.getDate(startTime);
             String formattedEnd = Utils.getDate(endTime);
             Utils.msg(sender, "&aTemporarily reactivating observations between \"&2" + formattedStart + "&a\" and \"&2" + formattedEnd + "&a\"!");

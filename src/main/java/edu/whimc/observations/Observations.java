@@ -30,33 +30,35 @@ public class Observations extends JavaPlugin implements CommandExecutor {
         Utils.setDebug(getConfig().getBoolean("debug"));
 
         this.queryer = new Queryer(this, q -> {
+            // If we couldn't connect to the database disable the plugin
             if (q == null) {
-                this.getLogger().severe("Could not create MySQL connection! Disabling plugin...");
+                this.getLogger().severe("Could not establish MySQL connection! Disabling plugin...");
                 getCommand("observations").setExecutor(this);
                 getCommand("observe").setExecutor(this);
-            } else {
-                Utils.setDebugPrefix(getDescription().getName());
-
-                this.templateManager = new TemplateManager(this);
-                this.signMenuFactory = new SignMenuFactory(this);
-
-                Utils.debug("Starting to load observations...");
-                q.loadObservations(() -> {
-                    Utils.debug("Finished loading observations!");
-                });
-                Observation.scanForExpiredObservations(this);
-
-                Permission parent = new Permission(PERM_PREFIX + ".*");
-                Bukkit.getPluginManager().addPermission(parent);
-
-                ObserveCommand observeCommand = new ObserveCommand(this);
-                getCommand("observe").setExecutor(observeCommand);
-                getCommand("observe").setTabCompleter(observeCommand);
-
-                ObservationsCommand oc = new ObservationsCommand(this);
-                getCommand("observations").setExecutor(oc);
-                getCommand("observations").setTabCompleter(oc);
+                return;
             }
+
+            Utils.setDebugPrefix(getDescription().getName());
+
+            this.templateManager = new TemplateManager(this);
+            this.signMenuFactory = new SignMenuFactory(this);
+
+            Utils.debug("Loading observations...");
+            q.loadObservations(() -> {
+                Utils.debug("Finished loading observations!");
+            });
+            Observation.scanForExpiredObservations(this);
+
+            Permission parent = new Permission(PERM_PREFIX + ".*");
+            Bukkit.getPluginManager().addPermission(parent);
+
+            ObserveCommand observeCommand = new ObserveCommand(this);
+            getCommand("observe").setExecutor(observeCommand);
+            getCommand("observe").setTabCompleter(observeCommand);
+
+            ObservationsCommand observationsCommand = new ObservationsCommand(this);
+            getCommand("observations").setExecutor(observationsCommand);
+            getCommand("observations").setTabCompleter(observationsCommand);
         });
     }
 
