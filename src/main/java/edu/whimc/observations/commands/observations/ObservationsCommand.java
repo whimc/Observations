@@ -21,10 +21,6 @@ public class ObservationsCommand implements CommandExecutor, TabCompleter {
     private final Map<String, AbstractSubCommand> subCommands = new HashMap<>();
 
     public ObservationsCommand(Observations plugin) {
-        Permission perm = new Permission(Observations.PERM_PREFIX + ".destination.*");
-        perm.addParent(Observations.PERM_PREFIX + ".*", true);
-        Bukkit.getPluginManager().addPermission(perm);
-
         subCommands.put("info", new ObservationsInfo(plugin, "observations", "info"));
         subCommands.put("list", new ObservationsList(plugin, "observations", "list"));
         subCommands.put("near", new ObservationsNear(plugin, "observations", "near"));
