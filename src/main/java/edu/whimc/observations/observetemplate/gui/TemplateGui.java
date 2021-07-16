@@ -1,11 +1,14 @@
 package edu.whimc.observations.observetemplate.gui;
 
 import edu.whimc.observations.Observations;
+import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,9 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,10 @@ public final class TemplateGui implements Listener {
     /* The position of the cancel button */
     private int cancelPosition;
 
+    /* The item used for the uncategorized observation button */
+    private ItemStack uncategorizedItem;
+    /* The position of the uncategorized observation button */
+    private int uncategorizedPosition;
 
     public TemplateGui(Observations plugin, TemplateManager manager) {
         this.plugin = plugin;
@@ -63,6 +68,12 @@ public final class TemplateGui implements Listener {
         this.cancelItem = new ItemStack(Material.matchMaterial(getString(Path.CANCEL_ITEM)));
         this.cancelPosition = getInt(Path.CANCEL_POSITION);
         setName(this.cancelItem, getString(Path.CANCEL_NAME));
+        setLore(this.cancelItem, getStringList(Path.CANCEL_LORE));
+
+        this.uncategorizedItem = new ItemStack(Material.matchMaterial(getString(Path.UNCATEGORIZED_ITEM)));
+        this.uncategorizedPosition = getInt(Path.UNCATEGORIZED_POSITION);
+        setName(this.uncategorizedItem, getString(Path.UNCATEGORIZED_NAME));
+        setLore(this.uncategorizedItem, getStringList(Path.UNCATEGORIZED_LORE));
 
         this.inventory = Bukkit.createInventory(null, this.inventorySize, Utils.color(this.inventoryName));
 
@@ -73,7 +84,32 @@ public final class TemplateGui implements Listener {
 
         // Add cancel item
         this.inventory.setItem(this.cancelPosition, this.cancelItem);
-        setAction(this.cancelPosition, p -> p.closeInventory());
+        setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+
+        // Add uncategorized observation item
+        this.inventory.setItem(this.uncategorizedPosition, this.uncategorizedItem);
+        setAction(this.uncategorizedPosition, p -> {
+                    if (!p.hasPermission(ObserveCommand.FREE_HAND_PERM)) {
+                        Utils.msg(p,
+                                "&cYou do not have the required permission!",
+                                "  &f&o" + ObserveCommand.FREE_HAND_PERM);
+                        return;
+                    }
+
+                    plugin.getSignMenuFactory()
+                            .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your Observation"))
+                            .reopenIfFail(false)
+                            .response((signPlayer, strings) -> {
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                if (response.isEmpty()) {
+                                    return false;
+                                }
+                                ObserveCommand.makeObservation(this.plugin, response, signPlayer);
+                                return true;
+                            })
+                            .open(p);
+                }
+        );
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
@@ -87,7 +123,7 @@ public final class TemplateGui implements Listener {
         }
     }
 
-    public void setAction(int slot, Consumer<Player> action){
+    public void setAction(int slot, Consumer<Player> action) {
         this.slotActions.put(slot, action);
     }
 
@@ -121,13 +157,6 @@ public final class TemplateGui implements Listener {
         }
 
         Player player = (Player) event.getWhoClicked();
-
-        // Close the inventory if they click the cancel button
-        if (clicked.equals(this.cancelItem)) {
-            event.getWhoClicked().closeInventory();
-            Utils.msg(player, "Observation canceled!");
-            return;
-        }
 
         // Do nothing if there's no action for the given slot
         Consumer<Player> action = this.slotActions.getOrDefault(event.getSlot(), null);
@@ -166,6 +195,10 @@ public final class TemplateGui implements Listener {
         return this.plugin.getConfig().getString(Path.ROOT.getPath() + path.getPath());
     }
 
+    public List<String> getStringList(Path path) {
+        return this.plugin.getConfig().getStringList(Path.ROOT.getPath() + path.getPath());
+    }
+
     public int getInt(Path path) {
         return this.plugin.getConfig().getInt(Path.ROOT.getPath() + path.getPath());
     }
@@ -182,6 +215,12 @@ public final class TemplateGui implements Listener {
         CANCEL_ITEM("cancel.item"),
         CANCEL_POSITION("cancel.position"),
         CANCEL_NAME("cancel.name"),
+        CANCEL_LORE("cancel.lore"),
+
+        UNCATEGORIZED_ITEM("uncategorized.item"),
+        UNCATEGORIZED_POSITION("uncategorized.position"),
+        UNCATEGORIZED_NAME("uncategorized.name"),
+        UNCATEGORIZED_LORE("uncategorized.lore"),
         ;
 
         private final String path;

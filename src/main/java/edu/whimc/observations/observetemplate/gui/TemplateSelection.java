@@ -3,7 +3,6 @@ package edu.whimc.observations.observetemplate.gui;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.libraries.CenteredText;
-import edu.whimc.observations.libraries.SignMenuFactory;
 import edu.whimc.observations.libraries.SpigotCallback;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
@@ -167,20 +166,18 @@ public class TemplateSelection implements Listener {
                     player,
                     "&8" + BULLET + " &7Write your own response",
                     "&aClick here to write your own response!",
-                    p -> {
-                        SignMenuFactory.Menu menu = this.plugin.getSignMenuFactory()
-                                .newMenu(Arrays.asList(ChatColor.BOLD + "Your response:"))
-                                .reopenIfFail(true)
-                                .response((signPlayer, strings) -> {
-                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
-                                    if (response.isEmpty()) {
-                                        return false;
-                                    }
-                                    addResponseAndAdvanceStage.accept(response);
-                                    return true;
-                                });
-                        menu.open(p);
-                    }
+                    p -> this.plugin.getSignMenuFactory()
+                            .newMenu(Arrays.asList(ChatColor.UNDERLINE + "Your response"))
+                            .reopenIfFail(true)
+                            .response((signPlayer, strings) -> {
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                if (response.isEmpty()) {
+                                    return false;
+                                }
+                                addResponseAndAdvanceStage.accept(response);
+                                return true;
+                            })
+                            .open(p)
             );
         }
 

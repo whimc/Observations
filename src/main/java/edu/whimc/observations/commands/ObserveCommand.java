@@ -29,6 +29,16 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
+    public static void makeObservation(Observations plugin, String observation, Player player) {
+        int days = plugin.getConfig().getInt("expiration-days");
+        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
+
+        Observation.createObservation(plugin, player, player.getLocation(), observation, expiration, null);
+        Utils.msg(player,
+                "&7Your observation has been placed:",
+                "  &8\"&f&l" + observation + "&8\"");
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -51,13 +61,7 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         }
 
         String text = StringUtils.join(args, " ");
-        int days = this.plugin.getConfig().getInt("expiration-days");
-        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-
-        Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, null);
-        Utils.msg(sender,
-                "&7Your observation has been placed:",
-                "  &8\"&f&l" + text + "&8\"");
+        makeObservation(this.plugin, text, player);
         return true;
     }
 

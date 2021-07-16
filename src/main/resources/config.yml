@@ -18,8 +18,18 @@ template-gui:
   rows: 4
   cancel:
     item: barrier
-    position: 31
+    position: 27
     name: "&cCancel"
+    lore:
+      - "&7Cancel your observation"
+  uncategorized:
+    item: oak_sign
+    position: 35
+    name: '&7Uncategorized Observation'
+    lore:
+      - '&fMake a custom observation without a template.'
+      - ''
+      - '&8&oThis can also be done with &7&o/observe <observation>'
 
 templates:
   ANALOGY:

@@ -85,8 +85,13 @@ mysql:
 |`template-gui.inventory-name`|`string`|The name of the inventory used for the GUI|
 |`template-gui.rows`|`integer`|The number of rows that will be in the GUI (Range [1-6])|
 |`template-gui.cancel.item`|`Minecraft material`|The item to use for the cancel button|
-|`template-gui.cancel.position`|`integer`|The position within the inventory to put the cancel button|
+|`template-gui.cancel.position`|`integer`|The position of the cancel button|
 |`template-gui.cancel.name`|`string`|The text to display for the cancel button|
+|`template-gui.cancel.lore`|`string list`|The lore of the cancel button|
+|`template-gui.uncategorized.item`|`Minecraft material`|The item to use for the uncategorized observation button|
+|`template-gui.uncategorized.position`|`integer`|The position of the uncategorized button|
+|`template-gui.uncategorized.name`|`string`|The text to display for the uncategorized button|
+|`template-gui.uncategorized.lore`|`string list`|The lore of the uncategorized button|
 
 #### Example
 ```yaml
@@ -96,8 +101,18 @@ template-gui:
   rows: 4
   cancel:
     item: barrier
-    position: 31
+    position: 27
     name: "&cCancel"
+    lore:
+      - "&7Cancel your observation"
+  uncategorized:
+    item: oak_sign
+    position: 35
+    name: '&7Uncategorized Observation'
+    lore:
+      - '&fMake a custom observation without a template.'
+      - ''
+      - '&8&oThis can also be done with &7&o/observe <observation>'
 ```
 
 ### Templates
@@ -108,8 +123,8 @@ There are 5 observation categories supported by the plugin: `ANALOGY`, `COMPARAT
 |`templates.<category>.gui.item`|`Minecraft material`|The item to use for this category in the GUI|
 |`templates.<category>.gui.position`|`integer`|The position of the category's item|
 |`templates.<category>.gui.name`|`string`|The name of the category's item|
-|`templates.<category>.gui.lore`|`list of strings`|The lore of the category's item|
-|`templates.<category>.prompts`|`list of prompts`|A list of prompts|
+|`templates.<category>.gui.lore`|`string list`|The lore of the category's item|
+|`templates.<category>.prompts`|`prompt list`|A list of prompts|
 
 Each prompt has the prompt itself and a list of world-specific fill-ins for the prompt.
 Within the `prompt`, a fill-in is notated via `{}`. A prompt can have as many fill-ins as you'd like.
