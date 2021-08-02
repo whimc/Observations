@@ -116,7 +116,7 @@ template-gui:
 ```
 
 ### Templates
-There are 5 observation categories supported by the plugin: `ANALOGY`, `COMPARATIVE`, `DESCRIPTIVE`, `FACTUAL`, and `INFERENCE`
+There are 5 observation categories supported by the plugin: `ANALOGY`, `COMPARATIVE`, `DESCRIPTIVE`, `INFERENCE`, and `QUESTION`
 
 | Key | Type | Description |
 |---|---|---|

@@ -263,9 +263,9 @@ public class TemplateSelection implements Listener {
             };
 
             builder.append(createComponent(
-                    "&a&l" + CHECK + " Confirm",
-                    "&aClick to submit your observation!",
-                    confirmCallback))
+                            "&a&l" + CHECK + " Confirm",
+                            "&aClick to submit your observation!",
+                            confirmCallback))
                     .append("  ");
         }
 

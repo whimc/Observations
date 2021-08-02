@@ -1,6 +1,6 @@
 # ###############################
 # The observation types are:
-# ANALOGY, COMPARATIVE, DESCRIPTIVE, FACTUAL, INFERENCE
+# ANALOGY, COMPARATIVE, DESCRIPTIVE, INFERENCE, QUESTION
 # ##############################
 
 debug: false
@@ -35,7 +35,7 @@ templates:
   ANALOGY:
     gui:
       item: green_concrete
-      position: 9
+      position: 10
       name: '&aAnalogy Observation'
       lore:
       - '&fComparing natural phenomena with another similar structure or object.'
@@ -58,7 +58,7 @@ templates:
   COMPARATIVE:
     gui:
       item: blue_concrete
-      position: 11
+      position: 12
       name: '&bComparative Observation'
       lore:
       - '&fComparing one natural phenomena to another; expectations are violated.'
@@ -80,7 +80,7 @@ templates:
   DESCRIPTIVE:
     gui:
       item: orange_concrete
-      position: 13
+      position: 14
       name: '&6Descriptive Observation'
       lore:
       - '&fRelated to color, temperature, quantity, and other physical attributes.'
@@ -117,29 +117,10 @@ templates:
           - missing
           - low
           - high
-  FACTUAL:
-    gui:
-      item: purple_concrete
-      position: 15
-      name: '&9Factual Observation'
-      lore:
-      - '&fNoun statements without elaborations.'
-      - ''
-      - '&7Example:'
-      - '  &f&oThere are animals.'
-    description: Noun statements without elaborations.
-    prompts:
-    - prompt: There is/are &7{}&r.
-      worlds:
-        world:
-          0:
-          - animals
-          - vegetables
-          - mountains
   INFERENCE:
     gui:
       item: pink_concrete
-      position: 17
+      position: 16
       name: '&dInference Observation'
       lore:
       - '&fA hypothesis or explanation is proposed.'
@@ -156,3 +137,27 @@ templates:
           1:
           - the sun provides nutrients
           - the temperatures are too cold to sustain life
+  QUESTION:
+    gui:
+      item: writable_book
+      position: 31
+      name: '&9Ask a question'
+      lore:
+        - '&fAsk a question about your environment.'
+        - ''
+        - '&7Example:'
+        - '  &f&oWhat if the moon were smaller.'
+    description: Ask a question about your environment.
+    prompts:
+      - prompt: What if &7{}&r?
+        worlds:
+          world:
+            0:
+              - the moon were smaller
+              - the earth spun slower
+      - prompt: Why &7{}&r?
+        worlds: {}
+      - prompt: How &7{}&r?
+        worlds: {}
+      - prompt: When &7{}&r?
+        worlds: {}

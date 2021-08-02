@@ -10,9 +10,9 @@ public enum ObservationType {
 
     DESCRIPTIVE,
 
-    FACTUAL,
-
     INFERENCE,
+
+    QUESTION,
     ;
 
     @Override
