@@ -41,8 +41,8 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
                 "  &8\"&f&l" + observation + "&8\"");
 
         // Call custom event
-		ObserveEvent observeEvent = new ObserveEvent(obs, player);
-		Bukkit.getServer().getPluginManager().callEvent(observeEvent);
+        ObserveEvent observeEvent = new ObserveEvent(obs, player);
+        Bukkit.getServer().getPluginManager().callEvent(observeEvent);
     }
 
     @Override

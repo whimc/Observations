@@ -11,8 +11,8 @@ public class ObserveEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Observation observation;
-    private Player player;
+    private final Observation observation;
+    private final Player player;
 
     public ObserveEvent(Observation observation, Player player) {
         this.observation = observation;
