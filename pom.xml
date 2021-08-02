@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
-	<artifactId>WHIMC-ObservationDisplayer</artifactId>
-	<version>1.4.8</version>
-	<name>WHIMC ObservationDisplayer</name>
+	<artifactId>WHIMC-Observations</artifactId>
+	<version>2.1.0</version>
+	<name>WHIMC Observations</name>
 	<description>Create holographic observations in worlds</description>
 
 	<repositories>
@@ -23,6 +23,11 @@
 		<repository>
 			<id>elmakers-repo</id>
 			<url>https://maven.elmakers.com/repository/</url>
+		</repository>
+		<!-- Maven repo for ProtocolLib -->
+		<repository>
+			<id>dmulloy2-repo</id>
+			<url>https://repo.dmulloy2.net/repository/public/</url>
 		</repository>
 	</repositories>
 
@@ -48,25 +53,21 @@
 			<version>3.6.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Add ProtocolLib to the build-->
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>4.7.0</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<!-- Import github release plugin -->
-	<pluginRepositories>
-		<pluginRepository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>bintray-cy6ergn0m-maven</id>
-			<name>bintray-plugins</name>
-			<url>http://dl.bintray.com/cy6ergn0m/maven</url>
-		</pluginRepository>
-	</pluginRepositories>
-	
 	<!-- Repo for plugin -->
 	<scm>
 		<connection>scm:git:git@github.com:whimc/Observation-Displayer.git</connection>
@@ -85,12 +86,18 @@
 		<!-- Github release settings -->
 		<plugins>
 			<plugin>
-				<groupId>cy.github</groupId>
+				<groupId>de.jutzig</groupId>
 				<artifactId>github-release-plugin</artifactId>
-				<version>0.5.1</version>
-
+				<version>1.1.1</version>
 				<configuration>
-					<releaseTitle>${project.artifactId}-${project.version}</releaseTitle>
+					<description>Release for v${project.version}</description>
+					<releaseName>${project.artifactId}-${project.version}</releaseName>
+					<tag>${project.version}</tag>
+					<fileSets>
+						<fileSet>
+							<directory>${project.build.directory}</directory>
+						</fileSet>
+					</fileSets>
 				</configuration>
 			</plugin>
 		</plugins>
