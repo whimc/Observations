@@ -9,12 +9,11 @@ import edu.whimc.observations.utils.Utils;
 import edu.whimc.observations.utils.sql.Queryer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Observations extends JavaPlugin implements CommandExecutor {
+public class Observations extends JavaPlugin {
 
     public static final String PERM_PREFIX = "whimc-observations";
 
