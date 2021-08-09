@@ -19,6 +19,11 @@
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
+		<!-- Elmakers repo for Quests -->
+		<repository>
+			<id>elmakers-repo</id>
+			<url>https://maven.elmakers.com/repository/</url>
+		</repository>
 		<!-- Maven repo for ProtocolLib -->
 		<repository>
 			<id>dmulloy2-repo</id>
@@ -39,6 +44,13 @@
 			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
 			<artifactId>holographicdisplays-api</artifactId>
 			<version>2.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Add Quests to the build -->
+		<dependency>
+			<groupId>me.blackvein.quests</groupId>
+			<artifactId>quests</artifactId>
+			<version>3.6.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Add ProtocolLib to the build-->

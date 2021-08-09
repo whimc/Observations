@@ -7,6 +7,7 @@ main: edu.whimc.observations.Observations
 load: POSTWORLD
 depend: [HolographicDisplays, ProtocolLib]
 softdepend: [Multiverse-Core]
+loadbefore: [Quests]
 commands:
   observe:
     description: Create an observation
