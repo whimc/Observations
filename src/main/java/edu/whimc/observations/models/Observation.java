@@ -86,14 +86,17 @@ public class Observation {
     public static void startExpiredObservationScanningTask(Observations plugin) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             Utils.debug("Scanning for expired observations...");
-            long count = observations.stream()
+            List<Observation> toRemove = observations.stream()
                     .filter(Observation::hasExpired)
                     .filter(v -> !v.isTemporary())
-                    .peek(Observation::deleteObservation)
-                    .count();
+                    .collect(Collectors.toList());
+
+            int count = toRemove.size();
+            toRemove.forEach(observation -> observation.deleteObservation());
+
             if (count > 0) {
                 plugin.getQueryer().makeExpiredObservationsInactive(dbCount -> {
-                    Utils.debug("Removed " + count + " expired observation(s). (" + dbCount + ") from database");
+                    Utils.debug("Removed " + count + " expired observation(s). (" + dbCount + " from the database)");
                 });
             }
         }, 20 * 60, 20 * 60);
