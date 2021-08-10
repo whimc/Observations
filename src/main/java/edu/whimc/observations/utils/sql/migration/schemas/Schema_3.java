@@ -6,20 +6,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Schema_2 extends SchemaVersion {
+public class Schema_3 extends SchemaVersion {
 
-    private static final String ADD_CATEGORY =
-            "ALTER TABLE whimc_observations ADD COLUMN category VARCHAR(64);";
+    private static final String REMOVE_FACTUAL =
+            "UPDATE whimc_observations SET category = CASE category WHEN 'FACTUAL' THEN NULL ELSE category END;";
 
-    public Schema_2() {
-        super(2, new Schema_3());
+    public Schema_3() {
+        super(3, null);
     }
 
     @Override
     protected void migrateRoutine(Connection connection) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(ADD_CATEGORY)) {
+        try (PreparedStatement statement = connection.prepareStatement(REMOVE_FACTUAL)) {
             statement.execute();
         }
     }
-
 }
