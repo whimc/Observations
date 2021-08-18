@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 public class MySQLConnection {
 
-    public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
     public static final String URL_TEMPLATE = "jdbc:mysql://%s:%s/%s";
 
     private Connection connection;
@@ -48,10 +47,8 @@ public class MySQLConnection {
             if (this.connection != null && !this.connection.isClosed()) {
                 return this.connection;
             }
-
-            Class.forName(DRIVER_CLASS);
             this.connection = DriverManager.getConnection(this.url, this.username, this.password);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException ignored) {
             return null;
         }
 
