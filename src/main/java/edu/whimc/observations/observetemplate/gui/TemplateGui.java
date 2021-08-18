@@ -8,7 +8,6 @@ import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
