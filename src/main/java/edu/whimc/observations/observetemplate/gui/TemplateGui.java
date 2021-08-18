@@ -62,18 +62,8 @@ public final class TemplateGui implements Listener {
         this.inventoryName = getString(Path.INVENTORY_NAME);
         this.inventorySize = 9 * getInt(Path.INVENTORY_ROWS);
 
-        this.fillerItem = new ItemStack(Material.matchMaterial(getString(Path.FILLER_ITEM)));
+        this.fillerItem = new ItemStack(getMaterial(Path.FILLER_ITEM));
         setName(this.fillerItem, " ");
-
-        this.cancelItem = new ItemStack(Material.matchMaterial(getString(Path.CANCEL_ITEM)));
-        this.cancelPosition = getInt(Path.CANCEL_POSITION);
-        setName(this.cancelItem, getString(Path.CANCEL_NAME));
-        setLore(this.cancelItem, getStringList(Path.CANCEL_LORE));
-
-        this.uncategorizedItem = new ItemStack(Material.matchMaterial(getString(Path.UNCATEGORIZED_ITEM)));
-        this.uncategorizedPosition = getInt(Path.UNCATEGORIZED_POSITION);
-        setName(this.uncategorizedItem, getString(Path.UNCATEGORIZED_NAME));
-        setLore(this.uncategorizedItem, getStringList(Path.UNCATEGORIZED_LORE));
 
         this.inventory = Bukkit.createInventory(null, this.inventorySize, Utils.color(this.inventoryName));
 
@@ -82,38 +72,57 @@ public final class TemplateGui implements Listener {
             this.inventory.setItem(slot, this.fillerItem);
         }
 
-        // Add cancel item
-        this.inventory.setItem(this.cancelPosition, this.cancelItem);
-        setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+        if (getBoolean(Path.CANCEL_ENABLED)) {
+            this.cancelItem = new ItemStack(getMaterial(Path.CANCEL_ITEM));
+            this.cancelPosition = getInt(Path.CANCEL_POSITION);
+            setName(this.cancelItem, getString(Path.CANCEL_NAME));
+            setLore(this.cancelItem, getStringList(Path.CANCEL_LORE));
 
-        // Add uncategorized observation item
-        this.inventory.setItem(this.uncategorizedPosition, this.uncategorizedItem);
-        setAction(this.uncategorizedPosition, p -> {
-                    if (!p.hasPermission(ObserveCommand.FREE_HAND_PERM)) {
-                        Utils.msg(p,
-                                "&cYou do not have the required permission!",
-                                "  &f&o" + ObserveCommand.FREE_HAND_PERM);
-                        return;
+            // Add inventory item and action
+            this.inventory.setItem(this.cancelPosition, this.cancelItem);
+            setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+        }
+
+        if (getBoolean(Path.UNCATEGORIZED_ENABLED)) {
+            this.uncategorizedItem = new ItemStack(getMaterial(Path.UNCATEGORIZED_ITEM));
+            this.uncategorizedPosition = getInt(Path.UNCATEGORIZED_POSITION);
+            setName(this.uncategorizedItem, getString(Path.UNCATEGORIZED_NAME));
+            setLore(this.uncategorizedItem, getStringList(Path.UNCATEGORIZED_LORE));
+
+            // Add inventory item and action
+            this.inventory.setItem(this.uncategorizedPosition, this.uncategorizedItem);
+            setAction(this.uncategorizedPosition, p -> {
+                        if (!p.hasPermission(ObserveCommand.FREE_HAND_PERM)) {
+                            Utils.msg(p,
+                                    "&cYou do not have the required permission!",
+                                    "  &f&o" + ObserveCommand.FREE_HAND_PERM);
+                            return;
+                        }
+
+                        plugin.getSignMenuFactory()
+                                .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your Observation"))
+                                .reopenIfFail(false)
+                                .response((signPlayer, strings) -> {
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                    if (response.isEmpty()) {
+                                        return false;
+                                    }
+                                    ObserveCommand.makeObservation(this.plugin, response, signPlayer);
+                                    return true;
+                                })
+                                .open(p);
                     }
-
-                    plugin.getSignMenuFactory()
-                            .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your Observation"))
-                            .reopenIfFail(false)
-                            .response((signPlayer, strings) -> {
-                                String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
-                                if (response.isEmpty()) {
-                                    return false;
-                                }
-                                ObserveCommand.makeObservation(this.plugin, response, signPlayer);
-                                return true;
-                            })
-                            .open(p);
-                }
-        );
+            );
+        }
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
             ObservationTemplate template = this.manager.getTemplate(type);
+
+            // Ignored disabled types
+            if (!template.isGuiEnabled()) {
+                continue;
+            }
 
             ItemStack item = new ItemStack(template.getGuiItem());
             setName(item, template.getGuiItemName());
@@ -191,12 +200,34 @@ public final class TemplateGui implements Listener {
         item.setItemMeta(meta);
     }
 
+    /**
+     * Get a material from its name. If a material can't be found, a warning is logged and STONE is returned.
+     *
+     * @param path The config path to the name of the material.
+     * @return The matched material or STONE if not found.
+     */
+    public Material getMaterial(Path path) {
+        String materialName = getString(path);
+        Material material = Material.matchMaterial(materialName);
+        if (material == null) {
+            this.plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName +
+                    "&c'! replacing with STONE."));
+            return Material.STONE;
+        }
+
+        return material;
+    }
+
     public String getString(Path path) {
         return this.plugin.getConfig().getString(Path.ROOT.getPath() + path.getPath());
     }
 
     public List<String> getStringList(Path path) {
         return this.plugin.getConfig().getStringList(Path.ROOT.getPath() + path.getPath());
+    }
+
+    public boolean getBoolean(Path path) {
+        return this.plugin.getConfig().getBoolean(Path.ROOT.getPath() + path.getPath());
     }
 
     public int getInt(Path path) {
@@ -212,11 +243,13 @@ public final class TemplateGui implements Listener {
         INVENTORY_NAME("inventory-name"),
         INVENTORY_ROWS("rows"),
 
+        CANCEL_ENABLED("cancel.enabled"),
         CANCEL_ITEM("cancel.item"),
         CANCEL_POSITION("cancel.position"),
         CANCEL_NAME("cancel.name"),
         CANCEL_LORE("cancel.lore"),
 
+        UNCATEGORIZED_ENABLED("uncategorized.enabled"),
         UNCATEGORIZED_ITEM("uncategorized.item"),
         UNCATEGORIZED_POSITION("uncategorized.position"),
         UNCATEGORIZED_NAME("uncategorized.name"),

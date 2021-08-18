@@ -16,6 +16,8 @@ public class ObservationTemplate {
 
     private final ObservationType type;
 
+    private final boolean guiEnabled;
+
     private final Material guiItem;
 
     private final String guiItemName;
@@ -36,6 +38,7 @@ public class ObservationTemplate {
         FileConfiguration config = plugin.getConfig();
         String pathPrefix = "templates." + type.name() + ".gui.";
 
+        this.guiEnabled = config.getBoolean(pathPrefix + "enabled", true);
         this.guiItem = Material.matchMaterial(config.getString(pathPrefix + "item"));
         this.guiItemName = config.getString(pathPrefix + "name");
         this.guiPosition = config.getInt(pathPrefix + "position");
@@ -48,6 +51,10 @@ public class ObservationTemplate {
 
     public ObservationType getType() {
         return this.type;
+    }
+
+    public boolean isGuiEnabled() {
+        return this.guiEnabled;
     }
 
     public Material getGuiItem() {
