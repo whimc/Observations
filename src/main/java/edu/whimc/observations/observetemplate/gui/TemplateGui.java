@@ -200,38 +200,24 @@ public final class TemplateGui implements Listener {
         item.setItemMeta(meta);
     }
 
-    /**
-     * Get a material from its name. If a material can't be found, a warning is logged and STONE is returned.
-     *
-     * @param path The config path to the name of the material.
-     * @return The matched material or STONE if not found.
-     */
     public Material getMaterial(Path path) {
-        String materialName = getString(path);
-        Material material = Material.matchMaterial(materialName);
-        if (material == null) {
-            this.plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName +
-                    "&c'! replacing with STONE."));
-            return Material.STONE;
-        }
-
-        return material;
+        return Utils.matchMaterial(this.plugin, getString(path), Material.STONE);
     }
 
     public String getString(Path path) {
-        return this.plugin.getConfig().getString(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getString(path.getPath());
     }
 
     public List<String> getStringList(Path path) {
-        return this.plugin.getConfig().getStringList(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getStringList(path.getPath());
     }
 
     public boolean getBoolean(Path path) {
-        return this.plugin.getConfig().getBoolean(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getBoolean(path.getPath());
     }
 
     public int getInt(Path path) {
-        return this.plugin.getConfig().getInt(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getInt(path.getPath());
     }
 
     private enum Path {
@@ -263,7 +249,7 @@ public final class TemplateGui implements Listener {
         }
 
         public String getPath() {
-            return this.path;
+            return ROOT.path + this.path;
         }
 
     }

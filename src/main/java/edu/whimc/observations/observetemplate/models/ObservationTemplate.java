@@ -39,7 +39,7 @@ public class ObservationTemplate {
         String pathPrefix = "templates." + type.name() + ".gui.";
 
         this.guiEnabled = config.getBoolean(pathPrefix + "enabled", true);
-        this.guiItem = Material.matchMaterial(config.getString(pathPrefix + "item"));
+        this.guiItem = Utils.matchMaterial(plugin, config.getString(pathPrefix + "item"), Material.STONE);
         this.guiItemName = config.getString(pathPrefix + "name");
         this.guiPosition = config.getInt(pathPrefix + "position");
         this.guiLore = config.getStringList(pathPrefix + "lore");
