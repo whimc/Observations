@@ -42,7 +42,7 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
 
         // Call custom event
         ObserveEvent observeEvent = new ObserveEvent(obs, player);
-        Bukkit.getServer().getPluginManager().callEvent(observeEvent);
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
     }
 
     @Override
