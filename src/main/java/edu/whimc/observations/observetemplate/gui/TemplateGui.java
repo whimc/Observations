@@ -96,8 +96,9 @@ public final class TemplateGui implements Listener {
                         return;
                     }
 
-                    plugin.getSignMenuFactory()
-                            .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your Observation"))
+                    String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "&f&nYour Observation");
+                    this.plugin.getSignMenuFactory()
+                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
                             .reopenIfFail(false)
                             .response((signPlayer, strings) -> {
                                 String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();

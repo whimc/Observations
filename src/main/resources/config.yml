@@ -13,6 +13,10 @@ mysql:
   password: pass
 
 template-gui:
+  text:
+    write-your-own-response: "Write your own response"
+    uncategorized-sign-header: "&f&nYour Observation"
+    custom-response-sign-header: "&f&nYour Response"
   filler-item: white_stained_glass_pane
   inventory-name: "&lChoose an observation type!"
   rows: 4
