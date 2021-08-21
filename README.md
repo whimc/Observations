@@ -84,10 +84,12 @@ mysql:
 |`template-gui.filler-item`|`Minecraft material`|The item to use for filler spaces in the GUI|
 |`template-gui.inventory-name`|`string`|The name of the inventory used for the GUI|
 |`template-gui.rows`|`integer`|The number of rows that will be in the GUI (Range [1-6])|
+|`template-gui.cancel.enabled`|`boolean` _(Optional, default `true`)_|Whether or not to show this item in the GUI _(default `true`)_|
 |`template-gui.cancel.item`|`Minecraft material`|The item to use for the cancel button|
 |`template-gui.cancel.position`|`integer`|The position of the cancel button|
 |`template-gui.cancel.name`|`string`|The text to display for the cancel button|
 |`template-gui.cancel.lore`|`string list`|The lore of the cancel button|
+|`template-gui.uncategorized.enabled`|`boolean` _(Optional, default `true`)_|Whether or not to show this item in the GUI _(default `true`)_|
 |`template-gui.uncategorized.item`|`Minecraft material`|The item to use for the uncategorized observation button|
 |`template-gui.uncategorized.position`|`integer`|The position of the uncategorized button|
 |`template-gui.uncategorized.name`|`string`|The text to display for the uncategorized button|
@@ -100,12 +102,14 @@ template-gui:
   inventory-name: "&lChoose an observation type!"
   rows: 4
   cancel:
+    enabled: true
     item: barrier
     position: 27
     name: "&cCancel"
     lore:
       - "&7Cancel your observation"
   uncategorized:
+    enabled: true
     item: oak_sign
     position: 35
     name: '&7Uncategorized Observation'
@@ -120,6 +124,7 @@ There are 5 observation categories supported by the plugin: `ANALOGY`, `COMPARAT
 
 | Key | Type | Description |
 |---|---|---|
+|`templates.<category>.gui.enabled`|`boolean` _(Optional, default `true`)_|Whether or not to show this item in the GUI |
 |`templates.<category>.gui.item`|`Minecraft material`|The item to use for this category in the GUI|
 |`templates.<category>.gui.position`|`integer`|The position of the category's item|
 |`templates.<category>.gui.name`|`string`|The name of the category's item|
@@ -152,6 +157,7 @@ You'll use the index of each `{}` to configure the fill-ins for that prompt in a
 templates:
   DESCRIPTIVE:
     gui:
+      enabled: true
       item: orange_concrete
       position: 13
       name: '&6Descriptive Observation'

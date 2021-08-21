@@ -1,11 +1,9 @@
 package edu.whimc.observations.utils;
 
+import edu.whimc.observations.Observations;
 import edu.whimc.observations.models.Observation;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 
 import java.sql.Timestamp;
@@ -22,12 +20,10 @@ import java.util.stream.Stream;
 
 public class Utils {
 
+    private static final String PREFIX = "&8&l[&9&lObservations&8&l]&r ";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d yyyy, h:mm a z");
     private static boolean debug = false;
     private static String debugPrefix = "[Observations] ";
-
-    private static final String PREFIX = "&8&l[&9&lObservations&8&l]&r ";
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d yyyy, h:mm a z");
 
     public static void setDebug(boolean shouldDebug) {
         debug = shouldDebug;
@@ -219,6 +215,16 @@ public class Utils {
         }
 
         return res;
+    }
+
+    public static Material matchMaterial(Observations plugin, String materialName, Material fallback) {
+        Material material = Material.matchMaterial(materialName);
+        if (material == null) {
+            plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName + "&c'! replacing with STONE."));
+            return fallback;
+        }
+
+        return material;
     }
 
 }

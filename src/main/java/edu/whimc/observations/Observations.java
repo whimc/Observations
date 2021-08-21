@@ -24,8 +24,6 @@ public class Observations extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getConfig().options().copyDefaults(true);
-        saveConfig();
         Utils.setDebug(getConfig().getBoolean("debug"));
 
         this.queryer = new Queryer(this, q -> {
