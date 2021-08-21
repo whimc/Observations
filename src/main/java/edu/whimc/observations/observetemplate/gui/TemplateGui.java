@@ -61,18 +61,8 @@ public final class TemplateGui implements Listener {
         this.inventoryName = getString(Path.INVENTORY_NAME);
         this.inventorySize = 9 * getInt(Path.INVENTORY_ROWS);
 
-        this.fillerItem = new ItemStack(Material.matchMaterial(getString(Path.FILLER_ITEM)));
+        this.fillerItem = new ItemStack(getMaterial(Path.FILLER_ITEM));
         setName(this.fillerItem, " ");
-
-        this.cancelItem = new ItemStack(Material.matchMaterial(getString(Path.CANCEL_ITEM)));
-        this.cancelPosition = getInt(Path.CANCEL_POSITION);
-        setName(this.cancelItem, getString(Path.CANCEL_NAME));
-        setLore(this.cancelItem, getStringList(Path.CANCEL_LORE));
-
-        this.uncategorizedItem = new ItemStack(Material.matchMaterial(getString(Path.UNCATEGORIZED_ITEM)));
-        this.uncategorizedPosition = getInt(Path.UNCATEGORIZED_POSITION);
-        setName(this.uncategorizedItem, getString(Path.UNCATEGORIZED_NAME));
-        setLore(this.uncategorizedItem, getStringList(Path.UNCATEGORIZED_LORE));
 
         this.inventory = Bukkit.createInventory(null, this.inventorySize, Utils.color(this.inventoryName));
 
@@ -81,39 +71,58 @@ public final class TemplateGui implements Listener {
             this.inventory.setItem(slot, this.fillerItem);
         }
 
-        // Add cancel item
-        this.inventory.setItem(this.cancelPosition, this.cancelItem);
-        setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+        if (getBoolean(Path.CANCEL_ENABLED)) {
+            this.cancelItem = new ItemStack(getMaterial(Path.CANCEL_ITEM));
+            this.cancelPosition = getInt(Path.CANCEL_POSITION);
+            setName(this.cancelItem, getString(Path.CANCEL_NAME));
+            setLore(this.cancelItem, getStringList(Path.CANCEL_LORE));
 
-        // Add uncategorized observation item
-        this.inventory.setItem(this.uncategorizedPosition, this.uncategorizedItem);
-        setAction(this.uncategorizedPosition, p -> {
-                    if (!p.hasPermission(ObserveCommand.FREE_HAND_PERM)) {
-                        Utils.msg(p,
-                                "&cYou do not have the required permission!",
-                                "  &f&o" + ObserveCommand.FREE_HAND_PERM);
-                        return;
+            // Add inventory item and action
+            this.inventory.setItem(this.cancelPosition, this.cancelItem);
+            setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+        }
+
+        if (getBoolean(Path.UNCATEGORIZED_ENABLED)) {
+            this.uncategorizedItem = new ItemStack(getMaterial(Path.UNCATEGORIZED_ITEM));
+            this.uncategorizedPosition = getInt(Path.UNCATEGORIZED_POSITION);
+            setName(this.uncategorizedItem, getString(Path.UNCATEGORIZED_NAME));
+            setLore(this.uncategorizedItem, getStringList(Path.UNCATEGORIZED_LORE));
+
+            // Add inventory item and action
+            this.inventory.setItem(this.uncategorizedPosition, this.uncategorizedItem);
+            setAction(this.uncategorizedPosition, p -> {
+                        if (!p.hasPermission(ObserveCommand.FREE_HAND_PERM)) {
+                            Utils.msg(p,
+                                    "&cYou do not have the required permission!",
+                                    "  &f&o" + ObserveCommand.FREE_HAND_PERM);
+                            return;
+                        }
+
+                        String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "&f&nYour Observation");
+                        this.plugin.getSignMenuFactory()
+                                .newMenu(Collections.singletonList(Utils.color(signHeader)))
+                                .reopenIfFail(false)
+                                .response((signPlayer, strings) -> {
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                    if (response.isEmpty()) {
+                                        return false;
+                                    }
+                                    ObserveCommand.makeObservation(this.plugin, response, signPlayer);
+                                    return true;
+                                })
+                                .open(p);
                     }
-
-                    String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "&f&nYour Observation");
-                    this.plugin.getSignMenuFactory()
-                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
-                            .reopenIfFail(false)
-                            .response((signPlayer, strings) -> {
-                                String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
-                                if (response.isEmpty()) {
-                                    return false;
-                                }
-                                ObserveCommand.makeObservation(this.plugin, response, signPlayer);
-                                return true;
-                            })
-                            .open(p);
-                }
-        );
+            );
+        }
 
         // Add template-specific items
         for (ObservationType type : ObservationType.values()) {
             ObservationTemplate template = this.manager.getTemplate(type);
+
+            // Ignored disabled types
+            if (!template.isGuiEnabled()) {
+                continue;
+            }
 
             ItemStack item = new ItemStack(template.getGuiItem());
             setName(item, template.getGuiItemName());
@@ -191,16 +200,24 @@ public final class TemplateGui implements Listener {
         item.setItemMeta(meta);
     }
 
+    public Material getMaterial(Path path) {
+        return Utils.matchMaterial(this.plugin, getString(path), Material.STONE);
+    }
+
     public String getString(Path path) {
-        return this.plugin.getConfig().getString(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getString(path.getPath());
     }
 
     public List<String> getStringList(Path path) {
-        return this.plugin.getConfig().getStringList(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getStringList(path.getPath());
+    }
+
+    public boolean getBoolean(Path path) {
+        return this.plugin.getConfig().getBoolean(path.getPath());
     }
 
     public int getInt(Path path) {
-        return this.plugin.getConfig().getInt(Path.ROOT.getPath() + path.getPath());
+        return this.plugin.getConfig().getInt(path.getPath());
     }
 
     private enum Path {
@@ -212,11 +229,13 @@ public final class TemplateGui implements Listener {
         INVENTORY_NAME("inventory-name"),
         INVENTORY_ROWS("rows"),
 
+        CANCEL_ENABLED("cancel.enabled"),
         CANCEL_ITEM("cancel.item"),
         CANCEL_POSITION("cancel.position"),
         CANCEL_NAME("cancel.name"),
         CANCEL_LORE("cancel.lore"),
 
+        UNCATEGORIZED_ENABLED("uncategorized.enabled"),
         UNCATEGORIZED_ITEM("uncategorized.item"),
         UNCATEGORIZED_POSITION("uncategorized.position"),
         UNCATEGORIZED_NAME("uncategorized.name"),
@@ -230,7 +249,7 @@ public final class TemplateGui implements Listener {
         }
 
         public String getPath() {
-            return this.path;
+            return ROOT.path + this.path;
         }
 
     }
