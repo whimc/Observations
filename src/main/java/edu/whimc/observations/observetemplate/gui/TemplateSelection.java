@@ -14,7 +14,6 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,46 +29,33 @@ import java.util.regex.Pattern;
 
 public class TemplateSelection implements Listener {
 
+    /* Unicode for check character */
     private static final String CHECK = "\u2714";
-
+    /* Unicode for cross (X) character */
     private static final String CROSS = "\u274C";
-
+    /* Unicode for bullet character */
     private static final String BULLET = "\u2022";
-    /**
-     * Selections that are currently happening.
-     */
+
+    /* Selections that are currently happening */
     private static final Map<UUID, TemplateSelection> ongoingSelections = new HashMap<>();
-    /**
-     * Instance of main class.
-     */
+
+    /* Instance of main class */
     private final Observations plugin;
-    /**
-     * Used to create clickable messages with callbacks.
-     */
+    /* Used to create clickable messages with callbacks */
     private final SpigotCallback spigotCallback;
-    /**
-     * The selected template to fill out.
-     */
+    /* The selected template to fill out */
     private final ObservationTemplate template;
-    /**
-     * The UUID of the player making the selection.
-     */
+    /* The UUID of the player making the selection */
     private final UUID uuid;
-    /**
-     * The current responses that have been chosen
-     */
+    /* The current responses that have been chosen */
     private final List<String> responses = new ArrayList<>();
-    /**
-     * The selected prompt from the template.
-     */
+
+
+    /* The selected prompt from the template */
     private ObservationPrompt prompt = null;
-    /**
-     * The stage of the selection.
-     */
+    /* The stage of the selection */
     private TemplateSelectionStage stage;
-    /**
-     * The response index that is being selected.
-     */
+    /* The response index that is being selected */
     private int responseIndex = 0;
 
     public TemplateSelection(Observations plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
@@ -159,14 +145,18 @@ public class TemplateSelection implements Listener {
                     p -> addResponseAndAdvanceStage.accept(response)
             );
         }
+
         // Send component for custom input if they have permission
         if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
+            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
+            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
+
             sendComponent(
                     player,
-                    "&8" + BULLET + " &7Write your own response",
+                    "&8" + BULLET + template.getColor() + " " + customResponse,
                     "&aClick here to write your own response!",
                     p -> this.plugin.getSignMenuFactory()
-                            .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your response"))
+                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
                             .reopenIfFail(true)
                             .response((signPlayer, strings) -> {
                                 String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();

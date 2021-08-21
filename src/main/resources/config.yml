@@ -13,16 +13,22 @@ mysql:
   password: pass
 
 template-gui:
+  text:
+    write-your-own-response: "Write your own response"
+    custom-response-sign-header: "&f&nYour Response"
+    uncategorized-sign-header: "&f&nYour Observation"
   filler-item: white_stained_glass_pane
   inventory-name: "&lChoose an observation type!"
   rows: 4
   cancel:
+    enabled: true
     item: barrier
     position: 27
     name: "&cCancel"
     lore:
       - "&7Cancel your observation"
   uncategorized:
+    enabled: true
     item: oak_sign
     position: 35
     name: '&7Uncategorized Observation'
@@ -34,6 +40,7 @@ template-gui:
 templates:
   ANALOGY:
     gui:
+      enabled: true
       item: green_concrete
       position: 10
       name: '&aAnalogy Observation'
@@ -57,6 +64,7 @@ templates:
           - something split (oreo?)
   COMPARATIVE:
     gui:
+      enabled: true
       item: blue_concrete
       position: 12
       name: '&bComparative Observation'
@@ -79,6 +87,7 @@ templates:
           - different colored than Earth
   DESCRIPTIVE:
     gui:
+      enabled: true
       item: orange_concrete
       position: 14
       name: '&6Descriptive Observation'
@@ -119,6 +128,7 @@ templates:
           - high
   INFERENCE:
     gui:
+      enabled: true
       item: pink_concrete
       position: 16
       name: '&dInference Observation'
@@ -139,6 +149,7 @@ templates:
           - the temperatures are too cold to sustain life
   QUESTION:
     gui:
+      enabled: true
       item: writable_book
       position: 31
       name: '&9Ask a question'
