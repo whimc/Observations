@@ -81,6 +81,10 @@ mysql:
 ### Template GUI
 | Key | Type | Description |
 |---|---|---|
+|`template-gui.text.write-your-own-response`|`string`|The fill-in option for writing your own response. Unless overridden, the highlight color of the category is automatically applied|
+|`template-gui.text.custom-response-sign-header`|`string`|The sign header when entering a custom response|
+|`template-gui.text.uncategorized-sign-header`|`string`|The sign header when making an uncategorized observation|
+
 |`template-gui.filler-item`|`Minecraft material`|The item to use for filler spaces in the GUI|
 |`template-gui.inventory-name`|`string`|The name of the inventory used for the GUI|
 |`template-gui.rows`|`integer`|The number of rows that will be in the GUI (Range [1-6])|
@@ -98,6 +102,10 @@ mysql:
 #### Example
 ```yaml
 template-gui:
+  text:
+    write-your-own-response: "Write your own response"
+    custom-response-sign-header: "&f&nYour Response"
+    uncategorized-sign-header: "&f&nYour Observation"
   filler-item: white_stained_glass_pane
   inventory-name: "&lChoose an observation type!"
   rows: 4

@@ -30,9 +30,11 @@ public class TemplateManager {
         this.gui = new TemplateGui(plugin, this);
 
         for (ObservationTemplate template : this.templates.values()) {
-            this.gui.setAction(template.getGuiPosition(), player -> {
-                new TemplateSelection(plugin, this.spigotCallback, player, template);
-            });
+            if (template.isGuiEnabled()) {
+                this.gui.setAction(template.getGuiPosition(), player -> {
+                    new TemplateSelection(plugin, this.spigotCallback, player, template);
+                });
+            }
         }
     }
 

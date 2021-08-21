@@ -8,7 +8,6 @@ import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -99,8 +98,9 @@ public final class TemplateGui implements Listener {
                             return;
                         }
 
-                        plugin.getSignMenuFactory()
-                                .newMenu(Collections.singletonList(ChatColor.UNDERLINE + "Your Observation"))
+                        String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "&f&nYour Observation");
+                        this.plugin.getSignMenuFactory()
+                                .newMenu(Collections.singletonList(Utils.color(signHeader)))
                                 .reopenIfFail(false)
                                 .response((signPlayer, strings) -> {
                                     String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
