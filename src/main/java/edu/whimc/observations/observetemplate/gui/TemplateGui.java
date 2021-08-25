@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.ChatColor;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -98,12 +99,12 @@ public final class TemplateGui implements Listener {
                             return;
                         }
 
-                        String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "&f&nYour Observation");
+                        String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "");
                         this.plugin.getSignMenuFactory()
                                 .newMenu(Collections.singletonList(Utils.color(signHeader)))
                                 .reopenIfFail(false)
                                 .response((signPlayer, strings) -> {
-                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), ' ').trim();
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
                                     if (response.isEmpty()) {
                                         return false;
                                     }
