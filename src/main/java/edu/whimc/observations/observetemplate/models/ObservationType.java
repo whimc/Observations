@@ -4,10 +4,12 @@ import org.apache.commons.lang.StringUtils;
 
 public enum ObservationType {
 
-    DESCRIPTIVE,
-
+    ANALOGY,
+    
     COMPARATIVE,
 
+    DESCRIPTIVE,
+    
     INFERENCE,
 
     QUESTION,
