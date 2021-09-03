@@ -5,6 +5,7 @@ import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.libraries.CenteredText;
 import edu.whimc.observations.libraries.SpigotCallback;
 import edu.whimc.observations.models.Observation;
+import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -198,6 +199,15 @@ public class TemplateSelection implements Listener {
             this.responseIndex -= 1;
             doStage(TemplateSelectionStage.SELECT_RESPONSE);
         });
+        
+        // Create observation object for custom event
+        int days = plugin.getConfig().getInt("expiration-days");
+        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
+        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, null);
+        
+        // Call custom event
+        ObserveEvent observeEvent = new ObserveEvent(obs, player);
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
     }
 
     private String getFilledInPrompt() {
