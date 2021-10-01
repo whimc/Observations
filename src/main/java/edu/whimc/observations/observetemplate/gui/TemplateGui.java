@@ -101,7 +101,7 @@ public final class TemplateGui implements Listener {
                                 .newMenu(Collections.singletonList(Utils.color(signHeader)))
                                 .reopenIfFail(false)
                                 .response((signPlayer, strings) -> {
-                                    String response = StringUtils.join(Arrays.copyOfRange(strings,0, strings.length), ' ').trim();
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
                                     if (response.isEmpty()) {
                                         return false;
                                     }

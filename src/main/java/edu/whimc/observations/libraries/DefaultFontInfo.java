@@ -122,7 +122,7 @@ public enum DefaultFontInfo {
 
     public static DefaultFontInfo getDefaultFontInfo(char c) {
         for (DefaultFontInfo dFI : DefaultFontInfo.values()) {
-            if (dFI.getCharacter() == c) return dFI;
+            if (dFI.getCharacter() == c) {return dFI;}
         }
         return DefaultFontInfo.DEFAULT;
     }

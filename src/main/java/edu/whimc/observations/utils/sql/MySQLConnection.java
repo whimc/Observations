@@ -2,7 +2,6 @@ package edu.whimc.observations.utils.sql;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.utils.sql.migration.SchemaManager;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

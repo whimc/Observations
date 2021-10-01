@@ -73,7 +73,8 @@ public class Observations extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Utils.msg(sender, "&cThis plugin is disabled because it was unable to connect to the configured database. " +
+        Utils.msg(sender, "&cThis plugin is disabled because it was unable to connect to the configured database. "
+                +
                 "Please modify the config to ensure the credentials are correct then restart the server.");
         return true;
     }
