@@ -17,8 +17,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.ChatColor;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,7 +25,6 @@ public final class TemplateGui implements Listener {
 
     private final Observations plugin;
     private final TemplateManager manager;
-
 
     private final Map<Integer, Consumer<Player>> slotActions = new HashMap<>();
 
