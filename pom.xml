@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
 	<artifactId>WHIMC-Observations</artifactId>
-	<version>2.4.5</version>
+	<version>2.4.6</version>
 	<name>WHIMC Observations</name>
 	<description>Create holographic observations in worlds</description>
 
@@ -19,10 +19,10 @@
 			<id>codemc-repo</id>
 			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
-		<!-- Elmakers repo for Quests -->
+		<!-- Maven repo for Quests -->
 		<repository>
-			<id>elmakers-repo</id>
-			<url>https://maven.elmakers.com/repository/</url>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 		<!-- Maven repo for ProtocolLib -->
 		<repository>
@@ -48,10 +48,9 @@
 		</dependency>
 		<!-- Add Quests to the build -->
 		<dependency>
-			<groupId>me.blackvein.quests</groupId>
-			<artifactId>quests</artifactId>
-			<version>3.6.2</version>
-			<scope>provided</scope>
+			<groupId>com.github.PikaMug.Quests</groupId>
+			<artifactId>quests-main</artifactId>
+			<version>4.0.8</version>
 		</dependency>
 		<!-- Add ProtocolLib to the build-->
 		<dependency>
