@@ -203,7 +203,7 @@ public class TemplateSelection implements Listener {
         // Create observation object for custom event
         int days = plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, null);
+        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, this.template);
         
         // Call custom event
         ObserveEvent observeEvent = new ObserveEvent(obs, player);
@@ -254,7 +254,7 @@ public class TemplateSelection implements Listener {
                 int days = this.plugin.getConfig().getInt("expiration-days");
                 Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
+                //Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
 
                 Utils.msg(player,
                         "&7Your observation has been placed:",
