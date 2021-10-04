@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public final class CenteredText {
 
-    private final static int CENTER_PX = 158;
+    private static final int CENTER_PX = 158;
 
     public static int getMessagePxSize(String message) {
         int messagePxSize = 0;
@@ -22,8 +22,8 @@ public final class CenteredText {
                 previousCode = false;
                 isBold = c == 'l' || c == 'L';
             } else {
-                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
-                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                DefaultFontInfo dfi = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dfi.getBoldLength() : dfi.getLength();
                 messagePxSize++;
             }
         }

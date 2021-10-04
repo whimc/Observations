@@ -52,9 +52,9 @@ public abstract class AbstractSubCommand {
     }
 
     protected void arguments(String args) {
-        String[] parsed_replaced = parseArgs(args, "[", "]", true);
+        String[] parsedReplaced = parseArgs(args, "[", "]", true);
         String[] parsed = parseArgs(args, "[", "]", false);
-        this.arguments.add(parsed_replaced);
+        this.arguments.add(parsedReplaced);
         this.minArgs = 0;
         for (String arg : parsed) {
             if (arg.startsWith("[") && arg.endsWith("]")) {

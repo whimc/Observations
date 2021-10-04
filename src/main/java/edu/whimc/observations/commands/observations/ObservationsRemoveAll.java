@@ -16,6 +16,7 @@ public class ObservationsRemoveAll extends AbstractSubCommand {
         super.arguments("[-p <player>] [-w <\"world...\">]");
     }
 
+    @SuppressWarnings("checkstyle:LineLength")
     @Override
     protected boolean onCommand(CommandSender sender, String[] args) {
         String player = null;

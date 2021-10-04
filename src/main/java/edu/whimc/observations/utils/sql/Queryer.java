@@ -5,14 +5,19 @@ import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-/**
- * Handles storing position data
+/** Handles storing position data.
  *
  * @author Jack Henhapl
  */
