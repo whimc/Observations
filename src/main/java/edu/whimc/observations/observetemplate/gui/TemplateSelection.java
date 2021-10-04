@@ -9,6 +9,12 @@ import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
@@ -20,12 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 public class TemplateSelection implements Listener {
 
@@ -58,7 +58,8 @@ public class TemplateSelection implements Listener {
     /* The response index that is being selected */
     private int responseIndex = 0;
 
-    public TemplateSelection(Observations plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
+    public TemplateSelection(Observations plugin, SpigotCallback spigotCallback, Player player,
+                             ObservationTemplate template) {
         UUID uuid = player.getUniqueId();
         if (ongoingSelections.containsKey(uuid)) {
             ongoingSelections.get(uuid).destroySelection();
@@ -121,7 +122,8 @@ public class TemplateSelection implements Listener {
         Player player = getPlayer();
         List<String> responses = this.prompt.getResponses(player.getWorld(), this.responseIndex);
         String highlight = this.template.getColor() + "&l";
-        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, highlight + "[&n   " + highlight + "]&r");
+        String filledIn = replaceFirst(getFilledInPrompt(), ObservationPrompt.FILLIN, highlight + "[&n   "
+                + highlight + "]&r");
 
         sendHeader();
         Utils.msgNoPrefix(player, filledIn, "");
@@ -148,8 +150,10 @@ public class TemplateSelection implements Listener {
 
         // Send component for custom input if they have permission
         if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
-            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
-            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
+            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header",
+                    "&f&nYour response");
+            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response",
+                    "Write your own response");
 
             sendComponent(
                     player,
@@ -159,7 +163,8 @@ public class TemplateSelection implements Listener {
                             .newMenu(Collections.singletonList(Utils.color(signHeader)))
                             .reopenIfFail(true)
                             .response((signPlayer, strings) -> {
-                                String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length),
+                                        ' ').trim();
                                 if (response.isEmpty()) {
                                     return false;
                                 }
@@ -202,7 +207,8 @@ public class TemplateSelection implements Listener {
         // Create observation object for custom event
         int days = plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, null);
+        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration,
+                null);
         
         // Call custom event
         ObserveEvent observeEvent = new ObserveEvent(obs, player);
@@ -253,7 +259,8 @@ public class TemplateSelection implements Listener {
                 int days = this.plugin.getConfig().getInt("expiration-days");
                 Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
+                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration,
+                        this.template);
 
                 Utils.msg(player,
                         "&7Your observation has been placed:",

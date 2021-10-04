@@ -1,5 +1,7 @@
 package edu.whimc.observations.libraries;
 
+import java.util.*;
+import java.util.function.Consumer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -8,9 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.Plugin;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 public class SpigotCallback {
 

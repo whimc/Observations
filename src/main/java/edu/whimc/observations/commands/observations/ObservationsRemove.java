@@ -4,9 +4,8 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-
 import java.util.List;
+import org.bukkit.command.CommandSender;
 
 public class ObservationsRemove extends AbstractSubCommand {
 
@@ -19,7 +18,9 @@ public class ObservationsRemove extends AbstractSubCommand {
     @Override
     protected boolean onCommand(CommandSender sender, String[] args) {
         Observation obs = Utils.getObervationWithError(sender, args[0]);
-        if (obs == null) return true;
+        if (obs == null) {
+            return true;
+        }
 
         obs.deleteAndSetInactive(() -> {
             Utils.msg(sender, "&aObservation \"&2" + obs.getId() + "&a\" removed!");

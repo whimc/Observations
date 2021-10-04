@@ -3,15 +3,15 @@ package edu.whimc.observations.commands.observations;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
 public class ObservationsCommand implements CommandExecutor, TabCompleter {
 

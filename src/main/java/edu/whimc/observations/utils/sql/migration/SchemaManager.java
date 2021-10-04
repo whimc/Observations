@@ -2,7 +2,6 @@ package edu.whimc.observations.utils.sql.migration;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.utils.sql.migration.schemas.Schema_1;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

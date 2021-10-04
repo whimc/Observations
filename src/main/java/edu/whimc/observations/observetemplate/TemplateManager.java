@@ -6,7 +6,6 @@ import edu.whimc.observations.observetemplate.gui.TemplateGui;
 import edu.whimc.observations.observetemplate.gui.TemplateSelection;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
-
 import java.util.HashMap;
 import java.util.Map;
 

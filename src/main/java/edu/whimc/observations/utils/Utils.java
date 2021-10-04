@@ -2,10 +2,6 @@ package edu.whimc.observations.utils;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.models.Observation;
-import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.*;
-import org.bukkit.command.CommandSender;
-
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,6 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 
 public class Utils {
 
@@ -35,7 +34,9 @@ public class Utils {
      * @param str Message to print
      */
     public static void debug(String str) {
-        if (!debug) return;
+        if (!debug) {
+            return;
+        }
         Bukkit.getLogger().info(color(debugPrefix + str));
     }
 
@@ -104,8 +105,13 @@ public class Utils {
         }
 
         Utils.msgNoPrefix(sender, "&7&m-----------------&r &9&lObservation List&r &7&m------------------",
-                "  &9Player: " + (player == null ? "&7N/A" : "&8\"&7&o" + player + "&8\"") +
-                        "    &9World: " + (world == null ? "&7N/A" : "&8\"&7&o" + world + "&8\""),
+                "  &9Player: "
+                        + (player == null ? "&7N/A" : "&8\"&7&o"
+                        + player
+                        + "&8\"")
+                        + "    &9World: "
+                        + (world == null ? "&7N/A" : "&8\"&7&o"
+                        + world + "&8\""),
                 "");
 
         List<Observation> matches = Observation.getObservations().stream()
@@ -126,7 +132,9 @@ public class Utils {
         int count = 0;
         boolean ignore = false;
         for (char chr : str.toCharArray()) {
-            if (count >= length) break;
+            if (count >= length) {
+                break;
+            }
             newStr.append(chr);
 
             if (ignore) {
@@ -134,8 +142,12 @@ public class Utils {
                 continue;
             }
 
-            if (chr == ChatColor.COLOR_CHAR) ignore = true;
-            if (chr != ChatColor.COLOR_CHAR && !ignore) count++;
+            if (chr == ChatColor.COLOR_CHAR) {
+                ignore = true;
+            }
+            if (chr != ChatColor.COLOR_CHAR && !ignore) {
+                count++;
+            }
         }
 
         return newStr.toString().replace(ChatColor.COLOR_CHAR, '&');
@@ -220,7 +232,8 @@ public class Utils {
     public static Material matchMaterial(Observations plugin, String materialName, Material fallback) {
         Material material = Material.matchMaterial(materialName);
         if (material == null) {
-            plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName + "&c'! replacing with STONE."));
+            plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName
+                    + "&c'! replacing with STONE."));
             return fallback;
         }
 

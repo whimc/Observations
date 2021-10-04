@@ -4,11 +4,10 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.command.CommandSender;
 
 public class ObservationsReactivate extends AbstractSubCommand {
 
@@ -78,7 +77,8 @@ public class ObservationsReactivate extends AbstractSubCommand {
 
             String formattedStart = Utils.getDate(startTime);
             String formattedEnd = Utils.getDate(endTime);
-            Utils.msg(sender, "&aTemporarily reactivating observations between \"&2" + formattedStart + "&a\" and \"&2" + formattedEnd + "&a\"!");
+            Utils.msg(sender, "&aTemporarily reactivating observations between \"&2" + formattedStart
+                    + "&a\" and \"&2" + formattedEnd + "&a\"!");
             plugin.getQueryer().reactivateObservations(startTime, endTime, count -> {
                 Utils.msg(sender, "&7" + count + " observations reactivated");
             });
@@ -129,7 +129,8 @@ public class ObservationsReactivate extends AbstractSubCommand {
         Utils.msgNoPrefix(sender, "  &7Examples:",
                 "    &7/observations &breactivate &31",
                 "    &7/observations &breactivate &31 100",
-                "    &7/observations &breactivate &7\"&3August 13 1999, 7:00 pm CST&7\" \"&3" + Utils.getDateNow() + "&7\"");
+                "    &7/observations &breactivate &7\"&3August 13 1999, 7:00 pm CST&7\" \"&3"
+                        + Utils.getDateNow() + "&7\"");
     }
 
     @Override

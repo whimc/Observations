@@ -5,12 +5,11 @@ import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
+import java.sql.*;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-
-import java.sql.*;
-import java.util.function.Consumer;
 
 /**
  * Handles storing position data
@@ -23,63 +22,85 @@ public class Queryer {
      * Query for inserting an observation into the database.
      */
     private static final String QUERY_SAVE_OBSERVATION =
-            "INSERT INTO whimc_observations " +
-                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration, category) " +
+            "INSERT INTO whimc_observations "
+                    +
+                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration, category) "
+                    +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * Query for getting all observations from the database.
      */
     private static final String QUERY_GET_ACTIVE_OBSERVATIONS =
-            "SELECT * " +
-                    "FROM whimc_observations " +
+            "SELECT * "
+                    +
+                    "FROM whimc_observations "
+                    +
                     "WHERE active = 1 AND (expiration IS NULL OR (expiration - time > 0))";
 
     /**
      * Query for making an observation inactive.
      */
     private static final String QUERY_MAKE_OBSERVATION_INACTIVE =
-            "UPDATE whimc_observations " +
-                    "SET active=0 " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET active=0 "
+                    +
                     "WHERE rowid=? AND active=1";
 
     private static final String QUERY_MAKE_PLAYER_OBSERVATIONS_INACTIVE =
-            "UPDATE whimc_observations " +
-                    "SET active=0 " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET active=0 "
+                    +
                     "WHERE username=? AND active=1";
 
     private static final String QUERY_MAKE_WORLD_OBSERVATIONS_INACTIVE =
-            "UPDATE whimc_observations " +
-                    "SET active=0 " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET active=0 "
+                    +
                     "WHERE active=1 AND world=?";
     private static final String QUERY_MAKE_OBSERVATIONS_INACTIVE =
-            "UPDATE whimc_observations " +
-                    "SET active=0 " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET active=0 "
+                    +
                     "WHERE username=? AND active=1 AND world=?";
 
     private static final String QUERY_MAKE_EXPIRED_INACTIVE =
-            "UPDATE whimc_observations " +
-                    "SET active=0 " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET active=0 "
+                    +
                     "WHERE ? > expiration";
 
     private static final String QUERY_SET_EXPIRATION =
-            "UPDATE whimc_observations " +
-                    "SET expiration=? " +
+            "UPDATE whimc_observations "
+                    +
+                    "SET expiration=? "
+                    +
                     "WHERE rowid=?";
 
     private static final String QUERY_GET_INACTIVE_ID =
-            "SELECT * " +
-                    "FROM whimc_observations " +
+            "SELECT * "
+                    +
+                    "FROM whimc_observations "
+                    +
                     "WHERE rowid=?";
 
     private static final String QUERY_GET_INACTIVE_RANGE =
-            "SELECT * " +
-                    "FROM whimc_observations " +
+            "SELECT * "
+                    +
+                    "FROM whimc_observations "
+                    +
                     "WHERE rowid BETWEEN ? AND ?";
 
     private static final String QUERY_GET_INACTIVE_TIME =
-            "SELECT * " +
-                    "FROM whimc_observations " +
+            "SELECT * "
+                    +
+                    "FROM whimc_observations "
+                    +
                     "WHERE time BETWEEN ? AND ?";
 
     private final Observations plugin;
@@ -104,7 +125,8 @@ public class Queryer {
      * @throws SQLException
      */
     private PreparedStatement getStatement(Connection connection, Observation obs) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_OBSERVATION, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_OBSERVATION,
+                Statement.RETURN_GENERATED_KEYS);
 
         String category = null;
         if (obs.getTemplate() != null) {
@@ -149,7 +171,8 @@ public class Queryer {
         long expNum = results.getLong("expiration");
         Timestamp expiration = expNum == 0 ? null : new Timestamp(expNum);
         String category = results.getString("category");
-        ObservationTemplate template = category == null ? null : this.plugin.getTemplateManager().getTemplate(ObservationType.valueOf(category));
+        ObservationTemplate template = category == null ? null :
+                this.plugin.getTemplateManager().getTemplate(ObservationType.valueOf(category));
 
         sync(() -> {
             World world = Bukkit.getWorld(worldName);
@@ -159,18 +182,30 @@ public class Queryer {
             }
             Location loc = new Location(world, x, y, z, yaw, pitch);
 
-            Utils.debug("  - " + id +
-                    " | " + timestamp.getTime() +
-                    " | " + name +
-                    " | (" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ")" +
-                    " | " + observation + " | " +
-                    " | " + (expiration == null ? "n/a" : expiration.getTime()));
-            Observation.loadObservation(this.plugin, id, timestamp, name, loc, observation, expiration, template, isTemporary);
+            Utils.debug("  - "
+                    + id
+                    + " | "
+                    + timestamp.getTime()
+                    + " | "
+                    + name
+                    + " | ("
+                    + loc.getBlockX()
+                    + ", "
+                    + loc.getBlockY()
+                    + ", "
+                    + loc.getBlockZ()
+                    + ")"
+                    + " | "
+                    + observation
+                    + " | "
+                    + " | "
+                    + (expiration == null ? "n/a" : expiration.getTime()));
+            Observation.loadObservation(this.plugin, id, timestamp, name, loc, observation, expiration,
+                    template, isTemporary);
         });
     }
 
-    /**
-     * Stores an observation into the database and returns the obervation's ID
+    /** Stores an observation into the database and returns the obervation's ID.
      *
      * @param observation Observation to save
      * @param callback    Function to call once the observation has been saved
@@ -322,7 +357,8 @@ public class Queryer {
         }, callback);
     }
 
-    private void loadTemporaryObservation(String query, Consumer<PreparedStatement> prepare, Consumer<Integer> callback) {
+    private void loadTemporaryObservation(String query, Consumer<PreparedStatement> prepare,
+                                          Consumer<Integer> callback) {
         async(() -> {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(query)) {

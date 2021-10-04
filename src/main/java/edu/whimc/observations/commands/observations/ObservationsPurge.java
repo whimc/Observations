@@ -4,10 +4,9 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.command.CommandSender;
 
 public class ObservationsPurge extends AbstractSubCommand {
 

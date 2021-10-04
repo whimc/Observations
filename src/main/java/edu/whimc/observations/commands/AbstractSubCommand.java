@@ -2,12 +2,6 @@ package edu.whimc.observations.commands;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 public abstract class AbstractSubCommand {
 

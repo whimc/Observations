@@ -1,7 +1,6 @@
 package edu.whimc.observations.utils.sql.migration;
 
 import com.google.common.io.Files;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;

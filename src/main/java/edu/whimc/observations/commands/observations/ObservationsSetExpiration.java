@@ -4,11 +4,10 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.command.CommandSender;
 
 public class ObservationsSetExpiration extends AbstractSubCommand {
 
@@ -44,7 +43,8 @@ public class ObservationsSetExpiration extends AbstractSubCommand {
             if (newExpiration == null) {
                 Utils.msg(sender, "&aRemoved the expiration from \"&2" + obs.getId() + "&a\"");
             } else {
-                Utils.msg(sender, "&aExpiration of \"&2" + obs.getId() + "&a\" set to \"&2" + Utils.getDate(newExpiration) + "&a\"");
+                Utils.msg(sender, "&aExpiration of \"&2" + obs.getId() + "&a\" set to \"&2"
+                        + Utils.getDate(newExpiration) + "&a\"");
             }
         });
         return true;

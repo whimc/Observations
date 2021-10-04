@@ -2,13 +2,12 @@ package edu.whimc.observations.observetemplate.models;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class ObservationTemplate {
 

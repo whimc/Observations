@@ -4,9 +4,8 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-
 import java.util.List;
+import org.bukkit.command.CommandSender;
 
 public class ObservationsInfo extends AbstractSubCommand {
 
@@ -19,15 +18,22 @@ public class ObservationsInfo extends AbstractSubCommand {
     @Override
     protected boolean onCommand(CommandSender sender, String[] args) {
         Observation obs = Utils.getObervationWithError(sender, args[0]);
-        if (obs == null) return true;
+        if (obs == null) {
+            return true;
+        }
 
         Utils.msgNoPrefix(sender,
                 "&7&m-----------------&r &9&lObservation Info&r &7&m------------------",
-                "  &9ID: &7" + obs.getId(),
-                "  &9Created: &7" + Utils.getDate(obs.getTimestamp()),
-                "  &9Expires: &7" + (obs.getExpiration() == null ? "Never" : Utils.getDate(obs.getExpiration())),
-                "  &9Player: &7" + obs.getPlayer(),
-                "  &9Observation: &8\"&f&l" + obs.getObservation() + "&8\"",
+                "  &9ID: &7"
+                        + obs.getId(),
+                "  &9Created: &7"
+                        + Utils.getDate(obs.getTimestamp()),
+                "  &9Expires: &7"
+                        + (obs.getExpiration() == null ? "Never" : Utils.getDate(obs.getExpiration())),
+                "  &9Player: &7"
+                        + obs.getPlayer(),
+                "  &9Observation: &8\"&f&l" + obs.getObservation()
+                        + "&8\"",
                 "",
                 "  &9Holo Location:",
                 "    " + Utils.locationString(obs.getHoloLocation(), false),

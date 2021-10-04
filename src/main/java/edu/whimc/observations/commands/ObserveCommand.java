@@ -4,6 +4,11 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.utils.Utils;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,12 +17,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 
 public class ObserveCommand implements CommandExecutor, TabCompleter {
 
@@ -35,7 +34,8 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         int days = plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
 
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), observation, expiration, null);
+        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), observation,
+                expiration, null);
         Utils.msg(player,
                 "&7Your observation has been placed:",
                 "  &8\"&f&l" + observation + "&8\"");

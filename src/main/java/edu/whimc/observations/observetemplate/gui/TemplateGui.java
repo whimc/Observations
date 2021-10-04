@@ -6,6 +6,9 @@ import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,9 +20,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public final class TemplateGui implements Listener {
 
@@ -101,7 +101,8 @@ public final class TemplateGui implements Listener {
                                 .newMenu(Collections.singletonList(Utils.color(signHeader)))
                                 .reopenIfFail(false)
                                 .response((signPlayer, strings) -> {
-                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 0,
+                                            strings.length), ' ').trim();
                                     if (response.isEmpty()) {
                                         return false;
                                     }

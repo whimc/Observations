@@ -4,11 +4,10 @@ import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.AbstractSubCommand;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class ObservationsNear extends AbstractSubCommand {
 
@@ -37,7 +36,8 @@ public class ObservationsNear extends AbstractSubCommand {
                 .collect(Collectors.toList());
 
         if (inRadius.isEmpty()) {
-            Utils.msg(sender, "&cThere are no observations within &4" +
+            Utils.msg(sender, "&cThere are no observations within &4"
+                    +
                     radius + " &cblock" + (radius == 1 ? "" : "s") + " of you!");
             return true;
         }

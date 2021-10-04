@@ -1,12 +1,11 @@
 package edu.whimc.observations.observetemplate.models;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 public class ObservationPrompt {
 

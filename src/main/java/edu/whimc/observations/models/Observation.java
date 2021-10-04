@@ -6,13 +6,6 @@ import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,6 +13,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Observation {
 
@@ -68,9 +67,11 @@ public class Observation {
     }
 
     public static Observation createObservation(Observations plugin, Player player, Location viewLoc,
-                                                String observation, Timestamp expiration, ObservationTemplate template) {
+                                                String observation, Timestamp expiration,
+                                                ObservationTemplate template) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, template, false, true);
+        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation,
+                expiration, template, false, true);
         observations.add(obs);
         return obs;
     }
@@ -78,7 +79,8 @@ public class Observation {
     public static Observation loadObservation(Observations plugin, int id, Timestamp timestamp,
                                               String playerName, Location viewLoc, String observation,
                                               Timestamp expiration, ObservationTemplate template, boolean isTemporary) {
-        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, template, isTemporary, false);
+        Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration,
+                template, isTemporary, false);
         observations.add(obs);
         return obs;
     }
@@ -108,7 +110,9 @@ public class Observation {
 
     public static Observation getObservation(int id) {
         for (Observation obs : observations) {
-            if (obs.getId() == id) return obs;
+            if (obs.getId() == id) {
+                return obs;
+            }
         }
 
         return null;
@@ -214,8 +218,10 @@ public class Observation {
             text = Utils.coloredSubstring(text, 20) + "&7 . . .";
         }
 
-        return "&9&l" + this.id + ".&r &8\"" + text + "&8\" &9> &7&o" + this.playerName + " " +
-                "&7(" + this.holoLoc.getWorld().getName() + ", " + this.holoLoc.getBlockX() + ", " +
+        return "&9&l" + this.id + ".&r &8\"" + text + "&8\" &9> &7&o" + this.playerName + " "
+                +
+                "&7(" + this.holoLoc.getWorld().getName() + ", " + this.holoLoc.getBlockX() + ", "
+                +
                 this.holoLoc.getBlockY() + ", " + this.holoLoc.getBlockZ() + "&7)";
     }
 

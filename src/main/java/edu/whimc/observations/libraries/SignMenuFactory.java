@@ -7,19 +7,18 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 public final class SignMenuFactory {
 
@@ -44,7 +43,8 @@ public final class SignMenuFactory {
     }
 
     private void listen() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this.plugin, PacketType.Play.Client.UPDATE_SIGN) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this.plugin,
+                PacketType.Play.Client.UPDATE_SIGN) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
@@ -102,19 +102,23 @@ public final class SignMenuFactory {
                 return;
             }
             Location location = player.getLocation();
-            this.position = new BlockPosition(location.getBlockX(), location.getBlockY() + (255 - location.getBlockY()), location.getBlockZ());
+            this.position = new BlockPosition(location.getBlockX(), location.getBlockY()
+                    + (255 - location.getBlockY()), location.getBlockZ());
 
             player.sendBlockChange(this.position.toLocation(location.getWorld()), Material.OAK_SIGN.createBlockData());
 
-            PacketContainer openSign = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
-            PacketContainer signData = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.TILE_ENTITY_DATA);
+            PacketContainer openSign =
+                    ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
+            PacketContainer signData =
+                    ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.TILE_ENTITY_DATA);
 
             openSign.getBlockPositionModifier().write(0, this.position);
 
             NbtCompound signNBT = (NbtCompound) signData.getNbtModifier().read(0);
 
             for (int line = 0; line < SIGN_LINES; line++) {
-                signNBT.put("Text" + (line + 1), this.text.size() > line ? String.format(NBT_FORMAT, color(this.text.get(line))) : "");
+                signNBT.put("Text" + (line + 1), this.text.size() > line ? String.format(NBT_FORMAT,
+                        color(this.text.get(line))) : "");
             }
 
             signNBT.put("x", this.position.getX());
