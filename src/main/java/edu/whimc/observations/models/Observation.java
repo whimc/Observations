@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,10 +68,19 @@ public class Observation {
         });
     }
 
-    public static Observation createObservation(Observations plugin, Player player, Location viewLoc,
-                                                String observation, Timestamp expiration, ObservationTemplate template) {
+    public static Observation createObservationEventWithCurrentTime(Observations plugin, String observation, Player player, ObservationTemplate template) {
+        int days = plugin.getConfig().getInt("expiration-days");
+        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), viewLoc, observation, expiration, template, false, true);
+
+        Observation obs = new Observation(plugin, -1, timestamp, player.getName(), player.getLocation(), observation, expiration, template, false, true);
+        Utils.msg(player,
+                "&7Your observation has been placed:",
+                "  &8\"&f&l" + observation + "&8\"");
+
+        // Call custom event
+        ObserveEvent observeEvent = new ObserveEvent(obs, player);
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
         observations.add(obs);
         return obs;
     }

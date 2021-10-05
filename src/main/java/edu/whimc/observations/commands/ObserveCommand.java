@@ -31,20 +31,6 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
-    public static void makeObservation(Observations plugin, String observation, Player player) {
-        int days = plugin.getConfig().getInt("expiration-days");
-        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), observation, expiration, null);
-        Utils.msg(player,
-                "&7Your observation has been placed:",
-                "  &8\"&f&l" + observation + "&8\"");
-
-        // Call custom event
-        ObserveEvent observeEvent = new ObserveEvent(obs, player);
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -67,7 +53,7 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         }
 
         String text = StringUtils.join(args, " ");
-        makeObservation(this.plugin, text, player);
+        Observation.createObservationEventWithCurrentTime(this.plugin, text, player, null);
         return true;
     }
 

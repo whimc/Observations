@@ -199,15 +199,6 @@ public class TemplateSelection implements Listener {
             this.responseIndex -= 1;
             doStage(TemplateSelectionStage.SELECT_RESPONSE);
         });
-        
-        // Create observation object for custom event
-        int days = plugin.getConfig().getInt("expiration-days");
-        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, this.template);
-        
-        // Call custom event
-        ObserveEvent observeEvent = new ObserveEvent(obs, player);
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
     }
 
     private String getFilledInPrompt() {
@@ -251,14 +242,7 @@ public class TemplateSelection implements Listener {
         if (withConfirm) {
             Consumer<Player> confirmCallback = p -> {
                 String text = Utils.color(getFilledInPrompt());
-                int days = this.plugin.getConfig().getInt("expiration-days");
-                Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-
-                //Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
-
-                Utils.msg(player,
-                        "&7Your observation has been placed:",
-                        "  &8\"&f&l" + text + "&8\"");
+                Observation.createObservationEventWithCurrentTime(this.plugin, text, player, this.template);
                 destroySelection();
             };
 

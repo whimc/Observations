@@ -2,6 +2,7 @@ package edu.whimc.observations.observetemplate.gui;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.ObserveCommand;
+import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
@@ -108,7 +109,7 @@ public final class TemplateGui implements Listener {
                                     if (response.isEmpty()) {
                                         return false;
                                     }
-                                    ObserveCommand.makeObservation(this.plugin, response, signPlayer);
+                                    Observation.createObservationEventWithCurrentTime(this.plugin, response, signPlayer, null);
                                     return true;
                                 })
                                 .open(p);

@@ -53,6 +53,7 @@ public class Queryer {
             "UPDATE whimc_observations " +
                     "SET active=0 " +
                     "WHERE active=1 AND world=?";
+
     private static final String QUERY_MAKE_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
                     "SET active=0 " +
@@ -133,14 +134,7 @@ public class Queryer {
         statement.setBoolean(11, true);
         statement.setLong(12, obs.getExpiration().getTime());
         statement.setString(13, category);
-        String obsNoColorWithAmpersand = ChatColor.stripColor(obs.getObservation());
-        String[] splitObsNoColor = obsNoColorWithAmpersand.split("&");
-        String obsNoColor = splitObsNoColor[0];
-        for(int k = 1; k < splitObsNoColor.length; k++)
-        {
-            obsNoColor += splitObsNoColor[k].substring(1);
-        }
-        statement.setString(14, obsNoColor);
+        statement.setString(14, ChatColor.stripColor(Utils.color(obs.getObservation())));
         return statement;
     }
 
