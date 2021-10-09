@@ -10,17 +10,12 @@ public class Schema_4 extends SchemaVersion {
 
     private static final String ADD_CATEGORY =
             "ALTER TABLE whimc_observations ADD COLUMN observation_color_stripped TEXT;";
-
-    /**
-     * Query to update existing observations with an uncolored version
-     */
+    
     private static final String QUERY_UPDATE_OBSERVATION_NO_COLOR =
             "UPDATE whimc_observations " +
                     "SET observation_color_stripped=?" +
                     "WHERE rowid=?";
-    /**
-     * Query for getting all observations from the database.
-     */
+
     private static final String QUERY_GET_OBSERVATIONS =
             "SELECT * " +
                     "FROM whimc_observations " +
@@ -34,6 +29,7 @@ public class Schema_4 extends SchemaVersion {
     protected void migrateRoutine(Connection connection) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(ADD_CATEGORY)) {
             statement.execute();
+        }catch (SQLException e){
         }
 
         try (PreparedStatement statement = connection.prepareStatement(QUERY_UPDATE_OBSERVATION_NO_COLOR)) {

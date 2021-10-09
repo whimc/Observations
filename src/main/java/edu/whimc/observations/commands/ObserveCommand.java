@@ -2,10 +2,8 @@ package edu.whimc.observations.commands;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.models.Observation;
-import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.utils.Utils;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,9 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +48,7 @@ public class ObserveCommand implements CommandExecutor, TabCompleter {
         }
 
         String text = StringUtils.join(args, " ");
-        Observation.createObservationEventWithCurrentTime(this.plugin, text, player, null);
+        Observation.createPlayerObservation(this.plugin, player, text, null);
         return true;
     }
 

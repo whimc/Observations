@@ -5,7 +5,6 @@ import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.libraries.CenteredText;
 import edu.whimc.observations.libraries.SpigotCallback;
 import edu.whimc.observations.models.Observation;
-import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -21,9 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -242,7 +238,7 @@ public class TemplateSelection implements Listener {
         if (withConfirm) {
             Consumer<Player> confirmCallback = p -> {
                 String text = Utils.color(getFilledInPrompt());
-                Observation.createObservationEventWithCurrentTime(this.plugin, text, player, this.template);
+                Observation.createPlayerObservation(this.plugin, player, text, this.template);
                 destroySelection();
             };
 

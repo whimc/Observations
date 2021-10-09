@@ -68,7 +68,15 @@ public class Observation {
         });
     }
 
-    public static Observation createObservationEventWithCurrentTime(Observations plugin, String observation, Player player, ObservationTemplate template) {
+    /**
+     * Creates a new observation and calls a new observe event with current time and configured expiration
+     * @param plugin Observations plugin being used
+     * @param player Player making the observation
+     * @param observation Text of the observation being made
+     * @param template The observation template being used
+     * @return New observation being created
+     */
+    public static Observation createPlayerObservation(Observations plugin, Player player, String observation, ObservationTemplate template) {
         int days = plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

@@ -18,7 +18,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.ChatColor;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -109,7 +108,7 @@ public final class TemplateGui implements Listener {
                                     if (response.isEmpty()) {
                                         return false;
                                     }
-                                    Observation.createObservationEventWithCurrentTime(this.plugin, response, signPlayer, null);
+                                    Observation.createPlayerObservation(this.plugin, signPlayer, response, null);
                                     return true;
                                 })
                                 .open(p);
