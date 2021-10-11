@@ -61,44 +61,44 @@
 		</dependency>
 	</dependencies>
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<!-- Repo for plugin -->
-	<scm>
-		<connection>scm:git:git@github.com:whimc/Observation-Displayer.git</connection>
-		<tag>HEAD</tag>
-	</scm>
+    <!-- Repo for plugin -->
+    <scm>
+        <connection>scm:git:git@github.com:whimc/Observation-Displayer.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
-	<build>
-		<!-- Allow pom.xml value substitution in plugin.yml -->
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+    <build>
+        <!-- Allow pom.xml value substitution in plugin.yml -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
-		<!-- Github release settings -->
-		<plugins>
-			<plugin>
-				<groupId>de.jutzig</groupId>
-				<artifactId>github-release-plugin</artifactId>
-				<version>1.1.1</version>
-				<configuration>
-					<description>Release for v${project.version}</description>
-					<releaseName>${project.artifactId}-${project.version}</releaseName>
-					<tag>${project.version}</tag>
-					<fileSets>
-						<fileSet>
-							<directory>${project.build.directory}</directory>
-						</fileSet>
-					</fileSets>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- Github release settings -->
+        <plugins>
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <description>Release for v${project.version}</description>
+                    <releaseName>${project.artifactId}-${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
