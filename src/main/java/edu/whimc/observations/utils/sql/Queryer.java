@@ -127,7 +127,7 @@ public class Queryer {
      * @param connection MySQL Connection
      * @param obs        Observation to save
      * @return PreparedStatement
-     * @throws SQLException
+     * @throws SQLException     error report
      */
     private PreparedStatement getStatement(Connection connection, Observation obs) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_OBSERVATION,
