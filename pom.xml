@@ -51,6 +51,7 @@
 			<groupId>com.github.PikaMug.Quests</groupId>
 			<artifactId>quests-main</artifactId>
 			<version>4.0.8</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- Add ProtocolLib to the build-->
 		<dependency>
