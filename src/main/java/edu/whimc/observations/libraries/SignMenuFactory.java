@@ -9,6 +9,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import edu.whimc.observations.utils.Utils;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -100,7 +101,7 @@ public final class SignMenuFactory {
             player.sendBlockChange(location, Material.OAK_SIGN.createBlockData());
             player.sendSignChange(
                     location,
-                    text.stream().map(Utils::color).toList().toArray(new String[4])
+                    text.stream().map(Utils::color).collect(Collectors.toList()).toArray(new String[4])
             );
 
             PacketContainer openSign = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
