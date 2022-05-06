@@ -65,6 +65,13 @@ public class Observation {
         plugin.getQueryer().storeNewObservation(this, newId -> {
             this.id = newId;
             createHologram();
+
+            if(this.template == null){
+                Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "observationassesser " + ChatColor.stripColor(Utils.color(observation)) + " null");
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "observationassesser " + ChatColor.stripColor(Utils.color(observation)) + " " + this.template.getType());
+            }
+
         });
     }
 
