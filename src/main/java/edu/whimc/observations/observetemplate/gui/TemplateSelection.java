@@ -54,6 +54,8 @@ public class TemplateSelection implements Listener {
     private TemplateSelectionStage stage;
     /* The response index that is being selected */
     private int responseIndex = 0;
+    /* Custom observation not using template */
+    private String customObservation;
 
     public TemplateSelection(Observations plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
         UUID uuid = player.getUniqueId();
@@ -106,6 +108,31 @@ public class TemplateSelection implements Listener {
                         this.prompt = curPrompt;
                         doStage(TemplateSelectionStage.SELECT_RESPONSE);
                     });
+        }
+
+        // Send component for custom input if they have permission
+        if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
+            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
+            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
+
+            sendComponent(
+                    player,
+                    "&8" + BULLET + template.getColor() + " " + customResponse,
+                    "&aClick here to write your own response!",
+                    p -> this.plugin.getSignMenuFactory()
+                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
+                            .reopenIfFail(true)
+                            .response((signPlayer, strings) -> {
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
+                                if (response.isEmpty()) {
+                                    return false;
+                                }
+                                customObservation = response;
+                                doStage(TemplateSelectionStage.CONFIRM);
+                                return true;
+                            })
+                            .open(p)
+            );
         }
 
         sendFooter(false, p -> {
@@ -180,7 +207,12 @@ public class TemplateSelection implements Listener {
     }
 
     private void doConfirm() {
-        String filledIn = getFilledInPrompt();
+        String filledIn = "";
+        if(this.prompt != null) {
+            filledIn = getFilledInPrompt();
+        } else {
+            filledIn = customObservation;
+        }
         Player player = getPlayer();
 
         sendHeader();
@@ -237,7 +269,12 @@ public class TemplateSelection implements Listener {
 
         if (withConfirm) {
             Consumer<Player> confirmCallback = p -> {
-                String text = Utils.color(getFilledInPrompt());
+                String text = "";
+                if(this.prompt != null) {
+                    text = Utils.color(getFilledInPrompt());
+                } else {
+                    text = customObservation;
+                }
                 Observation.createPlayerObservation(this.plugin, player, text, this.template);
                 destroySelection();
             };
