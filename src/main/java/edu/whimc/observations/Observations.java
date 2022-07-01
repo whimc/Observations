@@ -30,7 +30,7 @@ public class Observations extends JavaPlugin {
             // If we couldn't connect to the database disable the plugin
             if (q == null) {
                 this.getLogger().severe("Could not establish MySQL connection! Disabling plugin...");
-                getCommand("observations").setExecutor(this);
+                getCommand("adminobservations").setExecutor(this);
                 getCommand("observe").setExecutor(this);
                 return;
             }
@@ -54,8 +54,8 @@ public class Observations extends JavaPlugin {
             getCommand("observe").setTabCompleter(observeCommand);
 
             ObservationsCommand observationsCommand = new ObservationsCommand(this);
-            getCommand("observations").setExecutor(observationsCommand);
-            getCommand("observations").setTabCompleter(observationsCommand);
+            getCommand("adminobservations").setExecutor(observationsCommand);
+            getCommand("adminobservations").setTabCompleter(observationsCommand);
         });
     }
 
