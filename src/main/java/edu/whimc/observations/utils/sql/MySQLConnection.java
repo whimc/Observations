@@ -22,11 +22,11 @@ public class MySQLConnection {
     private final Observations plugin;
 
     public MySQLConnection(Observations plugin) {
-        this.host = plugin.getConfig().getString("mysql.host", "localhost");
-        this.port = plugin.getConfig().getInt("mysql.port", 3306);
-        this.database = plugin.getConfig().getString("mysql.database", "minecraft");
-        this.username = plugin.getConfig().getString("mysql.username", "user");
-        this.password = plugin.getConfig().getString("mysql.password", "pass");
+        this.host = plugin.getConfig().getString("mysql.host");
+        this.port = plugin.getConfig().getInt("mysql.port");
+        this.database = plugin.getConfig().getString("mysql.database");
+        this.username = plugin.getConfig().getString("mysql.username");
+        this.password = plugin.getConfig().getString("mysql.password");
 
         this.url = String.format(URL_TEMPLATE, this.host, this.port, this.database);
 

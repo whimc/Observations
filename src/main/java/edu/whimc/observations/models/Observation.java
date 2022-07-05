@@ -65,13 +65,29 @@ public class Observation {
         plugin.getQueryer().storeNewObservation(this, newId -> {
             this.id = newId;
             createHologram();
-
-            if(this.template == null){
-                Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "observationassesser " + ChatColor.stripColor(Utils.color(observation)) + " null");
+            String worlds = plugin.getConfig().getString("agent-worlds");
+            if(worlds.contains(",")){
+                String[] agentWorlds = worlds.split(", ");
+                for(int k = 0; k < agentWorlds.length; k++){
+                    String worldName = agentWorlds[k];
+                    if(Bukkit.getPlayer(playerName).getWorld().getName().equalsIgnoreCase(worldName)){
+                        if(this.template == null){
+                            Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "structureassessment " + ChatColor.stripColor(Utils.color(observation)) + " null");
+                        } else {
+                            Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "structureassessment " + ChatColor.stripColor(Utils.color(observation)) + " " + this.template.getType());
+                        }
+                        break;
+                    }
+                }
             } else {
-                Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "observationassesser " + ChatColor.stripColor(Utils.color(observation)) + " " + this.template.getType());
+                if(Bukkit.getPlayer(playerName).getWorld().getName().equalsIgnoreCase(worlds)){
+                    if(this.template == null){
+                        Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "structureassessment " + ChatColor.stripColor(Utils.color(observation)) + " null");
+                    } else {
+                        Bukkit.dispatchCommand(Bukkit.getPlayer(playerName), "structureassessment " + ChatColor.stripColor(Utils.color(observation)) + " " + this.template.getType());
+                    }
+                }
             }
-
         });
     }
 

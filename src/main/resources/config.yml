@@ -172,3 +172,4 @@ templates:
         worlds: {}
       - prompt: When &7{}&r?
         worlds: {}
+agent-worlds: Trappist
