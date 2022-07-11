@@ -12,6 +12,6 @@ commands:
   observe:
     description: Create an observation
     usage: '/observe [text]'
-  observations:
+  adminobservations:
     description: Manage observations
-    usage: '/observations'
+    usage: '/adminobservations'

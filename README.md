@@ -16,21 +16,21 @@ It should show up in the target directory. Make sure to update your version numb
 
 ## Commands
 
-### `/observations`
-Manager the observations that have been created on the server.
+### `/adminobservations`
+Manage the observations that have been created on the server.
 
 | Command | Permission | Description |
 |---|---|---|
-|`/observations`|`n/a`|List all `/observations` subcommands|
-|`/observations info`|`whimc-observations.observations.info`|Show information about an observation|
-|`/observations list`|`whimc-observations.observations.list`|List all observations (or filer by player and/or world)|
-|`/observations near`|`whimc-observations.observations.near`|List all observations in a radius|
-|`/observations purge`|`whimc-observations.observations.purge`|Purge all temporary observations|
-|`/observations reactivate`|`whimc-observations.observations.reactivate`|Reactivate observations within a given time frame|
-|`/observations remove`|`whimc-observations.observations.remove`|Remove an observation|
-|`/observations removeall`|`whimc-observations.observations.removeall`|Remove all observations from a certain player and/or in a certain world|
-|`/observations setexpiration`|`whimc-observations.observations.setexpiration`|Change the expiration date of an observation|
-|`/observations teleport`|`whimc-observations.observations.teleport`|Teleport to an observation|
+|`/adminobservations`|`n/a`|List all `/observations` subcommands|
+|`/adminobservations info`|`whimc-observations.observations.info`|Show information about an observation|
+|`/adminobservations list`|`whimc-observations.observations.list`|List all observations (or filer by player and/or world)|
+|`/adminobservations near`|`whimc-observations.observations.near`|List all observations in a radius|
+|`/adminobservations purge`|`whimc-observations.observations.purge`|Purge all temporary observations|
+|`/adminobservations reactivate`|`whimc-observations.observations.reactivate`|Reactivate observations within a given time frame|
+|`/adminobservations remove`|`whimc-observations.observations.remove`|Remove an observation|
+|`/adminobservations removeall`|`whimc-observations.observations.removeall`|Remove all observations from a certain player and/or in a certain world|
+|`/adminobservations setexpiration`|`whimc-observations.observations.setexpiration`|Change the expiration date of an observation|
+|`/adminobservations teleport`|`whimc-observations.observations.teleport`|Teleport to an observation|
 
 
 ### `/observe`

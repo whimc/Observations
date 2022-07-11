@@ -19,15 +19,15 @@ public class ObservationsCommand implements CommandExecutor, TabCompleter {
     private final Map<String, AbstractSubCommand> subCommands = new HashMap<>();
 
     public ObservationsCommand(Observations plugin) {
-        subCommands.put("info", new ObservationsInfo(plugin, "observations", "info"));
-        subCommands.put("list", new ObservationsList(plugin, "observations", "list"));
-        subCommands.put("near", new ObservationsNear(plugin, "observations", "near"));
-        subCommands.put("purge", new ObservationsPurge(plugin, "observations", "purge"));
-        subCommands.put("reactivate", new ObservationsReactivate(plugin, "observations", "reactivate"));
-        subCommands.put("remove", new ObservationsRemove(plugin, "observations", "remove"));
-        subCommands.put("removeall", new ObservationsRemoveAll(plugin, "observations", "removeall"));
-        subCommands.put("setexpiration", new ObservationsSetExpiration(plugin, "observations", "setexpiration"));
-        subCommands.put("teleport", new ObservationsTeleport(plugin, "observations", "teleport"));
+        subCommands.put("info", new ObservationsInfo(plugin, "adminobservations", "info"));
+        subCommands.put("list", new ObservationsList(plugin, "adminobservations", "list"));
+        subCommands.put("near", new ObservationsNear(plugin, "adminobservations", "near"));
+        subCommands.put("purge", new ObservationsPurge(plugin, "adminobservations", "purge"));
+        subCommands.put("reactivate", new ObservationsReactivate(plugin, "adminobservations", "reactivate"));
+        subCommands.put("remove", new ObservationsRemove(plugin, "adminobservations", "remove"));
+        subCommands.put("removeall", new ObservationsRemoveAll(plugin, "adminobservations", "removeall"));
+        subCommands.put("setexpiration", new ObservationsSetExpiration(plugin, "adminobservations", "setexpiration"));
+        subCommands.put("teleport", new ObservationsTeleport(plugin, "adminobservations", "teleport"));
     }
 
     @Override
