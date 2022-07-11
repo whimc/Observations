@@ -22,6 +22,7 @@ Manage the observations that have been created on the server.
 | Command | Permission | Description |
 |---|---|---|
 |`/adminobservations`|`n/a`|List all `/adminobservations` subcommands|
+=======
 |`/adminobservations info`|`whimc-observations.observations.info`|Show information about an observation|
 |`/adminobservations list`|`whimc-observations.observations.list`|List all observations (or filer by player and/or world)|
 |`/adminobservations near`|`whimc-observations.observations.near`|List all observations in a radius|
@@ -31,6 +32,7 @@ Manage the observations that have been created on the server.
 |`/adminobservations removeall`|`whimc-observations.observations.removeall`|Remove all observations from a certain player and/or in a certain world|
 |`/adminobservations setexpiration`|`whimc-observations.observations.setexpiration`|Change the expiration date of an observation|
 |`/adminobservations teleport`|`whimc-observations.observations.teleport`|Teleport to an observation|
+=======
 
 ### `/observe`
 Root command for making observations.
