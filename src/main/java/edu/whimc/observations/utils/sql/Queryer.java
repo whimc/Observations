@@ -8,6 +8,7 @@ import edu.whimc.observations.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.ChatColor;
 
 import java.sql.*;
 import java.util.function.Consumer;
@@ -24,8 +25,8 @@ public class Queryer {
      */
     private static final String QUERY_SAVE_OBSERVATION =
             "INSERT INTO whimc_observations " +
-                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration, category) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(time, uuid, username, world, x, y, z, yaw, pitch, observation, active, expiration, category, observation_color_stripped) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * Query for getting all observations from the database.
@@ -52,6 +53,7 @@ public class Queryer {
             "UPDATE whimc_observations " +
                     "SET active=0 " +
                     "WHERE active=1 AND world=?";
+
     private static final String QUERY_MAKE_OBSERVATIONS_INACTIVE =
             "UPDATE whimc_observations " +
                     "SET active=0 " +
@@ -132,7 +134,7 @@ public class Queryer {
         statement.setBoolean(11, true);
         statement.setLong(12, obs.getExpiration().getTime());
         statement.setString(13, category);
-
+        statement.setString(14, ChatColor.stripColor(Utils.color(obs.getObservation())));
         return statement;
     }
 

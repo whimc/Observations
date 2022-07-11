@@ -2,6 +2,7 @@ package edu.whimc.observations.observetemplate.gui;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.commands.ObserveCommand;
+import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
@@ -17,7 +18,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.ChatColor;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -108,7 +108,7 @@ public final class TemplateGui implements Listener {
                                     if (response.isEmpty()) {
                                         return false;
                                     }
-                                    ObserveCommand.makeObservation(this.plugin, response, signPlayer);
+                                    Observation.createPlayerObservation(this.plugin, signPlayer, response, null);
                                     return true;
                                 })
                                 .open(p);

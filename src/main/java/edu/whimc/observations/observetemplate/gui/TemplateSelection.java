@@ -5,7 +5,6 @@ import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.libraries.CenteredText;
 import edu.whimc.observations.libraries.SpigotCallback;
 import edu.whimc.observations.models.Observation;
-import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -21,9 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -58,6 +54,8 @@ public class TemplateSelection implements Listener {
     private TemplateSelectionStage stage;
     /* The response index that is being selected */
     private int responseIndex = 0;
+    /* Custom observation not using template */
+    private String customObservation;
 
     public TemplateSelection(Observations plugin, SpigotCallback spigotCallback, Player player, ObservationTemplate template) {
         UUID uuid = player.getUniqueId();
@@ -110,6 +108,31 @@ public class TemplateSelection implements Listener {
                         this.prompt = curPrompt;
                         doStage(TemplateSelectionStage.SELECT_RESPONSE);
                     });
+        }
+
+        // Send component for custom input if they have permission
+        if (player.hasPermission(ObserveCommand.CUSTOM_RESPONSE_PERM)) {
+            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
+            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
+
+            sendComponent(
+                    player,
+                    "&8" + BULLET + template.getColor() + " " + customResponse,
+                    "&aClick here to write your own response!",
+                    p -> this.plugin.getSignMenuFactory()
+                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
+                            .reopenIfFail(true)
+                            .response((signPlayer, strings) -> {
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
+                                if (response.isEmpty()) {
+                                    return false;
+                                }
+                                customObservation = response;
+                                doStage(TemplateSelectionStage.CONFIRM);
+                                return true;
+                            })
+                            .open(p)
+            );
         }
 
         sendFooter(false, p -> {
@@ -184,7 +207,12 @@ public class TemplateSelection implements Listener {
     }
 
     private void doConfirm() {
-        String filledIn = getFilledInPrompt();
+        String filledIn = "";
+        if(this.prompt != null) {
+            filledIn = getFilledInPrompt();
+        } else {
+            filledIn = customObservation;
+        }
         Player player = getPlayer();
 
         sendHeader();
@@ -199,15 +227,6 @@ public class TemplateSelection implements Listener {
             this.responseIndex -= 1;
             doStage(TemplateSelectionStage.SELECT_RESPONSE);
         });
-        
-        // Create observation object for custom event
-        int days = plugin.getConfig().getInt("expiration-days");
-        Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-        Observation obs = Observation.createObservation(plugin, player, player.getLocation(), filledIn, expiration, null);
-        
-        // Call custom event
-        ObserveEvent observeEvent = new ObserveEvent(obs, player);
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
     }
 
     private String getFilledInPrompt() {
@@ -250,15 +269,13 @@ public class TemplateSelection implements Listener {
 
         if (withConfirm) {
             Consumer<Player> confirmCallback = p -> {
-                String text = Utils.color(getFilledInPrompt());
-                int days = this.plugin.getConfig().getInt("expiration-days");
-                Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
-
-                Observation.createObservation(this.plugin, player, player.getLocation(), text, expiration, this.template);
-
-                Utils.msg(player,
-                        "&7Your observation has been placed:",
-                        "  &8\"&f&l" + text + "&8\"");
+                String text = "";
+                if(this.prompt != null) {
+                    text = Utils.color(getFilledInPrompt());
+                } else {
+                    text = customObservation;
+                }
+                Observation.createPlayerObservation(this.plugin, player, text, this.template);
                 destroySelection();
             };
 

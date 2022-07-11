@@ -16,10 +16,12 @@ public class Schema_2 extends SchemaVersion {
     }
 
     @Override
-    protected void migrateRoutine(Connection connection) throws SQLException {
+    protected void migrateRoutine(Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(ADD_CATEGORY)) {
             statement.execute();
+        }catch (SQLException e){
         }
+
     }
 
 }

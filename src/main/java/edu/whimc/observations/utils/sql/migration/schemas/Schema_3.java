@@ -12,7 +12,7 @@ public class Schema_3 extends SchemaVersion {
             "UPDATE whimc_observations SET category = CASE category WHEN 'FACTUAL' THEN NULL ELSE category END;";
 
     public Schema_3() {
-        super(3, null);
+        super(3, new Schema_4());
     }
 
     @Override
