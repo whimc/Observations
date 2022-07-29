@@ -201,6 +201,10 @@ public class Observation {
         return this.id;
     }
 
+    public Hologram getHologram() {
+        return this.hologram;
+    }
+
     public Timestamp getTimestamp() {
         return this.timestamp;
     }
