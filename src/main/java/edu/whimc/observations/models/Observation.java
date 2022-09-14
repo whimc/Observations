@@ -37,7 +37,8 @@ public class Observation {
     private int id;
     private Hologram hologram;
     private Timestamp expiration;
-    private Material hologramItem = Material.OAK_SIGN;
+
+    private Material hologramItem = Material.LIGHT;
 
     protected Observation(Observations plugin, int id, Timestamp timestamp, String playerName,
                           Location viewLoc, String observation, Timestamp expiration, ObservationTemplate template,
