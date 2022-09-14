@@ -48,27 +48,23 @@
 			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
 			<artifactId>holographicdisplays-api</artifactId>
 			<version>2.4.0</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Add Quests to the build -->
 		<dependency>
 			<groupId>me.blackvein.quests</groupId>
 			<artifactId>quests-api</artifactId>
 			<version>4.5.3</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.blackvein.quests</groupId>
 			<artifactId>quests-core</artifactId>
 			<version>4.5.3</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Add ProtocolLib to the build-->
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.7.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
