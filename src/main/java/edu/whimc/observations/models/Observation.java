@@ -38,7 +38,7 @@ public class Observation {
     private Hologram hologram;
     private Timestamp expiration;
 
-    private Material hologramItem = Material.NETHER_STAR;
+    private Material hologramItem = Material.BIRCH_SIGN;
 
     protected Observation(Observations plugin, int id, Timestamp timestamp, String playerName,
                           Location viewLoc, String observation, Timestamp expiration, ObservationTemplate template,
