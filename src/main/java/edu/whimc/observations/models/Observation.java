@@ -3,6 +3,7 @@ package edu.whimc.observations.models;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
+import com.gmail.filoghost.holographicdisplays.api.line.TouchableLine;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -37,7 +38,7 @@ public class Observation {
     private int id;
     private Hologram hologram;
     private Timestamp expiration;
-    private Material hologramItem = Material.OAK_SIGN;
+    private Material hologramItem;
 
     protected Observation(Observations plugin, int id, Timestamp timestamp, String playerName,
                           Location viewLoc, String observation, Timestamp expiration, ObservationTemplate template,
@@ -52,7 +53,10 @@ public class Observation {
         this.template = template;
         this.isTemporary = isTemporary;
 
-        if (this.template != null) {
+        if (this.template == null) {
+            this.hologramItem = Utils.matchMaterial(
+                    plugin, plugin.getConfig().getString("template-gui.uncategorized.item"), Material.STONE);
+        } else {
             this.hologramItem = this.template.getGuiItem();
         }
 
@@ -154,23 +158,27 @@ public class Observation {
 
     private void createHologram() {
         Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
-        ObservationClick clickListener = new ObservationClick(this.viewLoc);
 
-        holo.appendItemLine(new ItemStack(this.hologramItem))
-                .setTouchHandler(clickListener);
-        holo.appendTextLine(Utils.color(this.observation))
-                .setTouchHandler(clickListener);
-        holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp))
-                .setTouchHandler(clickListener);
+        List<TouchableLine> lines = new ArrayList<>();
+
+        lines.add(holo.appendItemLine(new ItemStack(this.hologramItem)));
+        lines.add(holo.appendTextLine(Utils.color(this.observation)));
+        lines.add(holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp)));
 
         if (this.expiration != null) {
-            holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration))
-                    .setTouchHandler(clickListener);
+            lines.add(holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration)));
         }
 
         if (this.isTemporary) {
-            holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*")
-                    .setTouchHandler(clickListener);
+            lines.add(holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*"));
+        }
+
+        if (this.plugin.getConfig().getBoolean("enable-click-to-view")) {
+            ObservationClick clickListener = new ObservationClick(this.viewLoc);
+            for (TouchableLine touchable : lines) {
+                touchable.setTouchHandler(clickListener);
+            }
+
         }
 
         this.hologram = holo;

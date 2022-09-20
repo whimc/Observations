@@ -220,7 +220,8 @@ public class Utils {
     public static Material matchMaterial(Observations plugin, String materialName, Material fallback) {
         Material material = Material.matchMaterial(materialName);
         if (material == null) {
-            plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName + "&c'! replacing with STONE."));
+            plugin.getLogger().warning(
+                    Utils.color("&cUnknown material '&4" + materialName + "&c'! replacing with " + fallback + "."));
             return fallback;
         }
 

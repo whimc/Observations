@@ -5,6 +5,7 @@
 
 debug: false
 expiration-days: 7
+enable-click-to-view: true
 mysql:
   host: localhost
   port: 3306
