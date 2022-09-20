@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
 	<artifactId>WHIMC-Observations</artifactId>
-	<version>2.5.2</version>
+	<version>2.5.3</version>
 	<name>WHIMC Observations</name>
 	<description>Create holographic observations in worlds</description>
 
@@ -68,44 +68,44 @@
 		</dependency>
 	</dependencies>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-    <!-- Repo for plugin -->
-    <scm>
-        <connection>scm:git:git@github.com:whimc/Observation-Displayer.git</connection>
-        <tag>HEAD</tag>
-    </scm>
+	<!-- Repo for plugin -->
+	<scm>
+		<connection>scm:git:git@github.com:whimc/Observation-Displayer.git</connection>
+		<tag>HEAD</tag>
+	</scm>
 
-    <build>
-        <!-- Allow pom.xml value substitution in plugin.yml -->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+	<build>
+		<!-- Allow pom.xml value substitution in plugin.yml -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 
-        <!-- Github release settings -->
-        <plugins>
-            <plugin>
-                <groupId>de.jutzig</groupId>
-                <artifactId>github-release-plugin</artifactId>
-                <version>1.1.1</version>
-                <configuration>
-                    <description>Release for v${project.version}</description>
-                    <releaseName>${project.artifactId}-${project.version}</releaseName>
-                    <tag>${project.version}</tag>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.build.directory}</directory>
-                        </fileSet>
-                    </fileSets>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+		<!-- Github release settings -->
+		<plugins>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.1.1</version>
+				<configuration>
+					<description>Release for v${project.version}</description>
+					<releaseName>${project.artifactId}-${project.version}</releaseName>
+					<tag>${project.version}</tag>
+					<fileSets>
+						<fileSet>
+							<directory>${project.build.directory}</directory>
+						</fileSet>
+					</fileSets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

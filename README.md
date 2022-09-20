@@ -53,11 +53,13 @@ If the player has the permission `whimc-observations.observe.customresponse`, th
 |---|---|---|
 |`debug`|`boolean`|Enable/disable debug messages (shows queries and other information in console)|
 |`expiration-days`|`integer`|The amount of time (in days) it will take for an observation to expire|
+|`enable-click-to-view`|`boolean`|Whether clicking an observation teleports you to the view point of where it was created. Setting this to `false` also fixes a bug where players collide with and bounce off observations|
 
 #### Example
 ```yaml
 debug: false
 expiration-days: 7
+enable-click-to-view: false
 ```
 
 ### MySQL
@@ -89,12 +91,12 @@ mysql:
 |`template-gui.filler-item`|`Minecraft material`|The item to use for filler spaces in the GUI|
 |`template-gui.inventory-name`|`string`|The name of the inventory used for the GUI|
 |`template-gui.rows`|`integer`|The number of rows that will be in the GUI (Range [1-6])|
-|`template-gui.cancel.enabled`|`boolean` _(Optional, default `true`)_|Whether or not to show this item in the GUI _(default `true`)_|
+|`template-gui.cancel.enabled`|`boolean` _(Optional, default `true`)_|Whether to show this item in the GUI _(default `true`)_|
 |`template-gui.cancel.item`|`Minecraft material`|The item to use for the cancel button|
 |`template-gui.cancel.position`|`integer`|The position of the cancel button|
 |`template-gui.cancel.name`|`string`|The text to display for the cancel button|
 |`template-gui.cancel.lore`|`string list`|The lore of the cancel button|
-|`template-gui.uncategorized.enabled`|`boolean` _(Optional, default `true`)_|Whether or not to show this item in the GUI _(default `true`)_|
+|`template-gui.uncategorized.enabled`|`boolean` _(Optional, default `true`)_|Whether to show this item in the GUI _(default `true`)_|
 |`template-gui.uncategorized.item`|`Minecraft material`|The item to use for the uncategorized observation button|
 |`template-gui.uncategorized.position`|`integer`|The position of the uncategorized button|
 |`template-gui.uncategorized.name`|`string`|The text to display for the uncategorized button|
