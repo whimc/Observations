@@ -7,7 +7,7 @@ import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.observetemplate.models.ObservationType;
 import edu.whimc.observations.utils.Utils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
