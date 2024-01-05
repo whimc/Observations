@@ -1,8 +1,8 @@
 package edu.whimc.observations.models;
 
-import me.blackvein.quests.CustomObjective;
-import me.blackvein.quests.Quest;
-import me.blackvein.quests.Quests;
+import me.pikamug.quests.quests.Quest;
+import me.pikamug.quests.module.BukkitCustomObjective;
+import me.pikamug.quests.Quests;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.Plugin;
@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 /**
  * A custom observation objective using the Quest plugin.
  */
-public class QuestObservationObjective extends CustomObjective {
+public class QuestObservationObjective extends BukkitCustomObjective {
 
     public QuestObservationObjective() {
         this.setName("Observation Objective");

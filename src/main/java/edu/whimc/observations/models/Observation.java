@@ -1,9 +1,18 @@
 package edu.whimc.observations.models;
 
+/* original HD displays imports
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
 import com.gmail.filoghost.holographicdisplays.api.line.TouchableLine;
+*/
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
+import eu.decentsoftware.holograms.api.holograms.HologramLine;
+import eu.decentsoftware.holograms.api.DecentHologramsAPI;
+import eu.decentsoftware.holograms.event.DecentHologramsEvent;
+import eu.decentsoftware.holograms.event.HologramClickEvent;
+import eu.decentsoftware.holograms.api.utils.Common;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -156,13 +165,13 @@ public class Observation {
     }
 
     private void createHologram() {
-        Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
+        Hologram holo = DHAPI.createHologram(this.plugin, this.holoLoc);
 
         List<TouchableLine> lines = new ArrayList<>();
 
-        lines.add(holo.appendItemLine(new ItemStack(this.hologramItem)));
-        lines.add(holo.appendTextLine(Utils.color(this.observation)));
-        lines.add(holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp)));
+        DHAPI.addHologramLine(lines, new ItemStack(this.hologramItem));
+        DHAPI.addHologramLine(lines, Utils.color(this.observation));
+        DHAPI.addHologramLine(lines, ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp));
 
         if (this.expiration != null) {
             lines.add(holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration)));
@@ -265,7 +274,7 @@ public class Observation {
         }
     }
 
-    private class ObservationClick implements TouchHandler {
+    private class ObservationClick implements DecentHologramsEvent {
 
         private final Location loc;
 
