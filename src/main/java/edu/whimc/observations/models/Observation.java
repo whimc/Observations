@@ -1,9 +1,16 @@
 package edu.whimc.observations.models;
+import me.filoghost.holographicdisplays.api.hologram.Hologram;
+import me.filoghost.holographicdisplays.api.hologram.line.*;
+
+/*
+original imports below:
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
 import com.gmail.filoghost.holographicdisplays.api.line.TouchableLine;
+ */
+
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
@@ -267,7 +274,7 @@ public class Observation {
 
     private class ObservationClick implements TouchHandler {
 
-        private final Location loc;
+    private final Location loc;
 
         public ObservationClick(Location loc) {
             this.loc = loc;
