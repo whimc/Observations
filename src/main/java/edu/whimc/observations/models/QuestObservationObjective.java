@@ -30,7 +30,7 @@ public class QuestObservationObjective extends BukkitCustomObjective {
         Quests quests = (Quests) plugin;
 
         for (Quest quest : quests.getQuester(event.getPlayer().getUniqueId()).getCurrentQuests().keySet()) {
-            incrementObjective(event.getPlayer(), this, 1, quest);
+            incrementObjective(event.getPlayer().getUniqueId(), this, quest, 1);
         }
     }
 
