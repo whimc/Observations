@@ -43,12 +43,11 @@
 			<artifactId>spigot-api</artifactId>
 			<version>1.18.2-R0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- Add HolographicDisplays to the build -->
+		<!-- Legacy version of Holographic Displays -->
 		<dependency>
-			<groupId>me.filoghost.holographicdisplays</groupId>
+			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
 			<artifactId>holographicdisplays-api</artifactId>
-			<version>3.0.0</version>
-			<scope>provided</scope>
+			<version>2.4.0</version>
 		</dependency>
 		<!-- Add Quests to the build -->
 		<dependency>
