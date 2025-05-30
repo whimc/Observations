@@ -1,19 +1,11 @@
 package edu.whimc.observations.models;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.gmail.filoghost.holographicdisplays.api.handler.TouchHandler;
-import com.gmail.filoghost.holographicdisplays.api.line.TouchableLine;
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
 import edu.whimc.observations.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
+import eu.decentsoftware.holograms.event.HologramClickEvent;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -22,8 +14,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-public class Observation {
+public class Observation implements Listener {
 
     private static final List<Observation> observations = new ArrayList<>();
 
@@ -57,6 +56,11 @@ public class Observation {
                     plugin, plugin.getConfig().getString("template-gui.uncategorized.item"), Material.STONE);
         } else {
             this.hologramItem = this.template.getGuiItem();
+        }
+
+        if (this.plugin.getConfig().getBoolean("enable-click-to-view")) {
+            // Register this class as a listener to handle hologram clicks
+            Bukkit.getPluginManager().registerEvents(this, plugin);
         }
 
         if (!isNew) {
@@ -156,28 +160,18 @@ public class Observation {
     }
 
     private void createHologram() {
-        Hologram holo = HologramsAPI.createHologram(this.plugin, this.holoLoc);
+        Hologram holo = DHAPI.createHologram(Integer.toString(this.id), this.holoLoc);
 
-        List<TouchableLine> lines = new ArrayList<>();
-
-        lines.add(holo.appendItemLine(new ItemStack(this.hologramItem)));
-        lines.add(holo.appendTextLine(Utils.color(this.observation)));
-        lines.add(holo.appendTextLine(ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp)));
+        DHAPI.addHologramLine(holo, this.hologramItem);
+        DHAPI.addHologramLine(holo, Utils.color(this.observation));
+        DHAPI.addHologramLine(holo, ChatColor.GRAY + this.playerName + " - " + Utils.getDate(this.timestamp));
 
         if (this.expiration != null) {
-            lines.add(holo.appendTextLine(ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration)));
+            DHAPI.addHologramLine(holo, ChatColor.GRAY + "Expires " + Utils.getDate(this.expiration));
         }
 
         if (this.isTemporary) {
-            lines.add(holo.appendTextLine(ChatColor.DARK_GRAY + "*temporary*"));
-        }
-
-        if (this.plugin.getConfig().getBoolean("enable-click-to-view")) {
-            ObservationClick clickListener = new ObservationClick(this.viewLoc);
-            for (TouchableLine touchable : lines) {
-                touchable.setTouchHandler(clickListener);
-            }
-
+            DHAPI.addHologramLine(holo, ChatColor.DARK_GRAY + "*temporary*");
         }
 
         this.hologram = holo;
@@ -265,18 +259,13 @@ public class Observation {
         }
     }
 
-    private class ObservationClick implements TouchHandler {
-
-        private final Location loc;
-
-        public ObservationClick(Location loc) {
-            this.loc = loc;
+    @EventHandler
+    public void onClick(HologramClickEvent event) {
+        if (event.getHologram() != this.hologram) {
+            return;
         }
 
-        @Override
-        public void onTouch(Player player) {
-            player.teleport(this.loc);
-        }
+        Bukkit.getScheduler().runTask(this.plugin, () -> event.getPlayer().teleport(this.viewLoc));
     }
 
 }

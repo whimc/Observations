@@ -5,7 +5,7 @@ author: Jack Henhapl
 api-version: 1.13
 main: edu.whimc.observations.Observations
 load: POSTWORLD
-depend: [HolographicDisplays, ProtocolLib]
+depend: [DecentHolograms, ProtocolLib]
 softdepend: [Multiverse-Core]
 loadbefore: [Quests]
 commands:

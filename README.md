@@ -11,7 +11,7 @@ $ mvn clean package
 It should show up in the target directory. Make sure to update your version number.
 
 ## Dependencies
-* [HolographicDisplays](https://github.com/filoghost/HolographicDisplays)
+* [DecentHolograms](https://www.spigotmc.org/resources/decentholograms-1-8-1-21-5-papi-support-no-dependencies.96927/)
 * [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
 
 ## Commands
