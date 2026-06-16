@@ -1,7 +1,5 @@
 # WHIMC-Observations
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/whimc/Observations?label=download&logo=github)](https://github.com/whimc/Observations/releases/latest)
-
 Create holographic observations in Minecraft worlds using guided templates or freehand text. Observations are stored in MySQL and rendered as DecentHolograms holograms.
 
 ## Installation
