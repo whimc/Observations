@@ -6,6 +6,9 @@ on:
     branches:
       - "master"
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: "Release"
@@ -20,11 +23,19 @@ jobs:
         with:
           java-version: 8
           distribution: temurin
+          cache: maven
 
-      - name: Generate ~/.m2/settings.xml
-        uses: whelk-io/maven-settings-xml-action@v22
-        with:
-          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+      - name: Build plugin
+        run: mvn clean package -B
+
+      - name: Read version
+        id: version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
 
       - name: Publish Release
-        run: mvn clean package de.jutzig:github-release-plugin:release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: WHIMC-Observations-${{ steps.version.outputs.version }}
+          files: target/WHIMC-Observations-${{ steps.version.outputs.version }}.jar
+          generate_release_notes: true

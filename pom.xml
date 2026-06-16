@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.whimc</groupId>
 	<artifactId>WHIMC-Observations</artifactId>
-	<version>2.7.1</version>
+	<version>2.7.2</version>
 	<name>WHIMC Observations</name>
 	<description>Create holographic observations in worlds</description>
 
@@ -97,27 +97,5 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-
-		<!-- Github release settings -->
-		<plugins>
-			<plugin>
-				<groupId>de.jutzig</groupId>
-				<artifactId>github-release-plugin</artifactId>
-				<version>1.1.1</version>
-				<configuration>
-					<description>Release for v${project.version}</description>
-					<releaseName>${project.artifactId}-${project.version}</releaseName>
-					<tag>${project.version}</tag>
-					<fileSets>
-						<fileSet>
-							<directory>${project.build.directory}</directory>
-							<includes>
-								<include>${project.build.finalName}.jar</include>
-							</includes>
-						</fileSet>
-					</fileSets>
-				</configuration>
-			</plugin>
-		</plugins>
 	</build>
 </project>
