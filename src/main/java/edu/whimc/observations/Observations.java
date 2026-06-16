@@ -3,6 +3,7 @@ package edu.whimc.observations;
 import edu.whimc.observations.commands.ObserveCommand;
 import edu.whimc.observations.commands.observations.ObservationsCommand;
 import edu.whimc.observations.libraries.SignMenuFactory;
+import edu.whimc.observations.models.HologramClickHandler;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.TemplateManager;
 import edu.whimc.observations.utils.Utils;
@@ -45,6 +46,10 @@ public class Observations extends JavaPlugin {
                 Utils.debug("Finished loading observations!");
             });
             Observation.startExpiredObservationScanningTask(this);
+
+            if (getConfig().getBoolean("enable-click-to-view")) {
+                HologramClickHandler.enable(this);
+            }
 
             Permission parent = new Permission(PERM_PREFIX + ".*");
             Bukkit.getPluginManager().addPermission(parent);

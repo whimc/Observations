@@ -7,6 +7,7 @@ import edu.whimc.observations.libraries.SpigotCallback;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.observetemplate.models.ObservationPrompt;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
+import edu.whimc.observations.utils.ObservationContentValidator;
 import edu.whimc.observations.utils.Utils;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -93,6 +94,18 @@ public class TemplateSelection implements Listener {
         }
     }
 
+    private boolean acceptCustomResponse(Player player, String response) {
+        ObservationContentValidator.Result result = ObservationContentValidator.validate(response);
+        if (result.isAccepted()) {
+            return true;
+        }
+        ObservationContentValidator.sendRejection(player, result);
+        if (result.getFailure() == ObservationContentValidator.Failure.PROFANITY) {
+            ObservationContentValidator.notifyOps(this.plugin, player, response);
+        }
+        return false;
+    }
+
     private void doSelectPrompt() {
         Player player = getPlayer();
 
@@ -124,7 +137,7 @@ public class TemplateSelection implements Listener {
                             .reopenIfFail(true)
                             .response((signPlayer, strings) -> {
                                 String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
-                                if (response.isEmpty()) {
+                                if (response.isEmpty() || !acceptCustomResponse(signPlayer, response)) {
                                     return false;
                                 }
                                 customObservation = response;
@@ -184,7 +197,7 @@ public class TemplateSelection implements Listener {
                             .reopenIfFail(true)
                             .response((signPlayer, strings) -> {
                                 String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
-                                if (response.isEmpty()) {
+                                if (response.isEmpty() || !acceptCustomResponse(signPlayer, response)) {
                                     return false;
                                 }
                                 addResponseAndAdvanceStage.accept(response);

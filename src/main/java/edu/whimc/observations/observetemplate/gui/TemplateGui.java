@@ -99,17 +99,17 @@ public final class TemplateGui implements Listener {
                             return;
                         }
 
-                        String signHeader = this.plugin.getConfig().getString("uncategorized-sign-header", "");
+                        String signHeader = this.plugin.getConfig().getString(
+                                "template-gui.text.uncategorized-sign-header", "&f&nYour Observation");
                         this.plugin.getSignMenuFactory()
                                 .newMenu(Collections.singletonList(Utils.color(signHeader)))
-                                .reopenIfFail(false)
+                                .reopenIfFail(true)
                                 .response((signPlayer, strings) -> {
-                                    String response = StringUtils.join(Arrays.copyOfRange(strings,0, strings.length), ' ').trim();
+                                    String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
                                     if (response.isEmpty()) {
                                         return false;
                                     }
-                                    Observation.createPlayerObservation(this.plugin, signPlayer, response, null);
-                                    return true;
+                                    return Observation.createPlayerObservation(this.plugin, signPlayer, response, null) != null;
                                 })
                                 .open(p);
                     }

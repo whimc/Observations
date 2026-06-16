@@ -2,16 +2,18 @@ package edu.whimc.observations.models;
 
 import edu.whimc.observations.Observations;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
+import edu.whimc.observations.utils.ObservationContentValidator;
 import edu.whimc.observations.utils.Utils;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import eu.decentsoftware.holograms.event.HologramClickEvent;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -19,12 +21,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
-public class Observation implements Listener {
+public class Observation {
 
     private static final List<Observation> observations = new ArrayList<>();
+    private static final Map<Integer, Observation> observationsById = new HashMap<>();
 
     private final Observations plugin;
     private final Timestamp timestamp;
@@ -58,11 +59,6 @@ public class Observation implements Listener {
             this.hologramItem = this.template.getGuiItem();
         }
 
-        if (this.plugin.getConfig().getBoolean("enable-click-to-view")) {
-            // Register this class as a listener to handle hologram clicks
-            Bukkit.getPluginManager().registerEvents(this, plugin);
-        }
-
         if (!isNew) {
             this.id = id;
             createHologram();
@@ -71,19 +67,25 @@ public class Observation implements Listener {
 
         plugin.getQueryer().storeNewObservation(this, newId -> {
             this.id = newId;
+            observationsById.put(this.id, this);
             createHologram();
         });
     }
 
     /**
-     * Creates a new observation and calls a new observe event with current time and configured expiration
-     * @param plugin Observations plugin being used
-     * @param player Player making the observation
-     * @param observation Text of the observation being made
-     * @param template The observation template being used
-     * @return New observation being created
+     * Creates a new observation and calls a new observe event with current time and configured expiration.
+     * @return The new observation, or null if the text was rejected
      */
     public static Observation createPlayerObservation(Observations plugin, Player player, String observation, ObservationTemplate template) {
+        ObservationContentValidator.Result validation = ObservationContentValidator.validate(observation);
+        if (!validation.isAccepted()) {
+            ObservationContentValidator.sendRejection(player, validation);
+            if (validation.getFailure() == ObservationContentValidator.Failure.PROFANITY) {
+                ObservationContentValidator.notifyOps(plugin, player, observation);
+            }
+            return null;
+        }
+
         int days = plugin.getConfig().getInt("expiration-days");
         Timestamp expiration = Timestamp.from(Instant.now().plus(days, ChronoUnit.DAYS));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -97,6 +99,9 @@ public class Observation implements Listener {
         ObserveEvent observeEvent = new ObserveEvent(obs, player);
         Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(observeEvent));
         observations.add(obs);
+        if (obs.id > 0) {
+            observationsById.put(obs.id, obs);
+        }
         return obs;
     }
 
@@ -105,6 +110,7 @@ public class Observation implements Listener {
                                               Timestamp expiration, ObservationTemplate template, boolean isTemporary) {
         Observation obs = new Observation(plugin, id, timestamp, playerName, viewLoc, observation, expiration, template, isTemporary, false);
         observations.add(obs);
+        observationsById.put(id, obs);
         return obs;
     }
 
@@ -132,11 +138,7 @@ public class Observation implements Listener {
     }
 
     public static Observation getObservation(int id) {
-        for (Observation obs : observations) {
-            if (obs.getId() == id) return obs;
-        }
-
-        return null;
+        return observationsById.get(id);
     }
 
     public static List<String> getObservationsTabComplete(String hint) {
@@ -175,6 +177,10 @@ public class Observation implements Listener {
         }
 
         this.hologram = holo;
+
+        if (this.plugin.getConfig().getBoolean("enable-click-to-view")) {
+            HologramClickHandler.register(this.hologram, this.viewLoc);
+        }
     }
 
     public void reRender() {
@@ -250,22 +256,17 @@ public class Observation implements Listener {
     public void deleteObservation() {
         deleteHologramOnly();
         observations.remove(this);
+        if (this.id > 0) {
+            observationsById.remove(this.id);
+        }
     }
 
     public void deleteHologramOnly() {
         if (this.hologram != null) {
+            HologramClickHandler.unregister(this.hologram);
             this.hologram.delete();
             this.hologram = null;
         }
-    }
-
-    @EventHandler
-    public void onClick(HologramClickEvent event) {
-        if (event.getHologram() != this.hologram) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(this.plugin, () -> event.getPlayer().teleport(this.viewLoc));
     }
 
 }

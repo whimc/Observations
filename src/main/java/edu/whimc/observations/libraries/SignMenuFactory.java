@@ -17,7 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -109,8 +108,8 @@ public final class SignMenuFactory {
             openSign.getBlockPositionModifier().write(0, position);
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, openSign);
-            } catch (InvocationTargetException exception) {
-                exception.printStackTrace();
+            } catch (Exception exception) {
+                plugin.getLogger().warning("Failed to open sign editor for " + player.getName() + ": " + exception.getMessage());
             }
 
             inputs.put(player.getUniqueId(), this);

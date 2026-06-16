@@ -1,0 +1,32 @@
+# One term per line. Lines starting with # are ignored.
+# Matched with word boundaries after normalization (leet-speak, stretched letters).
+asshole
+bastard
+bitch
+bollocks
+bullshit
+cock
+crap
+cunt
+damn
+dick
+douche
+fag
+faggot
+fuck
+goddamn
+hell
+jackass
+jerk
+motherfucker
+nigger
+nigga
+piss
+prick
+pussy
+retard
+shit
+slut
+twat
+whore
+wanker
