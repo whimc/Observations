@@ -1,19 +1,28 @@
 # One term per line. Lines starting with # are ignored.
 # Matched with word boundaries after normalization (leet-speak, stretched letters).
+# Separated forms (f.u.c.k, f u c k) and longer glued forms are also detected.
 asshole
+asshat
+asswipe
 bastard
 bitch
+bitches
 bollocks
 bullshit
 cock
+cocksucker
 crap
 cunt
 damn
 dick
+dickhead
 douche
+douchebag
 fag
 faggot
 fuck
+fucker
+fucking
 goddamn
 hell
 jackass
@@ -25,7 +34,10 @@ piss
 prick
 pussy
 retard
+retarded
 shit
+shithead
+shitty
 slut
 twat
 whore

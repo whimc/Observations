@@ -54,15 +54,17 @@ Manage observations that have been created on the server.
 | Command | Permission | Description |
 |---|---|---|
 | `/adminobservations` | `n/a` | List all `/adminobservations` subcommands |
-| `/adminobservations info` | `whimc-observations.observations.info` | Show information about an observation |
-| `/adminobservations list` | `whimc-observations.observations.list` | List all observations (or filter by player and/or world) |
-| `/adminobservations near` | `whimc-observations.observations.near` | List all observations in a radius |
-| `/adminobservations purge` | `whimc-observations.observations.purge` | Purge all temporary observations |
-| `/adminobservations reactivate` | `whimc-observations.observations.reactivate` | Reactivate observations within a given time frame |
-| `/adminobservations remove` | `whimc-observations.observations.remove` | Remove an observation |
-| `/adminobservations removeall` | `whimc-observations.observations.removeall` | Remove all observations from a certain player and/or in a certain world |
-| `/adminobservations setexpiration` | `whimc-observations.observations.setexpiration` | Change the expiration date of an observation |
-| `/adminobservations teleport` | `whimc-observations.observations.teleport` | Teleport to an observation |
+| `/adminobservations info` | `whimc-observations.adminobservations.info` | Show information about an observation |
+| `/adminobservations list` | `whimc-observations.adminobservations.list` | List all observations (or filter by player and/or world) |
+| `/adminobservations near` | `whimc-observations.adminobservations.near` | List all observations in a radius |
+| `/adminobservations purge` | `whimc-observations.adminobservations.purge` | Purge all temporary observations |
+| `/adminobservations reactivate` | `whimc-observations.adminobservations.reactivate` | Reactivate observations within a given time frame |
+| `/adminobservations remove` | `whimc-observations.adminobservations.remove` | Remove an observation |
+| `/adminobservations removeall` | `whimc-observations.adminobservations.removeall` | Remove all observations from a certain player and/or in a certain world |
+| `/adminobservations setexpiration` | `whimc-observations.adminobservations.setexpiration` | Change the expiration date of an observation |
+| `/adminobservations teleport` | `whimc-observations.adminobservations.teleport` | Teleport to an observation |
+
+Parent wildcard: `whimc-observations.adminobservations.*`. Permission nodes are also registered at runtime; declaring them in `plugin.yml` is tracked in [#60](https://github.com/whimc/Observations/issues/60).
 
 ## Content moderation
 
@@ -80,13 +82,22 @@ Submissions containing blocked language are rejected. The player sees a message 
 
 Online server operators are notified in chat and the attempt is logged to the console with a censored preview of the text.
 
-The blocklist ships in `blocked-words.txt` inside the plugin JAR (`src/main/resources/blocked-words.txt` in source). One term per line; lines starting with `#` are comments. Matching uses word boundaries and normalizes common leet-speak substitutions and stretched letters (e.g. `f@ck`, `fuuuuck`).
+The blocklist ships in `blocked-words.txt` inside the plugin JAR (`src/main/resources/blocked-words.txt` in source). One term per line; lines starting with `#` are comments. Matching:
 
-To customize the list, edit `blocked-words.txt` and rebuild the plugin.
+* Normalizes common leet-speak and stretched letters (e.g. `f@ck`, `fuuuuck`, `sh1t`)
+* Catches spaced or punctuated forms (`f u c k`, `f.u.c.k`)
+* Treats `@` as either `a` or `u` so variants like `f@ck` still match
+
+To customize the list today, edit `blocked-words.txt` and rebuild the plugin. Loading an editable copy from the plugin data folder (without a rebuild) is planned in [#58](https://github.com/whimc/Observations/issues/58).
 
 ### Nonsense / spam detection
 
-Observations that look like keyboard spam are rejected. For example, holding down a single key (`aaaaaaaaaaaaaaaa`) or other very low-diversity text.
+Observations that look like keyboard spam are rejected:
+
+* More than 5 identical characters in a row (`!!!!!!`, `hhhhhhh`) is blocked
+* Very low letter-diversity text is blocked
+
+High-entropy keyboard mash (e.g. random letter runs without long repeats) is not fully covered yet — see [#57](https://github.com/whimc/Observations/issues/57).
 
 When using the sign editor, the menu reopens so the player can try again. For `/observe <text>`, the player receives a message asking for a meaningful observation.
 
@@ -260,3 +271,23 @@ templates:
               - low
               - high
 ```
+
+## Planned improvements
+
+Tracked on GitHub. Contributions welcome.
+
+### High priority
+
+* [#57](https://github.com/whimc/Observations/issues/57) — Keyboard-mash / gibberish detection
+* [#58](https://github.com/whimc/Observations/issues/58) — Editable data-folder blocklist + moderation notify permission
+* [#59](https://github.com/whimc/Observations/issues/59) — Multiverse / late-loaded world template fill-ins
+* [#60](https://github.com/whimc/Observations/issues/60) — Declare permissions in `plugin.yml` (README nodes corrected)
+* [#61](https://github.com/whimc/Observations/issues/61) — Sign editor: strip header line from saved text
+
+### Medium priority
+
+* [#62](https://github.com/whimc/Observations/issues/62) — Template flow edge cases (Go Back, empty QUESTION prompts)
+* [#63](https://github.com/whimc/Observations/issues/63) — Admin search, soft-hide, and staff inspect tools
+* [#64](https://github.com/whimc/Observations/issues/64) — `onDisable` cleanup + safer UUID persistence
+* [#65](https://github.com/whimc/Observations/issues/65) — `/adminobservations reload`
+* [#66](https://github.com/whimc/Observations/issues/66) — Freehand max length + placement cooldown
